@@ -20,6 +20,7 @@ export class Components
 
     public static add(name:string, clazz:Type<any>) : void
     {
+        console.log("from library");
         let comp:Component = new Component(name,clazz);
         Components.classes.set(comp.name,comp);
     }
