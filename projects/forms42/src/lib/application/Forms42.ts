@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'alex',
+  selector: 'forms42',
   template: 
   `Library III
         <span #canvas style="z-index=0">
@@ -11,7 +11,7 @@ import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
 })
 
 
-export class Application implements OnInit
+export class Forms42 implements OnInit
 {
   page:HTMLElement = null;
   canvas:HTMLElement = null;
