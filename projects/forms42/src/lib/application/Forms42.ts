@@ -1,42 +1,14 @@
-import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
+import { Forms42App } from "./Forms42App";
 
-@Component({
-  selector: 'forms42',
-  template: 
-  `Library III
-        <span #canvas style="z-index=0">
-          <span #page  style="z-index=1"><input></span>
-        </span>
-  `
-})
-
-
-export class Forms42 implements OnInit
-{
-  page:HTMLElement = null;
-  canvas:HTMLElement = null;
-  
-  @ViewChild("page",{read: ElementRef, static: true}) pelem:ElementRef;
-  @ViewChild("canvas",{read: ElementRef, static: true}) celem:ElementRef;
-
-  public ngOnInit(): void 
-  {
-      console.log("init");
-      this.page = this.pelem.nativeElement;
-      this.canvas = this.celem.nativeElement;
-  }
-
-
-  public block() : void
-  {
-    this.page.style.zIndex = "1";
-    this.canvas.style.zIndex = "0";
-  }
-
-
-  public unblock() : void
-  {
-    this.page.style.zIndex = "0";
-    this.canvas.style.zIndex = "1";    
-  }
+export class Forms42
+{    
+    public enable() : void
+    {
+        Forms42App.main.enable();
+    }
+    
+    public disable() : void
+    {
+        Forms42App.main.disable();
+    }
 }

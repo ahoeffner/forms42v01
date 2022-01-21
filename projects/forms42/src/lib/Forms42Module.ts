@@ -1,16 +1,13 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { HttpClientModule } from '@angular/common/http';
-import { Forms42 } from './application/Forms42';
+import { Forms42Main } from './application/Forms42Main';
 
 
 @NgModule({
-    declarations: [Forms42],
-    exports     : [Forms42],
-    imports     : [CommonModule, HttpClientModule]
+  declarations: [Forms42Main],
+  imports: [
+  ],
+  exports: [Forms42Main]
 })
 
 
-export class Forms42Module
-{
-}
+export class Forms42Module { }

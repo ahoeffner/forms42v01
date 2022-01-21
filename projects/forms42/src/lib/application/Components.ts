@@ -1,51 +1,55 @@
-import { Type } from "@angular/core";
+import { Builder } from "./Builder";
 import { Form } from "../forms/Form";
+import { ComponentRef, Type } from "@angular/core";
+
 
 export class Components
 {
-    private static mainclass:Type<any> = null;
+    private static builder:Builder = null;
 
     private static classes:Map<string,Component> =
         new Map<string,Component>();
 
-
-    public static main(clazz?:Type<any>) : Type<any>
+    
+    public static setBuilder(builder:Builder) : void
     {
-        if (clazz != null) 
-            Components.mainclass = clazz;
+        Components.builder = builder;
+    }
 
-        return(Components.mainclass);
+
+    public createComponent(component:Type<any> | object) : ComponentRef<any>
+    {
+        return(Components.builder.createComponent(component));
+    }
+
+
+    public static add(path:string, clazz:Type<any>) : void
+    {
+        let comp:Component = new Component(path,clazz);
+        Components.classes.set(comp.path,comp);
     }
         
 
-    public static add(name:string, clazz:Type<any>) : void
+    public static get(path:string) : Component
     {
-        console.log("from library");
-        let comp:Component = new Component(name,clazz);
-        Components.classes.set(comp.name,comp);
-    }
-        
-
-    public static get(name:string) : Component
-    {
-        return(Components.classes.get(name));
+        return(Components.classes.get(path));
     }
 }
 
 
 export class Component
 {
-    public name:string = null;
+    public path:string = null;
     public form:boolean = false;
     public clazz:Type<any> = null;
     
-    constructor(name:string, clazz:Type<any>)
+    constructor(path:string, clazz:Type<any>)
     {
-        this.name = name;
+        this.path = path;
         this.clazz = clazz;
 
-        if (this.name == null)
-            this.name = clazz.name;
+        if (this.path == null)
+            this.path = "/"+clazz.name;
 
         if (clazz.prototype instanceof Form)
             this.form = true;
