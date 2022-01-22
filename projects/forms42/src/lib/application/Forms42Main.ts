@@ -1,14 +1,15 @@
+import { Builder } from "./Builder";
+import { Components } from "./Components";
 import { Forms42App } from "./Forms42App";
-import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
+import { Component, ElementRef, ViewChild, OnInit, ComponentRef, Type } from "@angular/core";
 
 
 @Component({
   selector: 'f42-main',
   template: 
   `
-    Hello II
     <div class="canvas">
-      <div #page class="page">XX<input></div>
+      <div #page class="page"></div>
       <div #modal class="page modal"></div>
     </div>
   `,
@@ -46,9 +47,10 @@ export class Forms42Main implements OnInit
   @ViewChild("modal",{read: ElementRef, static: true}) private melem:ElementRef;
 
 
-  constructor()
+  constructor(builder:Builder)
   {
     Forms42App.main = this;
+    Components.builder = builder;
   }
 
 
@@ -59,6 +61,13 @@ export class Forms42Main implements OnInit
   }
 
 
+  public display(path:Type<any> | string) : void
+  {
+    let comp:ComponentRef<any> = Components.createComponent(path);
+    this.page.appendChild(Components.node(comp));
+  }
+
+
   public disable() : void
   {
     let width:number = this.page.offsetWidth;
@@ -66,7 +75,6 @@ export class Forms42Main implements OnInit
 
     this.modal.style.width = width + "px";
     this.modal.style.height = height + "px";
-    console.log("Disabled");
   }
 
 
@@ -74,6 +82,5 @@ export class Forms42Main implements OnInit
   {
     this.modal.style.width = "0px";
     this.modal.style.height = "0px";
-    console.log("Enabled");
   }
 }

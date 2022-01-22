@@ -1,24 +1,31 @@
 import { Builder } from "./Builder";
 import { Form } from "../forms/Form";
-import { ComponentRef, Type } from "@angular/core";
+import { ComponentRef, EmbeddedViewRef, Type } from "@angular/core";
 
 
 export class Components
 {
-    private static builder:Builder = null;
+    public static builder:Builder = null;
 
     private static classes:Map<string,Component> =
         new Map<string,Component>();
 
-    
-    public static setBuilder(builder:Builder) : void
+
+    public static node(component:ComponentRef<any>) : HTMLElement
     {
-        Components.builder = builder;
+        return((component.hostView as EmbeddedViewRef<any>).rootNodes[0]);
     }
 
 
-    public createComponent(component:Type<any> | object) : ComponentRef<any>
+    public static createComponent(component:Type<any> | object | string) : ComponentRef<any>
     {
+        if (typeof(component) == "string")
+        {
+            let comp:Component = Components.classes.get(component);
+            if (comp == null) throw("No component mapped to path: "+component);
+            component = comp.clazz;
+        }
+
         return(Components.builder.createComponent(component));
     }
 
@@ -49,7 +56,10 @@ export class Component
         this.clazz = clazz;
 
         if (this.path == null)
-            this.path = "/"+clazz.name;
+            this.path = "/"+clazz.name.toLowerCase();
+
+        if (!this.path.startsWith("/"))
+            this.path = "/" + this.path;
 
         if (clazz.prototype instanceof Form)
             this.form = true;
