@@ -1,10 +1,10 @@
 import { Components } from "../application/Components";
 
-export const injectable = (path?:string) => 
+export const injectable = (id?:string) => 
 {
     function define(comp: any) 
     {
-        Components.add(path,comp);
+        Components.add(id,comp);
     }
     
     return (define);

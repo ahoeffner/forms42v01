@@ -11,57 +11,88 @@ export class Components
         new Map<string,Component>();
 
 
-    public static node(component:ComponentRef<any>) : HTMLElement
+    public static build(component:Type<any>) : ComponentRef<any>
     {
-        return((component.hostView as EmbeddedViewRef<any>).rootNodes[0]);
-    }
-
-
-    public static createComponent(component:Type<any> | object | string) : ComponentRef<any>
-    {
-        if (typeof(component) == "string")
-        {
-            let comp:Component = Components.classes.get(component);
-            if (comp == null) throw("No component mapped to path: "+component);
-            component = comp.clazz;
-        }
-
         return(Components.builder.createComponent(component));
     }
 
 
-    public static add(path:string, clazz:Type<any>) : void
+    public static getInstance(id:string, inst:string) : ComponentInstance
     {
-        let comp:Component = new Component(path,clazz);
-        Components.classes.set(comp.path,comp);
+        let comp:Component = Components.get(id);
+        if (comp == null) throw("No component mapped to "+id);
+        return(comp.getInstance(inst));
+    }
+
+
+    public static add(id:string, clazz:Type<any>) : Component
+    {
+        let comp:Component = new Component(id,clazz);
+        Components.classes.set(comp.id,comp);
+        return(comp);
     }
         
 
-    public static get(path:string) : Component
+    public static get(id:string) : Component
     {
-        return(Components.classes.get(path));
+        return(Components.classes.get(id));
     }
 }
 
 
 export class Component
 {
-    public path:string = null;
+    public id:string = null;
     public form:boolean = false;
     public clazz:Type<any> = null;
+
+    private instances:Map<string,ComponentInstance> =
+        new Map<string,ComponentInstance>();
     
-    constructor(path:string, clazz:Type<any>)
+    constructor(id:string, clazz:Type<any>)
     {
-        this.path = path;
+        this.id = id;
         this.clazz = clazz;
 
-        if (this.path == null)
-            this.path = "/"+clazz.name.toLowerCase();
+        if (this.id == null)
+            this.id = "/"+clazz.name.toLowerCase();
 
-        if (!this.path.startsWith("/"))
-            this.path = "/" + this.path;
+        if (!this.id.startsWith("/"))
+            this.id = "/" + this.id;
 
         if (clazz.prototype instanceof Form)
             this.form = true;
+    }
+
+
+    public getInstance(inst:string) : ComponentInstance
+    {
+        let cinst:ComponentInstance = this.instances.get(inst);
+
+        if (cinst == null)
+        {
+            cinst = new ComponentInstance(this);
+            this.instances.set(inst,cinst);
+        }
+
+        return(cinst);   
+    }
+}
+
+
+export class ComponentInstance
+{
+    public component:Component = null;
+    public ref:ComponentRef<any> = null;
+
+    constructor(component:Component)
+    {
+        this.component = component;
+        this.ref = Components.build(component.clazz);
+    }
+
+    public node() : HTMLElement
+    {
+        return((this.ref.hostView as EmbeddedViewRef<any>).rootNodes[0]);
     }
 }

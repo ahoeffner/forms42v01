@@ -1,9 +1,22 @@
-import { Type } from "@angular/core";
 import { Forms42App } from "./Forms42App";
 
 
 export class Forms42
 {    
+    private static instance:Forms42 = null;
+
+    public static get() : Forms42
+    {
+        if (Forms42.instance == null)
+            Forms42.instance = new Forms42();
+            
+        return(Forms42.instance);
+    }
+
+    private constructor()
+    {
+    }
+
     public enable() : void
     {
         Forms42App.main.enable();
@@ -14,8 +27,9 @@ export class Forms42
         Forms42App.main.disable();
     }
 
-    public showform(path:Type<any> | string) : void
+    public showform(id:string, inst?:string) : void
     {
-        Forms42App.main.display(path);
+        if (inst == null) inst = "";
+        Forms42App.main.showComponent(id,inst);
     }
 }

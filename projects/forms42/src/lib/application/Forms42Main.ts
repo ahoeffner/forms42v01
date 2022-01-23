@@ -1,5 +1,5 @@
 import { Builder } from "./Builder";
-import { Components } from "./Components";
+import { ComponentInstance, Components } from "./Components";
 import { Forms42App } from "./Forms42App";
 import { Component, ElementRef, ViewChild, OnInit, ComponentRef, Type } from "@angular/core";
 
@@ -40,47 +40,47 @@ import { Component, ElementRef, ViewChild, OnInit, ComponentRef, Type } from "@a
 
 export class Forms42Main implements OnInit
 {
-  private page:HTMLDivElement = null;
-  private modal:HTMLDivElement = null;
-  
-  @ViewChild("page",{read: ElementRef, static: true}) private pelem:ElementRef;
-  @ViewChild("modal",{read: ElementRef, static: true}) private melem:ElementRef;
+	private page:HTMLDivElement = null;
+	private modal:HTMLDivElement = null;
+
+	@ViewChild("page",{read: ElementRef, static: true}) private pelem:ElementRef;
+	@ViewChild("modal",{read: ElementRef, static: true}) private melem:ElementRef;
 
 
-  constructor(builder:Builder)
-  {
-    Forms42App.main = this;
-    Components.builder = builder;
-  }
+	constructor(builder:Builder)
+	{
+		Forms42App.main = this;
+		Components.builder = builder;
+	}
 
 
-  public ngOnInit(): void 
-  {
-      this.page = this.pelem.nativeElement;
-      this.modal = this.melem.nativeElement;
-  }
+	public ngOnInit(): void 
+	{
+		this.page = this.pelem.nativeElement;
+		this.modal = this.melem.nativeElement;
+	}
 
 
-  public display(path:Type<any> | string) : void
-  {
-    let comp:ComponentRef<any> = Components.createComponent(path);
-    this.page.appendChild(Components.node(comp));
-  }
+	public showComponent(id:string, inst:string) : void
+	{
+		let cinst:ComponentInstance = Components.getInstance(id,inst);
+		this.page.appendChild(cinst.node());
+	}
 
 
-  public disable() : void
-  {
-    let width:number = this.page.offsetWidth;
-    let height:number = this.page.offsetHeight;
+	public disable() : void
+	{
+		let width:number = this.page.offsetWidth;
+		let height:number = this.page.offsetHeight;
 
-    this.modal.style.width = width + "px";
-    this.modal.style.height = height + "px";
-  }
+		this.modal.style.width = width + "px";
+		this.modal.style.height = height + "px";
+	}
 
 
-  public enable() : void
-  {
-    this.modal.style.width = "0px";
-    this.modal.style.height = "0px";
-  }
+	public enable() : void
+	{
+		this.modal.style.width = "0px";
+		this.modal.style.height = "0px";
+	}
 }
