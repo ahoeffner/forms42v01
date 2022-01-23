@@ -49,6 +49,7 @@ export class Forms42Main implements OnInit
 
 	constructor(builder:Builder)
 	{
+		Forms42App.main = this;
 		Components.builder = builder;
 	}
 
@@ -57,7 +58,6 @@ export class Forms42Main implements OnInit
 	{
 		this.page = this.pelem.nativeElement;
 		this.modal = this.melem.nativeElement;
-		Forms42App.main = this;
 	}
 
 

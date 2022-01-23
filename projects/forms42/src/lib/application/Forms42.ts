@@ -1,16 +1,12 @@
 import { Forms42App } from "./Forms42App";
-import { Sleeper } from "../utils/Sleeper";
 
 
 export class Forms42
 {    
     private static instance:Forms42 = null;
 
-    public static async get() : Promise<Forms42>
+    public static get() : Forms42
     {
-        while(Forms42App.main == null)
-            Forms42.sleep(1);
-            
         if (Forms42.instance == null)
             Forms42.instance = new Forms42();
             
@@ -20,6 +16,7 @@ export class Forms42
 
     private constructor() {}
 
+    
     public enable() : void
     {
         Forms42App.main.enable();
@@ -36,8 +33,9 @@ export class Forms42
         Forms42App.main.showComponent(id,inst);
     }
 
-    public static sleep(ms:number)
+    public sleep(ms:number) : Promise<void>
     {
-        new Sleeper().sleep(ms);
+        console.log("Dammm v1");
+        return(new Promise(resolve => setTimeout(resolve,ms)));
     }
 }
