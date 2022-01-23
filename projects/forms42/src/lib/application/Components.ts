@@ -35,7 +35,7 @@ export class Components
 
     public static get(id:string) : Component
     {
-        return(Components.classes.get(id));
+        return(Components.classes.get(id.toLowerCase()));
     }
 }
 
@@ -54,14 +54,14 @@ export class Component
         this.id = id;
         this.clazz = clazz;
 
-        if (this.id == null)
-            this.id = "/"+clazz.name.toLowerCase();
-
-        if (!this.id.startsWith("/"))
-            this.id = "/" + this.id;
-
         if (clazz.prototype instanceof Form)
             this.form = true;
+
+        if (this.id == null)
+            this.id = clazz.name.toLowerCase();
+
+        if (this.form && !this.id.startsWith("/"))
+            this.id = "/" + this.id;
     }
 
 

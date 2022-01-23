@@ -1,7 +1,7 @@
 import { Builder } from "./Builder";
-import { ComponentInstance, Components } from "./Components";
 import { Forms42App } from "./Forms42App";
-import { Component, ElementRef, ViewChild, OnInit, ComponentRef, Type } from "@angular/core";
+import { ComponentInstance, Components } from "./Components";
+import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
 
 
 @Component({
@@ -49,7 +49,6 @@ export class Forms42Main implements OnInit
 
 	constructor(builder:Builder)
 	{
-		Forms42App.main = this;
 		Components.builder = builder;
 	}
 
@@ -58,13 +57,15 @@ export class Forms42Main implements OnInit
 	{
 		this.page = this.pelem.nativeElement;
 		this.modal = this.melem.nativeElement;
+		Forms42App.main = this;
 	}
 
 
-	public showComponent(id:string, inst:string) : void
+	public showComponent(id:string, inst:string) : ComponentInstance
 	{
 		let cinst:ComponentInstance = Components.getInstance(id,inst);
 		this.page.appendChild(cinst.node());
+		return(cinst);
 	}
 
 
