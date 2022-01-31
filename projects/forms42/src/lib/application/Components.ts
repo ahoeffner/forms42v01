@@ -91,6 +91,11 @@ export class ComponentInstance
         this.ref = Components.build(component.clazz);
     }
 
+    public instance() : any
+    {
+        return(this.ref.instance);
+    }
+
     public node() : HTMLElement
     {
         return((this.ref.hostView as EmbeddedViewRef<any>).rootNodes[0]);

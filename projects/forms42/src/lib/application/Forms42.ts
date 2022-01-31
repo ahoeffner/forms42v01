@@ -1,5 +1,5 @@
-import { Forms42App } from "./Forms42App";
-
+import { state } from "@angular/animations";
+import { State } from "./State";
 
 export class Forms42
 {    
@@ -14,28 +14,35 @@ export class Forms42
     }
 
 
-    private constructor() {}
+    private constructor() 
+    {
+    }
 
-    
+
     public enable() : void
     {
-        Forms42App.main.enable();
+        State.main.enable();
     }
     
     public disable() : void
     {
-        Forms42App.main.disable();
+        State.main.disable();
     }
 
     public showform(id:string, inst?:string) : void
     {
         if (inst == null) inst = "";
-        Forms42App.main.showComponent(id,inst);
+        State.main.showComponent(id,inst);
+    }
+
+    public showWindow(id:string, modal:boolean, inst?:string) : void
+    {
+        if (inst == null) inst = "";
+        State.main.showWindow(id,inst,modal,1);
     }
 
     public sleep(ms:number) : Promise<void>
     {
-        console.log("Dammm v1");
         return(new Promise(resolve => setTimeout(resolve,ms)));
     }
 }
