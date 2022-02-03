@@ -1,0 +1,10 @@
+ng build forms42
+rm -R ../Forms42Demo/node_modules/forms42/*
+
+echo content:
+ls -a ../Forms42Demo/node_modules/forms42
+
+cp -R dist/forms42/* ../Forms42Demo/node_modules/forms42
+
+echo content:
+ls -a ../Forms42Demo/node_modules/forms42
