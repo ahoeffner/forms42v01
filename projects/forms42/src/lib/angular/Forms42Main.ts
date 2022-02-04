@@ -1,5 +1,5 @@
 import { Builder } from './Builder';
-import { F42ComponentFactory } from './F42ComponentFactory';
+import { NGComponentFactory } from './NGComponentFactory';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component({
@@ -59,7 +59,7 @@ export class Forms42Main implements OnInit
 
 	constructor(builder:Builder) 
 	{
-		F42ComponentFactory.builder = builder;
+		NGComponentFactory.builder = builder;
 	}
 
 

@@ -1,4 +1,4 @@
-export interface F42Component
+export interface Component
 {
     instance() :object;
     html() : HTMLElement;
