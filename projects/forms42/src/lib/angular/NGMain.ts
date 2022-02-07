@@ -9,6 +9,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 	selector: 'f42-main',
 	template: 
 	`
+	FormsLibrary
 	<div #windows class="windows"></div>
     <div class="canvas">
       <div #page class="page"></div>

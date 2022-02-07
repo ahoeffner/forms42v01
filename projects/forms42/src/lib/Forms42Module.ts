@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { NGMain } from './angular/NGMain';
-import { CommonModule } from '@angular/common';
 
 
 @NgModule({
-	imports: [CommonModule],
+	imports: [],
 	declarations: [NGMain],
 	exports: [NGMain]
 })
