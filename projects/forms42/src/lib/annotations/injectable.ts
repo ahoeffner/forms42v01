@@ -1,10 +1,10 @@
-import { Context } from "../application/Context";
+import { ComponentFactory } from "../application/ComponentFactory";
 
 export const injectable = (id?:string) => 
 {
     function define(comp: any) 
     {
-        Context.factory.addComponent(id,comp);
+        ComponentFactory.addClass(id,comp);
     }
     
     return (define);

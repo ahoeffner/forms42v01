@@ -5,6 +5,6 @@
 export * from './lib/FormsLibrary';
 export * from './lib/angular/NGMain';
 export * from './lib/framework/Forms42';
+export {NGForm as Form} from './lib/angular/NGForm';
 
-export * from './lib/forms/Form';
 export { injectable } from './lib/annotations/injectable';

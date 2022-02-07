@@ -1,5 +1,8 @@
-import { NgModule } from '@angular/core';
 import { NGMain } from './angular/NGMain';
+import { Builder } from './angular/Builder';
+import { Context } from './application/Context';
+import { ComponentFactory } from './application/ComponentFactory';
+import { NgModule } from '@angular/core';
 
 
 @NgModule({

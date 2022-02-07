@@ -1,21 +1,41 @@
 import { Type } from '@angular/core';
-import { Component } from './interfaces/Component';
-import { ComponentFactory as Factory } from './interfaces/ComponentFactory'; 
-import { NGComponentFactory as Angular } from '../angular/NGComponentFactory'; 
+import { Component } from '../framework/interfaces/Component';
+import { ComponentFactory as Factory } from '../framework/interfaces/ComponentFactory'; 
 
 
 export class ComponentFactory
 {
-    private factory:Factory = new Angular();
+    private static classes:Map<string,Type<any>> =
+        new Map<string,Type<any>>();
 
     private definitions:Map<string,ComponentDefinition> = 
         new Map<string,ComponentDefinition>();
 
 
+    public static addClass(id: string, clazz: Type<any>) : void
+    {
+        if (id == null) id = clazz.name.toLowerCase();
+        ComponentFactory.classes.set(id,clazz);
+    }
+
+
+    constructor(private factory$:Factory) 
+    {
+        ComponentFactory.classes.forEach((value,key) => {this.addComponent(key,value)});
+        ComponentFactory.classes.clear();
+    }
+
+
+    public factory() : Factory
+    {
+        return(this.factory$);
+    }
+
+
     public addComponent(id: string, clazz: Type<any>) : void 
     {
         if (id == null) id = clazz.name.toLowerCase();
-        this.definitions.set(id,new ComponentDefinition(this.factory,clazz));
+        this.definitions.set(id,new ComponentDefinition(this.factory(),clazz));
     }
 
 

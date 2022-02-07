@@ -1,15 +1,16 @@
 import { Builder } from './Builder';
-import { NGComponent } from './NGComponent';
+import { Main } from '../application/Main';
 import { Context } from '../application/Context';
-import { Main } from '../framework/interfaces/Main';
 import { NGComponentFactory } from './NGComponentFactory';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Main as IMain } from '../framework/interfaces/Main';
+import { ComponentFactory } from '../application/ComponentFactory';
+import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 
 @Component({
 	selector: 'f42-main',
 	template: 
 	`
-	FormsLibrary V2
+	FormsLibrary V23
 	<div #windows class="windows"></div>
     <div class="canvas">
       <div #page class="page"></div>
@@ -48,60 +49,57 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 	})
 
 
-export class NGMain implements OnInit, Main 
+export class NGMain implements IMain, OnInit
 {
-	private layer:number = 0;
-	private page:HTMLDivElement = null;
-	private modal:HTMLDivElement = null;
-	private windows:HTMLDivElement = null;
+	private layer$:number = 0;
+	private page$:HTMLDivElement = null;
+	private overlay$:HTMLDivElement = null;
+	private windows$:HTMLDivElement = null;
 
 	@ViewChild("page",{read: ElementRef, static: true}) private pelem:ElementRef;
 	@ViewChild("modal",{read: ElementRef, static: true}) private melem:ElementRef;
 	@ViewChild("windows",{read: ElementRef, static: true}) private welem:ElementRef;
 
 
-	constructor(builder:Builder) 
+	constructor(private viewref:ViewContainerRef)
 	{
-		Context.main = this;
-		NGComponentFactory.builder = builder;
 	}
 
 
 	public ngOnInit(): void 
 	{
-		this.page = this.pelem.nativeElement;
-		this.modal = this.melem.nativeElement;
-		this.windows = this.welem.nativeElement;
-		this.page.style.zIndex = "" + this.layer;
-		this.modal.style.zIndex = "" + (+this.layer + 1);
+		this.page$ = this.pelem.nativeElement;
+		this.overlay$ = this.melem.nativeElement;
+		this.windows$ = this.welem.nativeElement;
+
+		Context.main = new Main(this);
+		let factory:NGComponentFactory = new NGComponentFactory();
+
+		factory.builder = new Builder(this.viewref);
+		Context.factory = new ComponentFactory(factory);
 	}
 
 
-	public showComponent(comp:NGComponent) : void
+	public layer() : number
 	{
-		this.page.appendChild(comp.html());
+		return(this.layer$);
 	}
 
 
-	public removeComponent(comp:NGComponent) : void
+	public page() : HTMLDivElement
 	{
-		this.page.removeChild(comp.html());
+		return(this.page$);
 	}
 
 
-	public disable() : void
+	public overlay() : HTMLDivElement
 	{
-		let width:number = this.page.offsetWidth;
-		let height:number = this.page.offsetHeight;
-
-		this.modal.style.width = width + "px";
-		this.modal.style.height = height + "px";
+		return(this.overlay$);
 	}
 
 
-	public enable() : void
+	public windows() : HTMLDivElement
 	{
-		this.modal.style.width = "0px";
-		this.modal.style.height = "0px";
+		return(this.windows$);
 	}
 }

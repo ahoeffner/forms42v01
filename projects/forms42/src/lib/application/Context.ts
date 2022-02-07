@@ -1,8 +1,8 @@
-import { Main } from '../framework/interfaces/Main';
-import { ComponentFactory } from "../framework/ComponentFactory";
+import { Main } from '../application/Main';
+import { ComponentFactory } from "./ComponentFactory";
 
 export class Context
 {
     public static main:Main = null;
-    public static factory:ComponentFactory = new ComponentFactory();
+    public static factory:ComponentFactory = null;
 }
