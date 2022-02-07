@@ -9,7 +9,7 @@ import { NGMain } from './angular/NGMain';
 })
 
 
-export class Forms42Module
+export class FormsLibrary
 {
 	constructor()
 	{

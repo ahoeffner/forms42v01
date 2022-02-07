@@ -1,5 +1,5 @@
 import { Forms42 } from 'forms42';
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 
 @Component({
 	selector: 'forms42',
@@ -8,7 +8,13 @@ import { Component } from '@angular/core';
 })
 
 
-export class Main 
+export class Main implements AfterViewInit
 {
 	constructor(private forms: Forms42) { }
+
+
+	ngAfterViewInit(): void 
+	{
+		this.forms.showform("/test1");
+	}
 }

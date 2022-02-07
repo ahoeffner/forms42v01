@@ -1,5 +1,6 @@
-import { Form, injectable } from 'forms42';
 import { Component } from '@angular/core';
+import { Form, injectable } from 'forms42';
+
 
 @Component({
 	selector: 'test1',
@@ -8,5 +9,7 @@ import { Component } from '@angular/core';
 
 @injectable("/test1")
 
-export class Test1 extends Form {
+
+export class Test1 extends Form 
+{
 }
