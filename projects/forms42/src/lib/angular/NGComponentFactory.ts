@@ -6,6 +6,7 @@ import { ComponentFactory } from '../framework/interfaces/ComponentFactory';
 
 export class NGComponentFactory implements ComponentFactory
 {
+    //public static form:Form = null;
     public static builder:Builder = null;
 
 

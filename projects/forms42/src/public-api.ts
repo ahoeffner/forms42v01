@@ -4,7 +4,7 @@
 
 export * from './lib/FormsLibrary';
 export * from './lib/angular/NGMain';
-export * from './lib/framework/Form';
 export * from './lib/framework/Forms42';
 
+export * from './lib/forms/Form';
 export { injectable } from './lib/annotations/injectable';
