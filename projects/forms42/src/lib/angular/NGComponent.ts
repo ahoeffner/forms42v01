@@ -1,16 +1,19 @@
-import { Component } from '../application/interfaces/Component';
+import { Component } from '../framework/interfaces/Component';
+import { ComponentRef, EmbeddedViewRef, Type } from '@angular/core';
 
 
 export class NGComponent implements Component
 {
+    constructor(private ref:ComponentRef<any>) {}
+
     instance(): object 
     {
-        throw new Error('Method not implemented.');
+        return(this.ref.instance);
     }
 
 
     html(): HTMLElement 
     {
-        throw new Error('Method not implemented.');
+        return((this.ref.hostView as EmbeddedViewRef<any>).rootNodes[0]);
     }
 }

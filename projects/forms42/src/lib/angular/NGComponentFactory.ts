@@ -1,7 +1,7 @@
 import { Builder } from './Builder';
-import { Type } from '@angular/core';
-import { Component } from '../application/interfaces/Component';
-import { ComponentFactory as ComponentFactory } from '../application/interfaces/ComponentFactory';
+import { NGComponent } from './NGComponent';
+import { ComponentRef, Type } from '@angular/core';
+import { ComponentFactory } from '../framework/interfaces/ComponentFactory';
 
 
 export class NGComponentFactory implements ComponentFactory
@@ -9,14 +9,9 @@ export class NGComponentFactory implements ComponentFactory
     public static builder:Builder = null;
 
 
-    public addClass(id: string, clazz: Type<any>) : void 
+    public newInstance(clazz: Type<any>) : NGComponent 
     {
-        throw new Error('Method not implemented.');
-    }
-  
-
-    getComponent(id: string, inst: string) : Component 
-    {
-        return(null);
+        let ref:ComponentRef<any> = NGComponentFactory.builder.createComponent(clazz);
+        return(new NGComponent(ref));
     }
 }

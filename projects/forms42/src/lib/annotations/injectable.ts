@@ -4,7 +4,7 @@ export const injectable = (id?:string) =>
 {
     function define(comp: any) 
     {
-        Context.factory.addClass(id,comp);
+        Context.factory.addComponent(id,comp);
     }
     
     return (define);

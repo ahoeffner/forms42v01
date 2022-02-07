@@ -1,15 +1,16 @@
 import { NgModule } from '@angular/core';
-import { Forms42Main } from './angular/Forms42Main';
+import { NGMain } from './angular/NGMain';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
-	imports: [],
-	declarations: [Forms42Main],
-	exports: [Forms42Main]
+	imports: [CommonModule],
+	declarations: [NGMain],
+	exports: [NGMain]
 })
 
 
-export class Forms42Module 
+export class Forms42Module
 {
 	constructor()
 	{

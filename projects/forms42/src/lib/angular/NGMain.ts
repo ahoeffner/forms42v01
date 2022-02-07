@@ -1,4 +1,7 @@
 import { Builder } from './Builder';
+import { NGComponent } from './NGComponent';
+import { Context } from '../application/Context';
+import { Main } from '../framework/interfaces/Main';
 import { NGComponentFactory } from './NGComponentFactory';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
@@ -6,7 +9,6 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 	selector: 'f42-main',
 	template: 
 	`
-	F42Main V3.1415
 	<div #windows class="windows"></div>
     <div class="canvas">
       <div #page class="page"></div>
@@ -45,7 +47,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 	})
 
 
-export class Forms42Main implements OnInit 
+export class NGMain implements OnInit, Main 
 {
 	private layer:number = 0;
 	private page:HTMLDivElement = null;
@@ -59,6 +61,7 @@ export class Forms42Main implements OnInit
 
 	constructor(builder:Builder) 
 	{
+		Context.main = this;
 		NGComponentFactory.builder = builder;
 	}
 
@@ -70,6 +73,18 @@ export class Forms42Main implements OnInit
 		this.windows = this.welem.nativeElement;
 		this.page.style.zIndex = "" + this.layer;
 		this.modal.style.zIndex = "" + (+this.layer + 1);
+	}
+
+
+	public showComponent(comp:NGComponent) : void
+	{
+		this.page.appendChild(comp.html());
+	}
+
+
+	public removeComponent(comp:NGComponent) : void
+	{
+		this.page.removeChild(comp.html());
 	}
 
 
