@@ -11,8 +11,8 @@ export class NGForm extends Form implements IForm, OnInit, AfterViewInit
 {
     public ngOnInit(): void 
     {
-        this["fw"] = this;
-        (Context.factory.factory() as NGComponentFactory).form = this;
+        this["__fw__"] = this;
+        (Context.factory.factory() as NGComponentFactory).form = this["__priv__"];
     }
 
 

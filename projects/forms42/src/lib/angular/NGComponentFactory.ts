@@ -1,13 +1,13 @@
 import { Builder } from './Builder';
-import { Form } from '../forms/Form';
 import { NGComponent } from './NGComponent';
+import { FormPrivate } from '../forms/FormPrivate';
 import { ComponentRef, Type } from '@angular/core';
 import { ComponentFactory } from '../framework/interfaces/ComponentFactory';
 
 
 export class NGComponentFactory implements ComponentFactory
 {
-    public form:Form = null;
+    public form:FormPrivate = null;
     public builder:Builder = null;
 
 

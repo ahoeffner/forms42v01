@@ -3,12 +3,13 @@ import { Builder } from './angular/Builder';
 import { Context } from './application/Context';
 import { ComponentFactory } from './application/ComponentFactory';
 import { NgModule } from '@angular/core';
+import { NGField } from './angular/NGField';
 
 
 @NgModule({
 	imports: [],
-	declarations: [NGMain],
-	exports: [NGMain]
+	declarations: [NGMain, NGField],
+	exports: [NGMain, NGField]
 })
 
 

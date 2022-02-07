@@ -4,7 +4,7 @@ import { Form, injectable } from 'forms42';
 
 @Component({
 	selector: 'test1',
-	template: 'Test1 <input>'
+	template: 'Test1 <field></field>'
 })
 
 @injectable("/test1")

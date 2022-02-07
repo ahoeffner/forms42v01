@@ -1,6 +1,6 @@
-import { Form } from '../forms/Form';
 import { Field } from '../fields/Field';
 import { Context } from '../application/Context';
+import { FormPrivate } from '../forms/FormPrivate';
 import { NGComponentFactory } from './NGComponentFactory';
 import { Field as IField } from '../framework/interfaces/Field';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -16,17 +16,12 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 	})
 
 
-export class NGField implements IField, OnInit 
+export class NGField extends Field implements IField, OnInit 
 {
-    private form:Form = null;
+    private form:FormPrivate = null;
 	private container:HTMLDivElement = null;
-	@ViewChild("container",{read: ElementRef, static: true}) private celem:ElementRef;
 
-
-    constructor()
-    {
-        let field:Field = new Field(this);
-    }
+    @ViewChild("container",{read: ElementRef, static: true}) private celem:ElementRef;
 
 
     public ngOnInit(): void 
@@ -34,6 +29,8 @@ export class NGField implements IField, OnInit
 		this.container = this.celem.nativeElement;
         this.container.innerHTML = "<input>";
         this.form = (Context.factory.factory() as NGComponentFactory).form;
-        console.log("Current Form "+this.form);
+
+        this["__fw__"] = this;
+        this.form.addField(this);
     }
 }
