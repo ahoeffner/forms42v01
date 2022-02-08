@@ -1,5 +1,7 @@
 import { Form } from "./Form";
-import { Field } from "../fields/Field";
+import { FieldInstance } from "../fields/FieldInstance";
+import { Form as IForm } from '../framework/interfaces/Form';
+
 
 export class FormPrivate
 {
@@ -11,14 +13,17 @@ export class FormPrivate
         this.form$ = form;
     }
 
-
     public form() : Form
     {
         return(this.form$);
     }
 
+    public setImplementation(impl:IForm)
+    {
+        
+    }
 
-    public addField(field:Field) : void
+    public addFieldInstance(field:FieldInstance) : void
     {
         console.log("Added field "+field);
     }

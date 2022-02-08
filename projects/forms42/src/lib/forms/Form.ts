@@ -1,9 +1,7 @@
-import { Form as IForm } from '../framework/interfaces/Form';
 import { FormPrivate } from './FormPrivate';
 
 export class Form
 {
-    private __fw__:IForm = null;
     private __priv__:FormPrivate = null;
 
 

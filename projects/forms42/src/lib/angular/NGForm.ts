@@ -11,13 +11,12 @@ export class NGForm extends Form implements IForm, OnInit, AfterViewInit
 {
     public ngOnInit(): void 
     {
-        this["__fw__"] = this;
+        this["__priv__"].setImplementation(this);
         (Context.factory.factory() as NGComponentFactory).form = this["__priv__"];
     }
 
 
     public ngAfterViewInit(): void 
     {
-        this.test();
     }
 }

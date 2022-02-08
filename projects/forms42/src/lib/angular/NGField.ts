@@ -1,9 +1,9 @@
-import { Field } from '../fields/Field';
 import { Context } from '../application/Context';
 import { FormPrivate } from '../forms/FormPrivate';
+import { FieldInstance } from '../fields/FieldInstance';
 import { NGComponentFactory } from './NGComponentFactory';
-import { Field as IField } from '../framework/interfaces/Field';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
 
 
@@ -16,10 +16,21 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 	})
 
 
-export class NGField extends Field implements IField, OnInit 
+export class NGField extends FieldInstance implements IField, OnInit 
 {
     private form:FormPrivate = null;
 	private placeholder$:HTMLSpanElement = null;
+
+    @Input("id")    public id:string    = null;
+    @Input("row")   public row:string   = null;
+    @Input("type")  public type:string  = null;
+    @Input("name")  public name:string  = null;
+    @Input("size")  public size:string  = null;
+    @Input("value") public value:string = null;
+    @Input("block") public block:string = null;
+    @Input("group") public group:string = null;
+    @Input("class") public class:string = null;
+    @Input("style") public style:string = null;
 
     @ViewChild("container",{read: ElementRef, static: true}) private celem:ElementRef;
 
@@ -27,12 +38,10 @@ export class NGField extends Field implements IField, OnInit
     public ngOnInit(): void 
     {
 		this.placeholder$ = this.celem.nativeElement;
-        
-        this.placeholder$.innerHTML = "<input>";
         this.form = (Context.factory.factory() as NGComponentFactory).form;
 
-        this["__fw__"] = this;
-        this.form.addField(this);
+        this["__priv__"].setImplementation(this);
+        this.form.addFieldInstance(this);
     }
 
 
