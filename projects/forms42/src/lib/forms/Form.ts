@@ -11,10 +11,4 @@ export class Form
     {
         this.__priv__ = new FormPrivate(this);
     }
-
-
-    public test() : void
-    {
-        console.log("Form.fw -> "+this.__fw__);
-    }
 }

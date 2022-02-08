@@ -19,18 +19,25 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 export class NGField extends Field implements IField, OnInit 
 {
     private form:FormPrivate = null;
-	private container:HTMLDivElement = null;
+	private placeholder$:HTMLSpanElement = null;
 
     @ViewChild("container",{read: ElementRef, static: true}) private celem:ElementRef;
 
 
     public ngOnInit(): void 
     {
-		this.container = this.celem.nativeElement;
-        this.container.innerHTML = "<input>";
+		this.placeholder$ = this.celem.nativeElement;
+        
+        this.placeholder$.innerHTML = "<input>";
         this.form = (Context.factory.factory() as NGComponentFactory).form;
 
         this["__fw__"] = this;
         this.form.addField(this);
+    }
+
+
+    public placeholder(): HTMLSpanElement 
+    {
+        return(this.placeholder$);
     }
 }
