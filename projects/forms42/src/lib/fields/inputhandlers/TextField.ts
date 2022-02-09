@@ -16,17 +16,17 @@ export class TextField extends Common implements FormField
     }
 
 
-    public getValue() 
+    public getValue() : any
     {
         return(this.input.value);
     }
 
-    public setValue(value: any): void 
+    public setValue(value: any) : void 
     {
         this.input.value = value;
     }
 
-    public setProperties(properties: any): void 
+    public setProperties(properties: any) : void 
 	{
         throw new Error("Method not implemented.");
     }
@@ -36,17 +36,17 @@ export class TextField extends Common implements FormField
         throw new Error("Method not implemented.");
     }
     
-	public enable(flag: boolean): void 
+	public enable(flag: boolean) : void 
 	{
         throw new Error("Method not implemented.");
     }
 
-    public readonly(flag: boolean): void 
+    public readonly(flag: boolean) : void 
 	{
         throw new Error("Method not implemented.");
     }
     
-	public validate(): boolean 
+	public validate() : boolean 
 	{
         throw new Error("Method not implemented.");
     }
