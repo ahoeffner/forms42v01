@@ -1,5 +1,5 @@
-import { FieldInstance } from "./FieldInstance";
 import { FieldType } from "./FieldTypes";
+import { FieldInstance } from "./FieldInstance";
 import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
 
 
@@ -32,10 +32,10 @@ export class FieldInstancePrivate
             return;
 
         this.type$ = type;
-        let input:HTMLElement = document.createElement('input');
+        //let input:HTMLElement = document.createElement('input');
 
-        this.addEvents(input);
-        this.impl$.placeholder().appendChild(input);
+        //this.addEvents(input);
+        //this.impl$.placeholder().appendChild(input);
     }
 
     private onEvent(event:any) : void

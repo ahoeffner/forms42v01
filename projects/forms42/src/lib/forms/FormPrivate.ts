@@ -20,11 +20,9 @@ export class FormPrivate
 
     public setImplementation(impl:IForm)
     {
-        
     }
 
     public addFieldInstance(field:FieldInstance) : void
     {
-        console.log("Added field "+field);
     }
 }

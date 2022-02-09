@@ -12,13 +12,15 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 	template: 
 	`
         <span #container></span>
+        <span #implementation style="display: none"><ng-content></ng-content></span>
     `
 	})
 
 
-export class NGField extends FieldInstance implements IField, OnInit 
+export class NGField extends FieldInstance implements IField, OnInit
 {
     private form:FormPrivate = null;
+	private implementation$:HTMLElement = null;
 	private placeholder$:HTMLSpanElement = null;
 
     @Input("id")    public id:string    = null;
@@ -33,12 +35,15 @@ export class NGField extends FieldInstance implements IField, OnInit
     @Input("style") public style:string = null;
 
     @ViewChild("container",{read: ElementRef, static: true}) private celem:ElementRef;
+    @ViewChild("implementation",{read: ElementRef, static: true}) private ielem:ElementRef;
 
 
     public ngOnInit(): void 
     {
 		this.placeholder$ = this.celem.nativeElement;
+		this.implementation$ = this.ielem.nativeElement;
         this.form = (Context.factory.factory() as NGComponentFactory).form;
+        console.log("implementation : "+(this.ielem.nativeElement as HTMLElement).innerHTML);
 
         this["__priv__"].setImplementation(this);
         this.form.addFieldInstance(this);
@@ -48,5 +53,11 @@ export class NGField extends FieldInstance implements IField, OnInit
     public placeholder(): HTMLSpanElement 
     {
         return(this.placeholder$);
+    }
+
+
+    public implementation(): HTMLSpanElement 
+    {
+        return(this.implementation$);
     }
 }

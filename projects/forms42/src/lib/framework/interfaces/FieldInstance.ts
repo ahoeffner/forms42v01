@@ -11,5 +11,6 @@ export interface FieldInstance
     style:string;
     value:string;
 
-    placeholder() : HTMLSpanElement;
+    placeholder() : HTMLElement;
+    implementation() : HTMLElement;
 }
