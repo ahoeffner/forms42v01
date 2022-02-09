@@ -10,13 +10,13 @@ export class FieldInstancePrivate
 {
     private impl$:IField = null;
     private type$:FieldType = null;
-    private ffield$:FormField = null;
-    private field$:FieldInstance = null
+    private field$:FormField = null;
+    private fieldinst$:FieldInstance = null
     
 
     constructor(field:FieldInstance)
     {
-        this.field$ = field;
+        this.fieldinst$ = field;
     }
 
     public id() : string
@@ -39,9 +39,9 @@ export class FieldInstancePrivate
         return(this.impl$.block);
     }
 
-    public field() : FieldInstance
+    public fieldinst() : FieldInstance
     {
-        return(this.field$);
+        return(this.fieldinst$);
     }
 
     public setImplementation(impl:IField)
@@ -59,25 +59,24 @@ export class FieldInstancePrivate
         if (type == this.type$)
             return;
 
-        if (this.ffield$ != null)
+        if (this.field$ != null)
         {
             replace = true;
-            value = this.ffield$.getValue();
-            this.ffield$.getElement().remove();
+            value = this.field$.getValue();
+            this.field$.getElement().remove();
         }
         
         this.type$ = type;
         let ftype:Type<FormField> = Handlers.get(type);
 
-        this.ffield$ = new ftype();
-        this.ffield$.eventhandler(this.onEvent);
-        this.ffield$.setElement(this.impl$.implementation());
+        this.field$ = new ftype();
+        this.field$.eventhandler(this.onEvent);
+        this.field$.setElement(this.impl$.implementation());
 
-        if (replace) this.ffield$.setValue(value);
-        this.impl$.placeholder().appendChild(this.ffield$.getElement());
+        if (replace) this.field$.setValue(value);
+        this.impl$.placeholder().appendChild(this.field$.getElement());
 
-        this.ffield$.setClasses("x1 x2");
-        console.log("classlist "+this.ffield$.getClasses());
+        this.field$.setStyle(this.impl$.style);
     }
 
     private onEvent(event:any) : void
@@ -88,6 +87,14 @@ export class FieldInstancePrivate
     private getType(name:string) : FieldType
     {
         if (name == null) name = "text";
-        return(FieldType[name.toLowerCase() as keyof typeof FieldType]);
+        let type:FieldType = FieldType[name.toLowerCase() as keyof typeof FieldType];
+
+        if (type == null) 
+        {
+            type = FieldType.text;
+            console.error({message: "No such fieldtype as "+name});
+        }
+
+        return(type);
     }
 }
