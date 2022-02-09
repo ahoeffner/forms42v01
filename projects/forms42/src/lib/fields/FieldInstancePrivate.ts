@@ -53,6 +53,9 @@ export class FieldInstancePrivate
     public setType(name:string) : void
     {
         let value:any = null;
+        let style:string = this.impl$.style;
+        let clazz:string = this.impl$.class;
+
         let replace:boolean = false;
         let type:FieldType = this.getType(name);
 
@@ -63,6 +66,8 @@ export class FieldInstancePrivate
         {
             replace = true;
             value = this.field$.getValue();
+            style = this.field$.getStyle();
+            clazz = this.field$.getClasses();
             this.field$.getElement().remove();
         }
         
@@ -73,10 +78,11 @@ export class FieldInstancePrivate
         this.field$.eventhandler(this.onEvent);
         this.field$.setElement(this.impl$.implementation());
 
-        if (replace) this.field$.setValue(value);
         this.impl$.placeholder().appendChild(this.field$.getElement());
 
-        this.field$.setStyle(this.impl$.style);
+        this.field$.setStyle(style);
+        this.field$.setClasses(clazz);
+        if (replace) this.field$.setValue(value);
     }
 
     private onEvent(event:any) : void
