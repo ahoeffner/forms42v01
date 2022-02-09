@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { FormField } from '../interfaces/FormField';
 import { TextField } from '../inputhandlers/TextField';
+import { FieldType } from '../FieldTypes';
 
 
 export class Handlers
@@ -18,14 +19,18 @@ export class Handlers
     }
 
 
-    public static set(id:string, clazz:Type<FormField>) : void
+    public static set(type:FieldType, clazz:Type<FormField>) : void
     {
+        let id:string = FieldType[type];
         Handlers.handlers.set(id.toLowerCase(),clazz);
     }
 
 
-    public static get(id:string) : Type<FormField>
+    public static get(type:FieldType) : Type<FormField>
     {
-        return(Handlers.handlers.get(id.toLowerCase()));
+        let id:string = FieldType[type];
+        let ftype:Type<FormField> = Handlers.handlers.get(id.toLowerCase());
+        if (ftype == null) ftype = TextField;
+        return(ftype);
     }
 }

@@ -6,6 +6,16 @@ export interface FormField
     getElement() : HTMLElement;
     setElement(element:HTMLElement) : void;
 
+    getStyle() : string;
+    setStyle(style:string) : void;
+    getStyleElement() : HTMLElement;
+
+    addClass(clazz:string) : void;
+    removeClass(clazz:string) : void;
+
+    getClasses() : string;
+    setClasses(classes:string) : void;
+
     setProperties(properties:any) : void;
     setValidValues(values:Set<any>|Map<any,any>) : void;
 

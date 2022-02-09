@@ -27,8 +27,6 @@ export class NGField extends FieldInstance implements IField, OnInit
     @Input("row")   public row:string   = null;
     @Input("type")  public type:string  = null;
     @Input("name")  public name:string  = null;
-    @Input("size")  public size:string  = null;
-    @Input("value") public value:string = null;
     @Input("block") public block:string = null;
     @Input("group") public group:string = null;
     @Input("class") public class:string = null;
@@ -41,9 +39,10 @@ export class NGField extends FieldInstance implements IField, OnInit
     public ngOnInit(): void 
     {
 		this.placeholder$ = this.celem.nativeElement;
-		this.implementation$ = this.ielem.nativeElement;
+		this.implementation$ = this.ielem.nativeElement.childNodes[0];
+
+        this.ielem.nativeElement.remove();
         this.form = (Context.factory.factory() as NGComponentFactory).form;
-        console.log("implementation : "+(this.ielem.nativeElement as HTMLElement).innerHTML);
 
         this["__priv__"].setImplementation(this);
         this.form.addFieldInstance(this);
