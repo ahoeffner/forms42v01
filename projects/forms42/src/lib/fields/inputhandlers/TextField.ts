@@ -62,8 +62,20 @@ export class TextField extends Common implements FormField
     private onEvent(jsevent:any) : void
     {
         let buble:boolean = false;
-
         let parser:BrowserEventParser = new BrowserEventParser(jsevent);
+
+        if (parser.prevent) 
+            jsevent.preventDefault();
+
+        if (parser.ignore)
+            return;
+
+        if (parser.printable)
+        {
+            let pos:number = this.getPosition();
+            this.setValue(this.getValue().toUpperCase());
+            this.setPosition(pos);
+        }
 
         if (buble)
         {
@@ -73,6 +85,15 @@ export class TextField extends Common implements FormField
         }
     }
 
+    private getPosition() : number
+    {
+        return(this.input.selectionStart);
+    }
+
+    private setPosition(pos:number) : void
+    {
+        this.input.setSelectionRange(pos,pos);
+    }
 
     private addEvents(element:HTMLElement) : void
     {

@@ -3,7 +3,7 @@ import { EventHandler, FormField } from "../interfaces/FormField";
 
 export class Common
 {
-    private properties:any = null;
+    private properties:any = {};
     private field:FormField = null;
 	private handler:EventHandler = null;
     private values: Set<any> | Map<any, any> = null;
