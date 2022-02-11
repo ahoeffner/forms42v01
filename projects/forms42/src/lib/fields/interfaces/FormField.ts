@@ -3,6 +3,8 @@ export interface FormField
     getValue() : any;
     setValue(value:any) : void;
 
+    validate() : boolean;
+
     getElement() : HTMLElement;
     setElement(element:HTMLElement) : void;
 
@@ -16,14 +18,17 @@ export interface FormField
     getClasses() : string;
     setClasses(classes:string) : void;
 
+    getProperties() : any;
     setProperties(properties:any) : void;
+
+    getValidValues() : Set<any> | Map<any, any> 
     setValidValues(values:Set<any>|Map<any,any>) : void;
 
     enable(flag:boolean) : void;
     readonly(flag:boolean) : void;
 
-    validate() : boolean;
-    eventhandler(handler:EventHandler) : void;
+    getEventHandler() : EventHandler;
+    setEventHandler(handler:EventHandler) : void;
 }
 
 

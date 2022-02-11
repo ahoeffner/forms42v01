@@ -1,11 +1,11 @@
 import { Common } from "./Common";
+import { BrowserEventParser } from "./BrowserEventParser";
 import { FormField, EventHandler, Event, getEventType } from "../interfaces/FormField";
 
 
 export class TextField extends Common implements FormField
 {
 	private element:HTMLElement = null;
-	private handler:EventHandler = null;
 	private input:HTMLInputElement = null;
 
 
@@ -14,7 +14,6 @@ export class TextField extends Common implements FormField
         super();
         this.setBase(this);
     }
-
 
     public getValue() : any
     {
@@ -25,35 +24,10 @@ export class TextField extends Common implements FormField
     {
         this.input.value = value;
     }
-
-    public setProperties(properties: any) : void 
-	{
-        throw new Error("Method not implemented.");
-    }
-
-    public setValidValues(values: Set<any> | Map<any, any>): void 
-	{
-        throw new Error("Method not implemented.");
-    }
-    
-	public enable(flag: boolean) : void 
-	{
-        throw new Error("Method not implemented.");
-    }
-
-    public readonly(flag: boolean) : void 
-	{
-        throw new Error("Method not implemented.");
-    }
     
 	public validate() : boolean 
 	{
         throw new Error("Method not implemented.");
-    }
-
-    public eventhandler(handler: EventHandler): void 
-	{
-		this.handler = handler;
     }
 
 	public getElement(): HTMLElement 
@@ -76,7 +50,6 @@ export class TextField extends Common implements FormField
         else
         {
             this.element = element;
-            console.log("Element: "+this.element.constructor.name+" input: "+(this.element instanceof HTMLInputElement));
 
             if (this.element instanceof HTMLInputElement) this.input = this.element;
             else                                          this.input = element.querySelector('input');    
@@ -88,8 +61,18 @@ export class TextField extends Common implements FormField
 
     private onEvent(jsevent:any) : void
     {
-        let event:Event = {type: getEventType(jsevent), event: jsevent};
-        this.handler(event);
+        let buble:boolean = false;
+
+        let parser:BrowserEventParser = new BrowserEventParser(jsevent);
+
+        console.log(jsevent.type+" "+this.getValue());
+
+        if (buble)
+        {
+            let handler:EventHandler = this.getEventHandler();
+            let event:Event = {type: getEventType(jsevent), event: jsevent};
+            handler(event);
+        }
     }
 
 
@@ -98,9 +81,15 @@ export class TextField extends Common implements FormField
         element.addEventListener("blur", (event) => {this.onEvent(event)});
         element.addEventListener("focus", (event) => {this.onEvent(event)});
         element.addEventListener("change", (event) => {this.onEvent(event)});
-        element.addEventListener("click", (event) => {this.onEvent(event)});
+
+        element.addEventListener("keyup", (event) => {this.onEvent(event)});
         element.addEventListener("keydown", (event) => {this.onEvent(event)});
         element.addEventListener("keypress", (event) => {this.onEvent(event)});
+
+        element.addEventListener("mouseout", (event) => {this.onEvent(event)});
+        element.addEventListener("mouseover", (event) => {this.onEvent(event)});
+
+        element.addEventListener("click", (event) => {this.onEvent(event)});
         element.addEventListener("dblclick", (event) => {this.onEvent(event)});
     }
 }

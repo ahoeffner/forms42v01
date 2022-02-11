@@ -75,7 +75,7 @@ export class FieldInstancePrivate
         let ftype:Type<FormField> = Handlers.get(type);
 
         this.field$ = new ftype();
-        this.field$.eventhandler(this.onEvent);
+        this.field$.setEventHandler(this.onEvent);
         this.field$.setElement(this.impl$.implementation());
 
         this.impl$.placeholder().appendChild(this.field$.getElement());
