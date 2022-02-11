@@ -65,8 +65,6 @@ export class TextField extends Common implements FormField
 
         let parser:BrowserEventParser = new BrowserEventParser(jsevent);
 
-        console.log(jsevent.type+" "+this.getValue());
-
         if (buble)
         {
             let handler:EventHandler = this.getEventHandler();
@@ -86,6 +84,7 @@ export class TextField extends Common implements FormField
         element.addEventListener("keydown", (event) => {this.onEvent(event)});
         element.addEventListener("keypress", (event) => {this.onEvent(event)});
 
+        element.addEventListener("wheel", (event) => {this.onEvent(event)});
         element.addEventListener("mouseout", (event) => {this.onEvent(event)});
         element.addEventListener("mouseover", (event) => {this.onEvent(event)});
 
