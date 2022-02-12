@@ -10,12 +10,15 @@
  * accompanied this code).
  */
 
-import { Injectable } from "@angular/core";
-import { Forms42 as Base } from "../application/Forms42";
+import { ComponentFactory } from "../application/ComponentFactory";
 
-@Injectable({providedIn: 'root',})
-
-
-export class Forms42 extends Base
+export const register = (id?:string) => 
 {
+    function define(comp: any) 
+    {
+        if (id == null) id = comp.name;
+        ComponentFactory.addClass(id.toLowerCase(),comp);
+    }
+    
+    return (define);
 }
