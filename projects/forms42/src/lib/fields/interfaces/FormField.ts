@@ -12,10 +12,13 @@
 
 export interface FormField
 {
-    getValue() : any;
-    setValue(value:any) : void;
+    prepare() : void;
+    detach(body:HTMLElement) : void;
+    attach(parent:HTMLElement) : void;
 
+    getValue() : any;
     validate() : boolean;
+    setValue(value:any) : void;
 
     getElement() : HTMLElement;
     setBody(body:HTMLElement) : void;

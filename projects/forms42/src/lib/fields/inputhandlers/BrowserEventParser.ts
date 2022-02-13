@@ -12,6 +12,8 @@
 
 export class BrowserEventParser
 {
+    public key:string = null;
+    public input:boolean = false;
     public ignore:boolean = false;
     public prevent:boolean = false;
     public printable:boolean = false;
@@ -23,29 +25,45 @@ export class BrowserEventParser
     }
 
 
+    public get type() : string
+    {
+        return(this.jsevent.type);
+    }
+
+
     private parseKeyEvent() : void
     {
+        this.key = null;
+        this.input = true;
+
         if (this.jsevent.type == "keyup")
         {
-            if (this.jsevent.key == "Alt" || this.jsevent.key == "Shift" || this.jsevent.key == "Control")
-            {
-                this.ignore = true;
-                return;
-            }
-
             if (this.jsevent.key.length == 1)
             {
-                this.prevent = true;
                 this.printable = true;
-                console.log("Printable: "+this.jsevent.key);
+                this.key = this.jsevent.key;
                 return;
             }
         }
 
         if (this.jsevent.type == "keydown")
         {
-            console.log("keydown "+this.jsevent.key);
+            this.prevent = false;
+
+            if (this.jsevent.key == "Alt") this.prevent = true;
+            if (this.jsevent.key == "Shift") this.prevent = true;
+            if (this.jsevent.key == "Control") this.prevent = true;
+            if (this.jsevent.key == "Meta") this.prevent = true;
+
             if (this.jsevent.key == "Tab") this.prevent = true;
+            if (this.jsevent.key == "ArrowUp") this.prevent = true;
+            if (this.jsevent.key == "ArrowDown") this.prevent = true;
         }
+    }
+
+
+    public toString() : string
+    {
+        return(this.type+" prevent: "+this.prevent+" ignore: "+this.ignore+" printable: "+this.printable);
     }
 }

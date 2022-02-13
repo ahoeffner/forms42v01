@@ -5,8 +5,8 @@ import { Form, register } from 'forms42';
 	selector: 'test1',
 	template: `
 		Test1 
-		<field type="date" handler="input" pattern="Hello"></field>
-		<field id="radio" type="radio" handler="input" pattern="Hello">
+		<field type="date" handler="input"></field>
+		<field id="radio" type="text" handler="input">
 			<label for="radio">Radio Button</label>
 		</field>
 		`,

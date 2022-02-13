@@ -69,6 +69,8 @@ export class FieldInstancePrivate
     public setHandler(name:string) : void
     {
         let value:any = null;
+        let style:string = null;
+        let classes:string = null;
 
         let replace:boolean = false;
         let type:Handler = this.getHandler(name);
@@ -80,7 +82,9 @@ export class FieldInstancePrivate
         {
             replace = true;
             value = this.field$.getValue();
-            this.field$.getElement().remove();
+            style = this.field$.getStyle();
+            classes = this.field$.getClasses();
+            this.field$.detach(this.impl$.tag());
         }
         
         this.type$ = type;
@@ -91,8 +95,15 @@ export class FieldInstancePrivate
         this.field$.setEventHandler(this.onEvent);
         this.field$.setAttributes(this.impl$.attributes());
 
-        this.impl$.tag().appendChild(this.field$.getElement());
-        if (replace) this.field$.setValue(value);
+        if (replace) 
+        {
+            this.field$.setValue(value);
+            this.field$.setStyle(style);
+            this.field$.setClasses(classes);
+        }
+        
+        this.field$.prepare();
+        this.field$.attach(this.impl$.tag());
     }
 
     private onEvent(event:any) : void

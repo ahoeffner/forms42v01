@@ -116,4 +116,16 @@ export class Common
     {
         this.field.getElement().classList.value = classes;
     }
+
+    public detach() : void
+    {
+        this.field.getElement().remove();
+        if (this.body != null) this.body.remove();
+    }
+
+    public attach(parent:HTMLElement) : void
+    {
+        parent.appendChild(this.field.getElement());
+        if (this.body != null) parent.appendChild(this.body);
+    }
 }

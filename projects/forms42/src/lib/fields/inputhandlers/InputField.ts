@@ -11,9 +11,10 @@
  */
 
 import { Common } from "./Common";
+import { Pattern } from "./Pattern";
+import { DatePattern } from "./patterns/DatePattern";
 import { BrowserEventParser } from "./BrowserEventParser";
 import { FormField, EventHandler, Event, getEventType } from "../interfaces/FormField";
-import { Pattern } from "./Pattern";
 
 
 export class InputField extends Common implements FormField
@@ -29,6 +30,11 @@ export class InputField extends Common implements FormField
 
         this.setBase(this);
         this.addEvents(this.element);
+    }
+
+    public prepare() : void
+    {
+
     }
 
     public getValue() : any
@@ -57,6 +63,16 @@ export class InputField extends Common implements FormField
 
         attributes.forEach((value,attr) => 
         {
+            if (attr == "type" && value == "date")
+            {
+                value = "text";
+                this.pattern = new DatePattern();
+                let plh:string = this.pattern.getValue(null);
+                this.element.setAttribute("placeholder",plh);
+                this.element.size = plh.length;
+                this.element.maxLength = plh.length;
+            }
+
             this.element.setAttribute(attr,value);
         });
     }
@@ -65,6 +81,12 @@ export class InputField extends Common implements FormField
     {
         let buble:boolean = false;
         let parser:BrowserEventParser = new BrowserEventParser(jsevent);
+
+        if (this.pattern != null)
+        {
+            this.applyPattern(parser);
+            return;
+        }
 
         if (parser.prevent) 
             jsevent.preventDefault();
@@ -75,8 +97,8 @@ export class InputField extends Common implements FormField
         if (parser.printable)
         {
             let pos:number = this.getPosition();
-            this.setValue(this.getValue().toUpperCase());
-            this.setPosition(pos);
+            //this.setValue(this.getValue().toUpperCase());
+            //this.setPosition(pos);
         }
 
         if (buble)
@@ -84,6 +106,27 @@ export class InputField extends Common implements FormField
             let handler:EventHandler = this.getEventHandler();
             let event:Event = {type: getEventType(jsevent), event: jsevent};
             handler(event);
+        }
+    }
+
+    private applyPattern(parser:BrowserEventParser) : void
+    {
+        if (this.getValue().length == 0)
+            this.setValue(this.pattern.getValue(null));
+
+        if (parser.type == "click")
+        {
+            this.pattern.setPosition(this.getPosition());
+            if (!this.pattern.input()) this.setPosition(this.pattern.prev());
+        }
+
+        if (parser.printable)
+        {
+            let pos:number = this.getPosition();
+            let val:string = this.pattern.setCharacter(pos,parser.key);
+
+            this.setValue(val);
+            this.setPosition(this.pattern.next());
         }
     }
 
