@@ -18,6 +18,7 @@ export class Common
     private properties:any = {};
     private field:FormField = null;
 	private handler:EventHandler = null;
+    private attributes: Map<string, string> = null;
     private values: Set<any> | Map<any, any> = null;
 
     public setBase(field:FormField) : void
@@ -33,6 +34,16 @@ export class Common
     public setProperties(properties: any) : void 
 	{
         this.properties = properties;
+    }
+
+    public getAttributes(): Map<string, any> 
+    {
+        return(this.attributes);
+    }
+
+    public setAttributes(attributes: Map<string, any>): void 
+    {
+        this.attributes = attributes;
     }
 
     public getEventHandler() : EventHandler
@@ -57,41 +68,41 @@ export class Common
 
     public readonly(flag: boolean) : void 
 	{
-        (this.field.getStyleElement() as HTMLInputElement).readOnly = flag;
+        (this.field.getElement() as HTMLInputElement).readOnly = flag;
     }
     
 	public enable(flag: boolean) : void 
 	{
-        (this.field.getStyleElement() as HTMLInputElement).disabled = !flag;
+        (this.field.getElement() as HTMLInputElement).disabled = !flag;
     }
 
     public getStyle() : string 
     {
-        return(this.field.getStyleElement().style.cssText);
+        return(this.field.getElement().style.cssText);
     }
 
     public setStyle(style: string) : void 
     {
-        this.field.getStyleElement().style.cssText = style;
+        this.field.getElement().style.cssText = style;
     }
 
     public addClass(clazz:string) : void
     {
-        this.field.getStyleElement().classList.add(clazz);
+        this.field.getElement().classList.add(clazz);
     }
 
     public removeClass(clazz:string) : void
     {
-        this.field.getStyleElement().classList.remove(clazz);
+        this.field.getElement().classList.remove(clazz);
     }
 
     public getClasses() : string 
     {
-        return(this.field.getStyleElement().classList.value);
+        return(this.field.getElement().classList.value);
     }
 
     public setClasses(classes: string) : void 
     {
-        this.field.getStyleElement().classList.value = classes;
+        this.field.getElement().classList.value = classes;
     }
 }

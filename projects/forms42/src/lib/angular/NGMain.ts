@@ -18,7 +18,8 @@ import { Main as IMain } from '../framework/interfaces/Main';
 import { ComponentFactory } from '../application/ComponentFactory';
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 
-@Component({
+@Component
+({
 	selector: 'f42-main',
 	template: 
 	`
@@ -58,8 +59,7 @@ import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@ang
 		}
 	`  
 	]
-	})
-
+})
 
 export class NGMain implements IMain, OnInit
 {
@@ -72,11 +72,9 @@ export class NGMain implements IMain, OnInit
 	@ViewChild("modal",{read: ElementRef, static: true}) private melem:ElementRef;
 	@ViewChild("windows",{read: ElementRef, static: true}) private welem:ElementRef;
 
-
 	constructor(private viewref:ViewContainerRef)
 	{
 	}
-
 
 	public ngOnInit(): void 
 	{
@@ -91,24 +89,20 @@ export class NGMain implements IMain, OnInit
 		Context.factory = new ComponentFactory(factory);
 	}
 
-
 	public layer() : number
 	{
 		return(this.layer$);
 	}
-
 
 	public page() : HTMLDivElement
 	{
 		return(this.page$);
 	}
 
-
 	public overlay() : HTMLDivElement
 	{
 		return(this.overlay$);
 	}
-
 
 	public windows() : HTMLDivElement
 	{

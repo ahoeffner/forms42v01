@@ -12,6 +12,10 @@
 
 export interface Pattern
 {
+    placeholder() : string;
     prev(pos:number) : number;
     next(pos:number) : number;
+    input(pos:number) : boolean;
+    validate(value:string) : any;
+    getPrintableValue(value:any) : string;
 }

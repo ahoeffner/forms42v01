@@ -1,7 +1,3 @@
-import { Context } from '../application/Context';
-import { FormPrivate } from '../forms/FormPrivate';
-import { FieldInstance } from '../fields/FieldInstance';
-import { NGComponentFactory } from './NGComponentFactory';
 /*
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3 only, as
@@ -14,61 +10,71 @@ import { NGComponentFactory } from './NGComponentFactory';
  * accompanied this code).
  */
 
+import { Context } from '../application/Context';
+import { FormPrivate } from '../forms/FormPrivate';
+import { FieldInstance } from '../fields/FieldInstance';
+import { NGComponentFactory } from './NGComponentFactory';
 import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
-
-
-@Component({
+@Component
+({
 	selector: 'field',
 	template: 
 	`
-        <span #container></span>
-        <span #implementation style="display: none"><ng-content></ng-content></span>
+        <span #tag></span>
+        <span #body style="display: none"><ng-content></ng-content></span>
     `
-	})
-
+})
 
 export class NGField extends FieldInstance implements IField, OnInit
 {
-    private form:FormPrivate = null;
-	private implementation$:HTMLElement = null;
-	private placeholder$:HTMLSpanElement = null;
+	private body$:HTMLElement = null;
+	private ctag$:HTMLSpanElement = null;
+    private attributes$:Map<string,string> = new Map<string,string>();
 
-    @Input("id")    public id:string    = null;
-    @Input("row")   public row:string   = null;
-    @Input("type")  public type:string  = null;
-    @Input("name")  public name:string  = null;
-    @Input("block") public block:string = null;
-    @Input("group") public group:string = null;
-    @Input("class") public class:string = null;
-    @Input("style") public style:string = null;
+    @ViewChild("tag",{read: ElementRef, static: true}) private telem:ElementRef;
+    @ViewChild("body",{read: ElementRef, static: true}) private belem:ElementRef;
 
-    @ViewChild("container",{read: ElementRef, static: true}) private celem:ElementRef;
-    @ViewChild("implementation",{read: ElementRef, static: true}) private ielem:ElementRef;
+    constructor(elem:ElementRef)
+    {
+        super();
 
+        let tag:HTMLElement = elem.nativeElement;
+        tag.getAttributeNames().forEach((attr:string) =>
+        {
+            if (!attr.startsWith("_"))
+            {
+                let value:string = tag.getAttribute(attr);
+                this.attributes$.set(attr,value);
+            }
+        });
+    }
 
     public ngOnInit(): void 
     {
-		this.placeholder$ = this.celem.nativeElement;
-		this.implementation$ = this.ielem.nativeElement.childNodes[0];
+		this.ctag$ = this.telem.nativeElement;
+		this.body$ = this.belem.nativeElement.childNodes[0];
 
-        this.ielem.nativeElement.remove();
-        this.form = (Context.factory.factory() as NGComponentFactory).form;
+        this.belem.nativeElement.remove();
+        let form:FormPrivate = (Context.factory.factory() as NGComponentFactory).form;
 
         this["__priv__"].setImplementation(this);
-        this.form.addFieldInstance(this);
+        form.addFieldInstance(this);
     }
 
-
-    public placeholder(): HTMLSpanElement 
+    public tag(): HTMLSpanElement 
     {
-        return(this.placeholder$);
+        return(this.ctag$);
     }
 
-
-    public implementation(): HTMLSpanElement 
+    public body(): HTMLSpanElement 
     {
-        return(this.implementation$);
+        return(this.body$);
+    }
+
+    public attributes(): Map<string, string> 
+    {
+        return(this.attributes$);    
     }
 }

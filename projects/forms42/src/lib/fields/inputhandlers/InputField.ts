@@ -13,28 +13,33 @@
 import { Common } from "./Common";
 import { BrowserEventParser } from "./BrowserEventParser";
 import { FormField, EventHandler, Event, getEventType } from "../interfaces/FormField";
+import { Pattern } from "./Pattern";
 
 
-export class TextField extends Common implements FormField
+export class InputField extends Common implements FormField
 {
-	private element:HTMLElement = null;
-	private input:HTMLInputElement = null;
+	private pattern:Pattern = null;
+	private body:HTMLElement = null;
+	private element:HTMLInputElement = null;
 
 
     constructor()
     {
         super();
+        this.element = document.createElement("input");
+
         this.setBase(this);
+        this.addEvents(this.element);
     }
 
     public getValue() : any
     {
-        return(this.input.value);
+        return(this.element.value);
     }
 
     public setValue(value: any) : void 
     {
-        this.input.value = value;
+        this.element.value = value;
     }
     
 	public validate() : boolean 
@@ -47,29 +52,21 @@ export class TextField extends Common implements FormField
 		return(this.element);
 	}
 
-    public getStyleElement(): HTMLElement 
+    public setBody(body: HTMLElement) : void 
     {
-        return(this.input);
+        this.body = body;
+        this.element.appendChild(this.body);
     }
 
-	public setElement(element: HTMLElement): void 
-	{
-        if (element == null) 
+    public override setAttributes(attributes: Map<string, any>): void 
+    {
+        super.setAttributes(attributes);
+
+        attributes.forEach((value,attr) => 
         {
-            this.element = document.createElement("input");
-            this.input = this.element as HTMLInputElement;
-        }
-        else
-        {
-            this.element = element;
-
-            if (this.element instanceof HTMLInputElement) this.input = this.element;
-            else                                          this.input = element.querySelector('input');    
-        }
-
-        this.addEvents(this.input);
-	}
-
+            this.element.setAttribute(attr,value);
+        });
+    }
 
     private onEvent(jsevent:any) : void
     {
@@ -99,12 +96,12 @@ export class TextField extends Common implements FormField
 
     private getPosition() : number
     {
-        return(this.input.selectionStart);
+        return(this.element.selectionStart);
     }
 
     private setPosition(pos:number) : void
     {
-        this.input.setSelectionRange(pos,pos);
+        this.element.setSelectionRange(pos,pos);
     }
 
     private addEvents(element:HTMLElement) : void

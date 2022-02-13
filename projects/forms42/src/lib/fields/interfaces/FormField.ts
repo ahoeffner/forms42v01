@@ -18,17 +18,19 @@ export interface FormField
     validate() : boolean;
 
     getElement() : HTMLElement;
-    setElement(element:HTMLElement) : void;
+    setBody(body:HTMLElement) : void;
 
     getStyle() : string;
     setStyle(style:string) : void;
-    getStyleElement() : HTMLElement;
 
     addClass(clazz:string) : void;
     removeClass(clazz:string) : void;
 
     getClasses() : string;
     setClasses(classes:string) : void;
+
+    getAttributes() : Map<string,any>;
+    setAttributes(properties:Map<string,any>) : void;
 
     getProperties() : any;
     setProperties(properties:any) : void;

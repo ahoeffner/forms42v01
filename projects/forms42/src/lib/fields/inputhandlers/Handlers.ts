@@ -11,9 +11,9 @@
  */
 
 import { Type } from '@angular/core';
+import { Handler } from '../Handler';
+import { InputField } from './InputField';
 import { FormField } from '../interfaces/FormField';
-import { TextField } from '../inputhandlers/TextField';
-import { FieldType } from '../FieldTypes';
 
 
 export class Handlers
@@ -25,24 +25,22 @@ export class Handlers
         let handlers:Map<String,Type<FormField>> =
             new Map<String,Type<FormField>>();
 
-        handlers.set("text",TextField);
+        handlers.set("input",InputField);
         
         return(handlers);
     }
 
-
-    public static set(type:FieldType, clazz:Type<FormField>) : void
+    public static set(type:Handler, clazz:Type<FormField>) : void
     {
-        let id:string = FieldType[type];
+        let id:string = Handler[type];
         Handlers.handlers.set(id.toLowerCase(),clazz);
     }
 
-
-    public static get(type:FieldType) : Type<FormField>
+    public static get(type:Handler) : Type<FormField>
     {
-        let id:string = FieldType[type];
+        let id:string = Handler[type];
         let ftype:Type<FormField> = Handlers.handlers.get(id.toLowerCase());
-        if (ftype == null) ftype = TextField;
+        if (ftype == null) ftype = InputField;
         return(ftype);
     }
 }

@@ -10,16 +10,8 @@
  * accompanied this code).
  */
 
-export enum FieldType
+export enum Handler
 {
-    date,
-    text,
     html,
-    radio,
-    integer,
-    decimal,
-    checkbox,
-    datetime,
-    password,
-    dropdown
+    input,
 }

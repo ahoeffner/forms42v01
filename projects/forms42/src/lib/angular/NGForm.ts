@@ -18,7 +18,6 @@ import { Component, AfterViewInit, OnInit } from "@angular/core";
 
 @Component({template: ''})
 
-
 export class NGForm extends Form implements IForm, OnInit, AfterViewInit
 {
     public ngOnInit(): void 
@@ -26,7 +25,6 @@ export class NGForm extends Form implements IForm, OnInit, AfterViewInit
         this["__priv__"].setImplementation(this);
         (Context.factory.factory() as NGComponentFactory).form = this["__priv__"];
     }
-
 
     public ngAfterViewInit(): void 
     {

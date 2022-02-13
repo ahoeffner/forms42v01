@@ -11,7 +11,7 @@
  */
 
 import { Type } from "@angular/core";
-import { FieldType } from "./FieldTypes";
+import { Handler } from "./Handler";
 import { FieldInstance } from "./FieldInstance";
 import { FormField } from "./interfaces/FormField";
 import { Handlers } from "./inputhandlers/Handlers";
@@ -21,7 +21,7 @@ import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
 export class FieldInstancePrivate
 {
     private impl$:IField = null;
-    private type$:FieldType = null;
+    private type$:Handler = null;
     private field$:FormField = null;
     private fieldinst$:FieldInstance = null
     
@@ -33,22 +33,26 @@ export class FieldInstancePrivate
 
     public id() : string
     {
-        return(this.impl$.id);
+        return(this.impl$.attributes().get("id"));
     }
 
     public row() : number
     {
-        return(+this.impl$.row);
-    }
-
-    public name() : string
-    {
-        return(this.impl$.name);
+        let row:string = this.impl$.attributes().get("row");
+        if (row == null) row = "-1";
+        return(+row);
     }
 
     public block() : string
     {
-        return(this.impl$.block);
+        let block:string = this.impl$.attributes().get("block");
+        if (block == null) block = "";
+        return(block);
+    }
+
+    public handler() : string
+    {
+        return(this.impl$.attributes().get("handler"));
     }
 
     public fieldinst() : FieldInstance
@@ -59,17 +63,15 @@ export class FieldInstancePrivate
     public setImplementation(impl:IField)
     {
         this.impl$ = impl;
-        this.setType(impl.type);
+        this.setHandler(this.handler());
     }
 
-    public setType(name:string) : void
+    public setHandler(name:string) : void
     {
         let value:any = null;
-        let style:string = this.impl$.style;
-        let clazz:string = this.impl$.class;
 
         let replace:boolean = false;
-        let type:FieldType = this.getType(name);
+        let type:Handler = this.getHandler(name);
 
         if (type == this.type$)
             return;
@@ -78,8 +80,6 @@ export class FieldInstancePrivate
         {
             replace = true;
             value = this.field$.getValue();
-            style = this.field$.getStyle();
-            clazz = this.field$.getClasses();
             this.field$.getElement().remove();
         }
         
@@ -87,13 +87,11 @@ export class FieldInstancePrivate
         let ftype:Type<FormField> = Handlers.get(type);
 
         this.field$ = new ftype();
+        this.field$.setBody(this.impl$.body());
         this.field$.setEventHandler(this.onEvent);
-        this.field$.setElement(this.impl$.implementation());
+        this.field$.setAttributes(this.impl$.attributes());
 
-        this.impl$.placeholder().appendChild(this.field$.getElement());
-
-        this.field$.setStyle(style);
-        this.field$.setClasses(clazz);
+        this.impl$.tag().appendChild(this.field$.getElement());
         if (replace) this.field$.setValue(value);
     }
 
@@ -102,15 +100,15 @@ export class FieldInstancePrivate
         console.log("event: "+event.type);
     }
 
-    private getType(name:string) : FieldType
+    private getHandler(name:string) : Handler
     {
-        if (name == null) name = "text";
-        let type:FieldType = FieldType[name.toLowerCase() as keyof typeof FieldType];
+        if (name == null) name = "input";
+        let type:Handler = Handler[name.toLowerCase() as keyof typeof Handler];
 
         if (type == null) 
         {
-            type = FieldType.text;
-            console.error({message: "No such fieldtype as "+name});
+            type = Handler.input;
+            console.error({message: "No such handler as "+name});
         }
 
         return(type);
