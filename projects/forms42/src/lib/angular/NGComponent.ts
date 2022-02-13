@@ -18,13 +18,18 @@ export class NGComponent implements Component
 {
     constructor(private ref:ComponentRef<any>) {}
 
-    instance(): object 
+    public getRef() : ComponentRef<any>
+    {
+        return(this.ref);
+    }
+
+    public instance(): object 
     {
         return(this.ref.instance);
     }
 
 
-    html(): HTMLElement 
+    public html(): HTMLElement 
     {
         return((this.ref.hostView as EmbeddedViewRef<any>).rootNodes[0]);
     }

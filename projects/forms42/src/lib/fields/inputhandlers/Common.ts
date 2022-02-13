@@ -17,6 +17,7 @@ export class Common
 {
     private properties:any = {};
     private field:FormField = null;
+	private body:HTMLElement = null;
 	private handler:EventHandler = null;
     private attributes: Map<string, string> = null;
     private values: Set<any> | Map<any, any> = null;
@@ -24,6 +25,16 @@ export class Common
     public setBase(field:FormField) : void
     {
         this.field = field;
+    }
+
+    public getBody() : HTMLElement
+    {
+        return(this.body);
+    }
+
+    public setBody(body: HTMLElement) : void 
+    {
+        this.body = body;
     }
 
     public getProperties() : any 

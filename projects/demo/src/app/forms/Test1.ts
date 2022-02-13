@@ -3,7 +3,13 @@ import { Form, register } from 'forms42';
 
 @Component({
 	selector: 'test1',
-	template: 'Test1 <field id="111" type="date" handler="input" pattern="Hello"></field>',
+	template: `
+		Test1 
+		<field type="date" handler="input" pattern="Hello"></field>
+		<field id="radio" type="radio" handler="input" pattern="Hello">
+			<label for="radio">Radio Button</label>
+		</field>
+		`,
 	styles: 
 	[
 	`

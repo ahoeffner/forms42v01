@@ -19,7 +19,6 @@ import { Pattern } from "./Pattern";
 export class InputField extends Common implements FormField
 {
 	private pattern:Pattern = null;
-	private body:HTMLElement = null;
 	private element:HTMLInputElement = null;
 
 
@@ -51,12 +50,6 @@ export class InputField extends Common implements FormField
 	{
 		return(this.element);
 	}
-
-    public setBody(body: HTMLElement) : void 
-    {
-        this.body = body;
-        this.element.appendChild(this.body);
-    }
 
     public override setAttributes(attributes: Map<string, any>): void 
     {

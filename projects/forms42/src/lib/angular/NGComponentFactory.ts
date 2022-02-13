@@ -14,6 +14,7 @@ import { Builder } from './Builder';
 import { NGComponent } from './NGComponent';
 import { FormPrivate } from '../forms/FormPrivate';
 import { ComponentRef, Type } from '@angular/core';
+import { Component } from '../framework/interfaces/Component';
 import { ComponentFactory } from '../framework/interfaces/ComponentFactory';
 
 
@@ -22,6 +23,10 @@ export class NGComponentFactory implements ComponentFactory
     public form:FormPrivate = null;
     public builder:Builder = null;
 
+    public detroy(comp: Component): void 
+    {
+        (comp as NGComponent).getRef().destroy();
+    }
 
     public newInstance(clazz: Type<any>) : NGComponent 
     {

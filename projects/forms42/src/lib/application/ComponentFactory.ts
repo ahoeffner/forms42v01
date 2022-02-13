@@ -101,7 +101,7 @@ class BeanDefinition
     {
         if (id == null) id = "";
         else id = id.toLowerCase();
-        this.instances.delete(id);        
+        this.instances.delete(id);    
     }
 
     public getInstance(id:string) : any
@@ -133,6 +133,10 @@ class ComponentDefinition
     {
         if (id == null) id = "";
         else id = id.toLowerCase();
+
+        let comp:Component = this.instances.get(id);
+
+        this.factory.detroy(comp);    
         this.instances.delete(id);        
     }
 

@@ -15,5 +15,6 @@ import { Component } from "./Component";
 
 export interface ComponentFactory
 {
+    detroy(comp:Component) : void;
     newInstance(clazz:Type<any>) : Component;
 }
