@@ -12,16 +12,18 @@
 
 export interface Pattern
 {
-    getPattern() : string;
+    placeholder() : string;
 
-    getObject(value:any) : any;
-    getValue(value:any) : string;
-    validate(value:string) : void;
+    getValue() : string;
+    setValue(value:string) : void;
+
+    validate() : void;
+    getObject() : any;
 
     prev() : number;
     next() : number;
 
-    delete(pos:number) : number;
     setPosition(pos:number) : number;
+    delete(fr:number,to:number) : void;
     setCharacter(pos:number, c:string) : string;
 }

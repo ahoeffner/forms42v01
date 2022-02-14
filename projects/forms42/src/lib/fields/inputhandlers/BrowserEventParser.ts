@@ -13,7 +13,6 @@
 export class BrowserEventParser
 {
     public key:string = null;
-    public input:boolean = false;
     public ignore:boolean = false;
     public prevent:boolean = false;
     public printable:boolean = false;
@@ -37,32 +36,40 @@ export class BrowserEventParser
     }
 
 
+    public preventDefault(flag?:boolean) : void
+    {
+        if (flag == null) flag = this.prevent;
+        if (flag) this.jsevent.preventDefault();
+    }
+
+
     private parseKeyEvent() : void
     {
-        this.input = true;
+        this.printable = false;
 
-        if (this.jsevent.type == "keyup")
+        switch(this.jsevent.type)
         {
-            if (this.jsevent.key.length == 1)
-            {
-                this.printable = true;
-                return;
-            }
-        }
+            case "keyup" :            
+                if (this.jsevent.key.length == 1)
+                {
+                    this.printable = true;
+                    this.key = this.jsevent.key;
+                }
+            break;
 
-        if (this.jsevent.type == "keydown")
-        {
-            this.prevent = false;
-            this.key = this.jsevent.key;
+            case "keydown":
+                this.prevent = false;
+                this.key = this.jsevent.key;
 
-            if (this.jsevent.key == "Alt") this.prevent = true;
-            if (this.jsevent.key == "Shift") this.prevent = true;
-            if (this.jsevent.key == "Control") this.prevent = true;
-            if (this.jsevent.key == "Meta") this.prevent = true;
+                if (this.jsevent.key == "Alt") this.prevent = true;
+                if (this.jsevent.key == "Shift") this.prevent = true;
+                if (this.jsevent.key == "Control") this.prevent = true;
+                if (this.jsevent.key == "Meta") this.prevent = true;
 
-            if (this.jsevent.key == "Tab") this.prevent = true;
-            if (this.jsevent.key == "ArrowUp") this.prevent = true;
-            if (this.jsevent.key == "ArrowDown") this.prevent = true;
+                if (this.jsevent.key == "Tab") this.prevent = true;
+                if (this.jsevent.key == "ArrowUp") this.prevent = true;
+                if (this.jsevent.key == "ArrowDown") this.prevent = true;
+            break;
         }
     }
 

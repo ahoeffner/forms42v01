@@ -14,7 +14,7 @@ export class DatePattern extends FieldPattern
 
     constructor()
     {
-        super(DatePattern.getTokens(),"  -  -  ");
+        super(DatePattern.getTokens(),"{}-{}-{}");
         /*
         this.pattern = "";
         let format:string = this.format.toLowerCase();
@@ -31,7 +31,7 @@ export class DatePattern extends FieldPattern
     }
 
 
-    public override getPattern(): string 
+    public override placeholder(): string 
     {
         return("dd-mm-yyyy");
     }
@@ -42,10 +42,8 @@ export class DayToken implements FieldToken
 {
     constructor(private pos$:number) {}
 
-    public pos(): number 
-    {
-        return(this.pos$);
-    }
+    public pos:number = 0;
+    public length:number = 2;
 
     getObject(value: any) {
         throw new Error("Method not implemented.");
@@ -70,9 +68,5 @@ export class DayToken implements FieldToken
     }
     setCharacter(pos: number, c: string): string {
         throw new Error("Method not implemented.");
-    }
-    public length() : number
-    {
-        return(2);
     }
 }

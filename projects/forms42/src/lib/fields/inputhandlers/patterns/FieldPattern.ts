@@ -3,64 +3,74 @@ import { Pattern } from "../Pattern";
 export class FieldPattern implements Pattern
 {
     private pos:number = 0;
+    private value:string = this.pattern;
 
     constructor(fields:FieldToken|FieldToken[], private pattern:string)
     {
     }
 
-    public getPattern(): string 
+    setValue(value: string) : void 
+    {
+        if (value == null)
+            value = this.pattern;
+
+        this.value = value;
+    }
+
+    public placeholder() : string 
     {
         return(this.pattern);
     }
 
-    public delete(pos: number): number 
+    public delete(fr:number, to:number) : void 
     {
-        return(pos);    
     }
 
-    public setPosition(pos: number): number 
+    public setPosition(pos: number) : number 
     {
         this.pos = pos;   
         return(this.pos); 
     }
 
-    public setCharacter(pos: number, c: string): string 
+    public setCharacter(pos: number, c: string) : string 
     {
         this.setPosition(pos);
         return(null);
     }
 
-    public prev(): number 
+    public prev() : number 
     {
+        if (this.pos > 0) this.pos--;
         return(this.pos);
     }
 
-    public next(): number 
+    public next() : number 
     {
+        if (this.pos < this.pattern.length) this.pos++;
         return(this.pos);
     }
 
-    public validate(value: string) : void
+    public validate() : void
     {
         throw new Error("Method not implemented.");
     }
 
-    public getObject(value: any) : any
+    public getObject() : any
     {
         throw new Error("Method not implemented.");
     }   
 
-    public getValue(value: any): string 
+    public getValue() : string 
     {
-        return(value);
+        return(this.value);
     }
 }
 
 
 export interface FieldToken
 {
-    pos() : number;
-    length():number;
+    pos : number;
+    length:number;
 
     getValue(value:any) : string;
     validate(value:string) : void;
