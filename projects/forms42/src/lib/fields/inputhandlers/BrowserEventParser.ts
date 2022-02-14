@@ -19,9 +19,9 @@ export class BrowserEventParser
     public printable:boolean = false;
 
 
-    constructor(private jsevent:any)
+    constructor(private jsevent$:any)
     {
-        if (jsevent.type.startsWith("key")) this.parseKeyEvent();
+        if (jsevent$.type.startsWith("key")) this.parseKeyEvent();
     }
 
 
@@ -31,9 +31,14 @@ export class BrowserEventParser
     }
 
 
+    public get jsevent() : any
+    {
+        return(this.jsevent$);
+    }
+
+
     private parseKeyEvent() : void
     {
-        this.key = null;
         this.input = true;
 
         if (this.jsevent.type == "keyup")
@@ -41,7 +46,6 @@ export class BrowserEventParser
             if (this.jsevent.key.length == 1)
             {
                 this.printable = true;
-                this.key = this.jsevent.key;
                 return;
             }
         }
@@ -49,6 +53,7 @@ export class BrowserEventParser
         if (this.jsevent.type == "keydown")
         {
             this.prevent = false;
+            this.key = this.jsevent.key;
 
             if (this.jsevent.key == "Alt") this.prevent = true;
             if (this.jsevent.key == "Shift") this.prevent = true;

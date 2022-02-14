@@ -67,7 +67,7 @@ export class InputField extends Common implements FormField
             {
                 value = "text";
                 this.pattern = new DatePattern();
-                let plh:string = this.pattern.getValue(null);
+                let plh:string = this.pattern.getPattern();
                 this.element.setAttribute("placeholder",plh);
                 this.element.size = plh.length;
                 this.element.maxLength = plh.length;
@@ -111,15 +111,29 @@ export class InputField extends Common implements FormField
 
     private applyPattern(parser:BrowserEventParser) : void
     {
-        if (this.getValue().length == 0)
-            this.setValue(this.pattern.getValue(null));
+        let pos:number = this.getPosition();
+        let pattern:string = this.pattern.getPattern();
+        if (this.getValue().length == 0) this.setValue(pattern);
 
         if (parser.type == "click")
         {
-            this.pattern.setPosition(this.getPosition());
-            if (!this.pattern.input()) this.setPosition(this.pattern.prev());
+            this.pattern.setPosition(pos);
         }
 
+        if (parser.key == "Backspace")
+        {
+            parser.jsevent.preventDefault();
+            let sel:number[] = this.getSelection();
+            console.log("delete "+sel[0]+" - "+sel[1]);
+        }
+
+        if (parser.key == "ArrowLeft")
+            console.log("left");
+
+        if (parser.key == "ArrowRight")
+            console.log("right");
+
+        /*
         if (parser.printable)
         {
             let pos:number = this.getPosition();
@@ -128,6 +142,7 @@ export class InputField extends Common implements FormField
             this.setValue(val);
             this.setPosition(this.pattern.next());
         }
+        */
     }
 
     private getPosition() : number
@@ -138,6 +153,14 @@ export class InputField extends Common implements FormField
     private setPosition(pos:number) : void
     {
         this.element.setSelectionRange(pos,pos);
+    }
+
+    private getSelection() : number[]
+    {
+        let pos:number[] = [];
+        pos[1] = this.element.selectionEnd;
+        pos[0] = this.element.selectionStart;
+        return(pos);
     }
 
     private addEvents(element:HTMLElement) : void

@@ -1,15 +1,21 @@
-import { Pattern } from "../Pattern";
+import { FieldPattern, FieldToken } from "./FieldPattern";
 
-export class DatePattern implements Pattern
+export class DatePattern extends FieldPattern
 {
-    private pos:number = 0;
-    private value:string = null;
-    private pattern:string = null;
-    private format:string = "dd-mm-yyyy";
+    private static getTokens() : FieldToken[]
+    {
+        let tokens:FieldToken[] = [];
+        tokens[0] = new DayToken(0);
+        tokens[1] = new DayToken(3);
+        tokens[2] = new DayToken(6);
+        return(tokens);
+    }
 
 
     constructor()
     {
+        super(DatePattern.getTokens(),"  -  -  ");
+        /*
         this.pattern = "";
         let format:string = this.format.toLowerCase();
 
@@ -21,57 +27,52 @@ export class DatePattern implements Pattern
         }
 
         this.value = this.pattern;
+        */
     }
 
-    public setPosition(pos: number): void 
+
+    public override getPattern(): string 
     {
-        this.pos = pos;    
+        return("dd-mm-yyyy");
+    }
+}
+
+
+export class DayToken implements FieldToken
+{
+    constructor(private pos$:number) {}
+
+    public pos(): number 
+    {
+        return(this.pos$);
     }
 
-    public setCharacter(pos: number, c: string): string 
-    {
-        this.pos = pos;
-        let a:string = this.value.substring(pos+1);
-        let p:string = this.value.substring(0,pos-1);
-        this.value = p + c + a;
-        return(this.value);
-    }
-
-    public prev(): number 
-    {
-        if (this.pos <= 0) return(0);
-        while(this.pos >= 0 && this.pattern.charAt(this.pos) == ' ') this.pos--;
-        return(this.pos);
-    }
-
-    public next(): number 
-    {
-        let len:number = this.pattern.length;
-
-        if (this.pos >= len) return(0);
-        while(this.pos < len && this.pattern.charAt(this.pos) == ' ') this.pos++;
-        return(this.pos);
-    }
-
-    public input(): boolean 
-    {
-        return(this.pattern.charAt(this.pos) == ' ');
-    }
-
-    public validate(value: string) 
-    {
+    getObject(value: any) {
         throw new Error("Method not implemented.");
     }
-
-    public getObject(value: any) 
-    {
+    getValue(value: any): string {
         throw new Error("Method not implemented.");
-    }   
-
-    public getValue(value: any): string 
+    }
+    validate(value: string): void {
+        throw new Error("Method not implemented.");
+    }
+    prev(): number {
+        throw new Error("Method not implemented.");
+    }
+    next(): number {
+        throw new Error("Method not implemented.");
+    }
+    delete(pos: number): number {
+        throw new Error("Method not implemented.");
+    }
+    setPosition(pos: number): number {
+        throw new Error("Method not implemented.");
+    }
+    setCharacter(pos: number, c: string): string {
+        throw new Error("Method not implemented.");
+    }
+    public length() : number
     {
-        if (value == null) value = this.pattern;
-        this.value = value;
-        return(value);
+        return(2);
     }
 }
