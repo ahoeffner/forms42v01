@@ -32,27 +32,27 @@ export class Common
         return(this.body);
     }
 
-    public setBody(body: HTMLElement) : void 
+    public setBody(body: HTMLElement) : void
     {
         this.body = body;
     }
 
-    public getProperties() : any 
+    public getProperties() : any
 	{
         return(this.properties);
     }
 
-    public setProperties(properties: any) : void 
+    public setProperties(properties: any) : void
 	{
         this.properties = properties;
     }
 
-    public getAttributes(): Map<string, any> 
+    public getAttributes(): Map<string, any>
     {
         return(this.attributes);
     }
 
-    public setAttributes(attributes: Map<string, any>): void 
+    public setAttributes(attributes: Map<string, any>): void
     {
         this.attributes = attributes;
     }
@@ -62,37 +62,37 @@ export class Common
         return(this.handler);
     }
 
-    public setEventHandler(handler: EventHandler): void 
+    public setEventHandler(handler: EventHandler): void
 	{
 		this.handler = handler;
     }
 
-    public getValidValues() : Set<any> | Map<any, any> 
+    public getValidValues() : Set<any> | Map<any, any>
 	{
         return(this.values);
     }
 
-    public setValidValues(values: Set<any> | Map<any, any>) : void 
+    public setValidValues(values: Set<any> | Map<any, any>) : void
 	{
         this.values = values;
     }
 
-    public readonly(flag: boolean) : void 
+    public readonly(flag: boolean) : void
 	{
         (this.field.getElement() as HTMLInputElement).readOnly = flag;
     }
-    
-	public enable(flag: boolean) : void 
+
+	public enable(flag: boolean) : void
 	{
         (this.field.getElement() as HTMLInputElement).disabled = !flag;
     }
 
-    public getStyle() : string 
+    public getStyle() : string
     {
         return(this.field.getElement().style.cssText);
     }
 
-    public setStyle(style: string) : void 
+    public setStyle(style: string) : void
     {
         this.field.getElement().style.cssText = style;
     }
@@ -107,12 +107,12 @@ export class Common
         this.field.getElement().classList.remove(clazz);
     }
 
-    public getClasses() : string 
+    public getClasses() : string
     {
         return(this.field.getElement().classList.value);
     }
 
-    public setClasses(classes: string) : void 
+    public setClasses(classes: string) : void
     {
         this.field.getElement().classList.value = classes;
     }
@@ -127,5 +127,9 @@ export class Common
     {
         parent.appendChild(this.field.getElement());
         if (this.body != null) parent.appendChild(this.body);
+    }
+
+    public prepare() : void
+    {
     }
 }

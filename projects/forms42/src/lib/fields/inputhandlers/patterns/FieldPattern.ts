@@ -12,18 +12,21 @@
 
 /*
  * #      : digit
- * a[uli] : letter u:upper l:lower i:ignore
- * *[uli] : any printable u:upper l:lower i:ignore
- * w[uli] : word character u:upper l:lower i:ignore a-z 0-9
+ * a[ul] : letter u:upper l:lower i:ignore
+ * *[ul] : any printable u:upper l:lower i:ignore
+ * w[ul] : word character u:upper l:lower i:ignore a-z 0-9
  */
 
 import { Pattern } from "../Pattern";
 
 export class FieldPattern implements Pattern
 {
-    private cpos:number = 0;
+    private pos:number = 0;
     private value:string = "";
-    private insert:boolean = true;
+    private insert:boolean = false;
+    private placeholder$:string = "";
+
+    private token:Token = null;
     private tokens:Map<number,Token> = new Map<number,Token>();
 
     constructor(pattern:string)
@@ -49,6 +52,7 @@ export class FieldPattern implements Pattern
 
             if (fixed)
             {
+                this.placeholder$ += c;
                 this.tokens.set(pos++,new Token("f"));
                 continue;
             }
@@ -61,25 +65,26 @@ export class FieldPattern implements Pattern
             if (i < pattern.length - 1)
             {
                 let mod:string = pattern.charAt(i+1);
-                if (mod == 'u' || mod == 'l' || mod == 'i')
+                if (mod == 'u' || mod == 'l')
                 {
                     i++;
                     token.setCase(mod);
                 }
             }
 
+            this.placeholder$ += " ";
             this.tokens.set(pos++,token);
         }
 
-        this.tokens.forEach((token,pos) =>
-        {
-            console.log(pos+" "+token);
-        });
+        this.value = this.placeholder$;
+        this.token = this.tokens.get(0);
     }
 
     setValue(value:string) : void
     {
-        if (value == null) value = "";
+        if (value == null)
+            value = this.placeholder$;
+
         this.value = value;
     }
 
@@ -90,47 +95,108 @@ export class FieldPattern implements Pattern
 
     public placeholder() : string
     {
-        return(null);
+        return(this.placeholder$);
     }
 
-    public delete(fr:number, to:number) : string
+    public delete(fr:number, to:number) : boolean
     {
-        if (fr == to) fr--;
+        if (fr == to)
+        {
+            fr--;
+            if (!this.setPosition(fr))
+                return(false);
+        }
+
         let a:string = this.value.substring(to);
         let b:string = this.value.substring(0,fr);
-        this.value = b + a;
-        return(this.value);
+
+        this.value = b + " " + a;
+        return(true);
     }
 
-    public setPosition(pos:number) : number
+    public setPosition(pos:number) : boolean
     {
-        this.cpos = pos;
-        return(this.cpos);
+        if (pos < 0 || pos > this.placeholder$.length-1)
+            return(false);
+
+        let token:Token = this.tokens.get(pos);
+
+        if (token.type == 'f')
+            return(false);
+
+        this.pos = pos;
+        this.token = token;
+
+        return(true)
     }
 
-    public setCharacter(pos:number, c:string) : string
+    public setCharacter(pos:number, c:string) : boolean
     {
-        this.setPosition(pos);
+        if (!this.setPosition(pos))
+            return(false);
 
-        this.pad(this.cpos);
+        let token:Token = this.tokens.get(this.pos);
+        if (token == null || !token.validate(c)) return(false);
+
+        if (token.case == 'u') c = c.toUpperCase();
+        if (token.case == 'l') c = c.toLowerCase();
+
+        this.pad(this.pos);
         let off:number = this.insert ? 0 : 1;
-        let a:string = this.value.substring(this.cpos+off);
-        let b:string = this.value.substring(0,this.cpos);
+        let a:string = this.value.substring(this.pos+off);
+        let b:string = this.value.substring(0,this.pos);
         this.value = b + c + a;
 
-        return(this.value);
+        return(true);
     }
 
     public prev() : number
     {
-        if (this.cpos > 0) this.cpos--;
-        return(this.cpos);
+        if (this.pos <= 0)
+            return(this.pos);
+
+        if (this.setPosition(this.pos-1))
+            return(this.pos);
+
+        let pos = this.pos - 1;
+
+        while(pos > 0 && !this.allowed(pos))
+            pos--;
+
+        if (!this.allowed(pos))
+        {
+            while(pos < this.placeholder$.length-1 && !this.allowed(pos))
+                pos++;
+        }
+
+        this.setPosition(pos);
+        return(this.pos);
     }
 
-    public next(): number
+    public next() : number
     {
-        this.setPosition(this.cpos+1);
-        return(this.cpos);
+        console.log("next "+this.pos);
+        
+        if (this.pos >= this.placeholder$.length)
+            return(this.pos);
+
+        if (this.setPosition(this.pos+1))
+            return(this.pos);
+
+        let pos = this.pos + 1;
+
+        console.log("find next pos: "+pos);
+        while(pos < this.placeholder$.length-1 && !this.allowed(pos))
+            pos++;
+
+        if (!this.allowed(pos))
+        {
+            while(this.pos > 0 && !this.allowed(pos))
+                pos--;
+        }
+
+        this.setPosition(pos);
+        return(this.pos);
     }
 
     public validate() : void
@@ -151,6 +217,13 @@ export class FieldPattern implements Pattern
     {
         while(this.value.length < length)
             this.value += "";
+    }
+
+    private allowed(pos:number) : boolean
+    {
+        let token:Token = this.tokens.get(pos);
+        console.log("allowed "+pos+" "+token);
+        return(token.type != 'f');
     }
 }
 
@@ -185,6 +258,22 @@ class Token
     {
         this.case$ = uli;
         return(this);
+    }
+
+    public validate(c:string) : boolean
+    {
+        let lc:string = c.toLowerCase();
+
+        switch(this.type$)
+        {
+            case "*": return(true);
+            case "f": return(false);
+            case "#": return(+c >= 0 && +c <= 9);
+            case "a": return(lc >= 'a' && lc <= 'z');
+            case "w": return((lc >= 'a' && lc <= 'z') || (+c >= 0 && +c <= 9));
+        }
+
+        return(false)
     }
 
     public toString() : string

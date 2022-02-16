@@ -25,7 +25,7 @@ export interface Pattern
     prev() : number;
     next() : number;
 
-    setPosition(pos:number) : number;
-    delete(fr:number,to:number) : string;
-    setCharacter(pos:number, c:string) : string;
+    setPosition(pos:number) : boolean;
+    delete(fr:number,to:number) : boolean;
+    setCharacter(pos:number, c:string) : boolean;
 }

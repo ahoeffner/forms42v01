@@ -32,11 +32,6 @@ export class InputField extends Common implements FormField
         this.addEvents(this.element);
     }
 
-    public prepare() : void
-    {
-
-    }
-
     public getValue() : any
     {
         let str:string = this.element.value.trim();
@@ -69,7 +64,7 @@ export class InputField extends Common implements FormField
             if (attr == "type" && value == "date")
             {
                 value = "text";
-                this.pattern = new FieldPattern("##-##-####");
+                this.pattern = new FieldPattern("{##}-{##}-{####}");
                 let plh:string = this.pattern.placeholder();
                 if (plh != null) this.element.setAttribute("placeholder",plh);
             }
@@ -116,12 +111,6 @@ export class InputField extends Common implements FormField
         let plh:string = this.pattern.placeholder();
         if (this.getValue() == null) this.setValue(plh);
 
-        if (parser.type == "click")
-        {
-            this.pattern.setPosition(pos);
-            return;
-        }
-
         if (parser.shift)
         {
             switch(parser.key)
@@ -143,17 +132,37 @@ export class InputField extends Common implements FormField
             }
         }
 
-        parser.preventDefault(true);
+        let prevent:boolean = parser.prevent;
+
+        if (parser.printable)
+            prevent = true;
+
+        switch(parser.key)
+        {
+            case "Backspace":
+            case "ArrowLeft":
+            case "ArrowRight": prevent = true;
+        }
+
+        parser.preventDefault(prevent);
+
 
         if (parser.key == "Backspace")
         {
             let sel:number[] = this.getSelection();
-            this.setValue(this.pattern.delete(sel[0],sel[1]));
+
+            if (this.pattern.delete(sel[0],sel[1]))
+                this.setValue(this.pattern.getValue());
 
             pos = sel[0];
-            if (sel[0] > 0 && sel[0] == sel[1]) pos--;
 
-            this.setPosition(this.pattern.setPosition(pos));
+            if (sel[0] > 0 && sel[0] == sel[1])
+                pos--;
+
+            if (!this.pattern.setPosition(pos))
+                pos = this.pattern.prev();
+
+            this.setPosition(pos);
         }
 
         if (parser.key == "ArrowLeft")
@@ -161,6 +170,8 @@ export class InputField extends Common implements FormField
 
         if (parser.key == "ArrowRight")
             this.setPosition(this.pattern.next());
+
+        console.log("print "+parser+" "+pos+" prevent: "+prevent);
 
         if (parser.printable)
         {
@@ -170,13 +181,17 @@ export class InputField extends Common implements FormField
             {
                 pos = sel[0];
                 this.pattern.delete(sel[0],sel[1]);
-                this.pattern.setPosition(sel[0]);
+
+                if (!this.pattern.setPosition(sel[0]))
+                    this.pattern.next();
             }
 
-            let val:string = this.pattern.setCharacter(pos,parser.key);
-
-            this.setValue(val);
-            this.setPosition(this.pattern.next());
+            console.log("setCharacter pos: "+pos+" char: "+parser.key);
+            if (this.pattern.setCharacter(pos,parser.key))
+            {
+                this.setValue(this.pattern.getValue());
+                this.setPosition(this.pattern.next());
+            }
         }
     }
 
