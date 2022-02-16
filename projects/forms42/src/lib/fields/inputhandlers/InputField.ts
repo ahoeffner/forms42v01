@@ -21,6 +21,8 @@ export class InputField extends Common implements FormField
 {
 	private pattern:Pattern = null;
 	private element:HTMLInputElement = null;
+    private parser:BrowserEventParser = new BrowserEventParser();
+
 
 
     constructor()
@@ -76,26 +78,19 @@ export class InputField extends Common implements FormField
     private onEvent(jsevent:any) : void
     {
         let buble:boolean = false;
-        let parser:BrowserEventParser = new BrowserEventParser(jsevent);
+        this.parser.event = jsevent;
 
         if (this.pattern != null)
         {
-            this.applyPattern(parser);
+            this.applyPattern(this.parser);
             return;
         }
 
-        if (parser.prevent)
+        if (this.parser.prevent)
             jsevent.preventDefault();
 
-        if (parser.ignore)
+        if (this.parser.ignore)
             return;
-
-        if (parser.printable)
-        {
-            let pos:number = this.getPosition();
-            //this.setValue(this.getValue().toUpperCase());
-            //this.setPosition(pos);
-        }
 
         if (buble)
         {
@@ -107,71 +102,65 @@ export class InputField extends Common implements FormField
 
     private applyPattern(parser:BrowserEventParser) : void
     {
+        if (parser.ignore) return;
         let pos:number = this.getPosition();
         let plh:string = this.pattern.placeholder();
         if (this.getValue() == null) this.setValue(plh);
-
-        if (parser.shift)
-        {
-            switch(parser.key)
-            {
-                case "ArrowLeft":
-                case "ArrowRight":
-                return;
-            }
-        }
-
-        if (parser.ctrl)
-        {
-            switch(parser.key)
-            {
-                case "a":
-                case "c":
-                case "v":
-                return;
-            }
-        }
 
         let prevent:boolean = parser.prevent;
 
         if (parser.printable)
             prevent = true;
 
-        switch(parser.key)
+        if (!parser.modifier)
         {
-            case "Backspace":
-            case "ArrowLeft":
-            case "ArrowRight": prevent = true;
+            switch(parser.key)
+            {
+                case "Backspace":
+                case "ArrowLeft":
+                case "ArrowRight": prevent = true;
+            }
         }
 
         parser.preventDefault(prevent);
 
-
-        if (parser.key == "Backspace")
+        if (parser.key == "Backspace" && !parser.modifier)
         {
             let sel:number[] = this.getSelection();
-
-            if (this.pattern.delete(sel[0],sel[1]))
-                this.setValue(this.pattern.getValue());
 
             pos = sel[0];
 
             if (sel[0] > 0 && sel[0] == sel[1])
+            {
                 pos--;
 
-            if (!this.pattern.setPosition(pos))
-                pos = this.pattern.prev();
+                // Move past fixed pattern before deleting
+                if (!this.pattern.setPosition(pos) && sel[0] > 0)
+                {
+                    let pre:number = pos;
+
+                    pos = this.pattern.prev();
+                    let off:number = pre - pos;
+
+                    if (off > 0)
+                    {
+                        sel[0] = sel[0] - off;
+                        sel[1] = sel[1] - off;
+                    }
+                }
+            }
+
+            if (this.pattern.delete(sel[0],sel[1]))
+                this.setValue(this.pattern.getValue());
 
             this.setPosition(pos);
         }
 
-        if (parser.key == "ArrowLeft")
+        if (parser.key == "ArrowLeft" && !parser.modifier)
             this.setPosition(this.pattern.prev());
 
-        if (parser.key == "ArrowRight")
+        if (parser.key == "ArrowRight" && !parser.modifier)
             this.setPosition(this.pattern.next());
-
-        console.log("print "+parser+" "+pos+" prevent: "+prevent);
 
         if (parser.printable)
         {
@@ -186,7 +175,6 @@ export class InputField extends Common implements FormField
                     this.pattern.next();
             }
 
-            console.log("setCharacter pos: "+pos+" char: "+parser.key);
             if (this.pattern.setCharacter(pos,parser.key))
             {
                 this.setValue(this.pattern.getValue());

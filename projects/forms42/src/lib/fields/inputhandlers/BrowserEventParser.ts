@@ -12,6 +12,8 @@
 
 export class BrowserEventParser
 {
+    private jsevent$:any;
+
     public key:string = null;
     public ignore:boolean = false;
     public prevent:boolean = false;
@@ -23,9 +25,12 @@ export class BrowserEventParser
     public shift:boolean = false;
 
 
-    constructor(private jsevent$:any)
+    public set event(event:any)
     {
-        if (jsevent$.type.startsWith("key")) this.parseKeyEvent();
+        this.jsevent$ = event;
+
+        if (event.type.startsWith("key"))
+            this.parseKeyEvent();
     }
 
 
@@ -38,6 +43,12 @@ export class BrowserEventParser
     public get jsevent() : any
     {
         return(this.jsevent$);
+    }
+
+
+    public get modifier() : boolean
+    {
+        return(this.alt || this.ctrl || this.meta || this.shift);
     }
 
 
@@ -55,6 +66,11 @@ export class BrowserEventParser
         switch(this.jsevent.type)
         {
             case "keyup" :
+                if (this.jsevent.key == "Alt") this.alt = false;
+                if (this.jsevent.key == "Meta") this.meta = false;
+                if (this.jsevent.key == "Shift") this.shift = false;
+                if (this.jsevent.key == "Control") this.ctrl = false;
+
                 if (!this.alt && !this.ctrl && !this.meta)
                 {
                     if (this.jsevent.key.length == 1)
@@ -65,21 +81,20 @@ export class BrowserEventParser
                 }
             break;
 
+            case "keypress":
+                this.prevent = true;
+            break;
+
             case "keydown":
                 this.ignore = false;
                 this.prevent = false;
                 this.printable = false;
-
                 this.key = this.jsevent.key;
-                this.alt = this.jsevent.altKey;
-                this.ctrl = this.jsevent.ctrlKey;
-                this.meta = this.jsevent.metaKey;
-                this.shift = this.jsevent.shiftKey;
 
-                if (this.jsevent.key == "Alt") this.ignore = true;
-                if (this.jsevent.key == "Meta") this.ignore = true;
-                if (this.jsevent.key == "Shift") this.ignore = true;
-                if (this.jsevent.key == "Control") this.ignore = true;
+                if (this.jsevent.key == "Alt") {this.ignore = true; this.alt = true;}
+                if (this.jsevent.key == "Meta") {this.ignore = true; this.meta = true;}
+                if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = true;}
+                if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = true;}
 
                 if (this.jsevent.key == "Tab") this.prevent = true;
                 if (this.jsevent.key == "ArrowUp") this.prevent = true;

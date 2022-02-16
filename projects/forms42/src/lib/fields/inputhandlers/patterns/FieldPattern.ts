@@ -26,7 +26,6 @@ export class FieldPattern implements Pattern
     private insert:boolean = false;
     private placeholder$:string = "";
 
-    private token:Token = null;
     private tokens:Map<number,Token> = new Map<number,Token>();
 
     constructor(pattern:string)
@@ -77,13 +76,40 @@ export class FieldPattern implements Pattern
         }
 
         this.value = this.placeholder$;
-        this.token = this.tokens.get(0);
     }
 
     setValue(value:string) : void
     {
         if (value == null)
+        {
             value = this.placeholder$;
+            return;
+        }
+
+        let pos:number = 0;
+        let fmt:string[] = [];
+        let plen:number = this.placeholder$.length;
+
+        for(let i = 0; i < plen && pos < value.length; i++)
+        {
+            let c:string = value.charAt(i);
+            let p:string = this.placeholder$.charAt(i);
+
+            if (p != ' ' && p != c)
+            {
+                fmt.push(p);
+                continue;
+            }
+
+            pos++;
+            fmt.push(c);
+        }
+
+        value = "";
+        fmt.forEach((c) => {value += c});
+
+        for (let i = value.length; i < plen; i++)
+            value += this.placeholder$.charAt(i);
 
         this.value = value;
     }
@@ -110,7 +136,7 @@ export class FieldPattern implements Pattern
         let a:string = this.value.substring(to);
         let b:string = this.value.substring(0,fr);
 
-        this.value = b + " " + a;
+        this.setValue(b + " " + a);
         return(true);
     }
 
@@ -125,7 +151,6 @@ export class FieldPattern implements Pattern
             return(false);
 
         this.pos = pos;
-        this.token = token;
 
         return(true)
     }
@@ -141,12 +166,11 @@ export class FieldPattern implements Pattern
         if (token.case == 'u') c = c.toUpperCase();
         if (token.case == 'l') c = c.toLowerCase();
 
-        this.pad(this.pos);
         let off:number = this.insert ? 0 : 1;
         let a:string = this.value.substring(this.pos+off);
         let b:string = this.value.substring(0,this.pos);
-        this.value = b + c + a;
 
+        this.setValue(b + c + a);
         return(true);
     }
 
@@ -163,6 +187,9 @@ export class FieldPattern implements Pattern
         while(pos > 0 && !this.allowed(pos))
             pos--;
 
+        if (pos < 0)
+            pos++;
+
         if (!this.allowed(pos))
         {
             while(pos < this.placeholder$.length-1 && !this.allowed(pos))
@@ -175,8 +202,6 @@ export class FieldPattern implements Pattern
 
     public next() : number
     {
-        console.log("next "+this.pos);
-        
         if (this.pos >= this.placeholder$.length)
             return(this.pos);
 
@@ -185,9 +210,11 @@ export class FieldPattern implements Pattern
 
         let pos = this.pos + 1;
 
-        console.log("find next pos: "+pos);
         while(pos < this.placeholder$.length-1 && !this.allowed(pos))
             pos++;
+
+        if (pos == this.placeholder$.length)
+            pos--;
 
         if (!this.allowed(pos))
         {
@@ -213,16 +240,10 @@ export class FieldPattern implements Pattern
         return(this.value);
     }
 
-    private pad(length:number) : void
-    {
-        while(this.value.length < length)
-            this.value += "";
-    }
-
     private allowed(pos:number) : boolean
     {
         let token:Token = this.tokens.get(pos);
-        console.log("allowed "+pos+" "+token);
+        if (token == null) console.log("pos: "+pos+" len: "+this.placeholder$.length+" "+(pos < this.placeholder$.length-1))
         return(token.type != 'f');
     }
 }
