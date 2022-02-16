@@ -17,6 +17,8 @@ export class BrowserEventParser
     public prevent:boolean = false;
     public printable:boolean = false;
 
+    public shift:boolean = false;
+
 
     constructor(private jsevent$:any)
     {
@@ -54,6 +56,7 @@ export class BrowserEventParser
                 {
                     this.printable = true;
                     this.key = this.jsevent.key;
+                    this.shift = this.jsevent.shiftKey; 
                 }
             break;
 
@@ -76,6 +79,6 @@ export class BrowserEventParser
 
     public toString() : string
     {
-        return(this.type+" prevent: "+this.prevent+" ignore: "+this.ignore+" printable: "+this.printable);
+        return(this.type+" prevent: "+this.prevent+" ignore: "+this.ignore+" printable: "+this.printable+" key: "+this.key);
     }
 }

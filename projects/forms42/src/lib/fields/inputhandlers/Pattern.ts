@@ -18,12 +18,14 @@ export interface Pattern
     setValue(value:string) : void;
 
     validate() : void;
+
     getObject() : any;
+    setObject(object:any) : void;
 
     prev() : number;
     next() : number;
 
     setPosition(pos:number) : number;
-    delete(fr:number,to:number) : void;
+    delete(fr:number,to:number) : string;
     setCharacter(pos:number, c:string) : string;
 }

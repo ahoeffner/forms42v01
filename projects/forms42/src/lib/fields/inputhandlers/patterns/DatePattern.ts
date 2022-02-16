@@ -1,72 +1,85 @@
-import { FieldPattern, FieldToken } from "./FieldPattern";
+import { Pattern } from "../Pattern";
 
-export class DatePattern extends FieldPattern
+export class DatePattern implements Pattern
 {
-    private static getTokens() : FieldToken[]
+    private cpos:number = 0;
+    private value:string = "";
+    private insert:boolean = true;
+
+    setValue(value:string) : void 
     {
-        let tokens:FieldToken[] = [];
-        tokens[0] = new DayToken(0);
-        tokens[1] = new DayToken(3);
-        tokens[2] = new DayToken(6);
-        return(tokens);
+        if (value == null) value = "";
+        this.value = value;
     }
 
-
-    constructor()
+    setObject(value:any) : void 
     {
-        super(DatePattern.getTokens(),"{}-{}-{}");
-        /*
-        this.pattern = "";
-        let format:string = this.format.toLowerCase();
-
-        for(let i = 0; i < format.length; i++)
-        {
-            let c = format.charAt(i);
-            if (c >= 'a' && c <= 'z') this.pattern += " ";
-            else                      this.pattern += this.format.charAt(i); 
-        }
-
-        this.value = this.pattern;
-        */
+        throw new Error("Method not implemented.");
     }
 
-
-    public override placeholder(): string 
+    public placeholder() : string 
     {
-        return("dd-mm-yyyy");
+        return(null);
     }
-}
+
+    public delete(fr:number, to:number) : string 
+    {
+        let a:string = this.value.substring(to);
+        let b:string = this.value.substring(0,fr);
+        this.value = b + a;
+        return(this.value);
+    }
+
+    public setPosition(pos:number) : number 
+    {
+        this.cpos = pos;
+        return(this.cpos);
+    }
+
+    public setCharacter(pos:number, c:string) : string 
+    {
+        this.setPosition(pos);
+
+        this.pad(this.cpos);
+        let off:number = this.insert ? 0 : 1;
+        let a:string = this.value.substring(this.cpos+off);
+        let b:string = this.value.substring(0,this.cpos);
+        this.value = b + c + a;
+
+        return(this.value);
+    }
 
 
-export class DayToken implements FieldToken
-{
-    constructor(private pos$:number) {}
+    public prev() : number 
+    {
+        if (this.cpos > 0) this.cpos--;
+        return(this.cpos);
+    }
 
-    public pos:number = 0;
-    public length:number = 2;
+    public next(): number 
+    {
+        this.setPosition(this.cpos+1);
+        console.log("next "+(this.cpos));
+        return(this.cpos);
+    }
 
-    getObject(value: any) {
+    public validate(): void {
         throw new Error("Method not implemented.");
     }
-    getValue(value: any): string {
+    public getObject() {
         throw new Error("Method not implemented.");
     }
-    validate(value: string): void {
-        throw new Error("Method not implemented.");
+
+
+    public getValue() : string 
+    {
+        return(this.value);
     }
-    prev(): number {
-        throw new Error("Method not implemented.");
-    }
-    next(): number {
-        throw new Error("Method not implemented.");
-    }
-    delete(pos: number): number {
-        throw new Error("Method not implemented.");
-    }
-    setPosition(pos: number): number {
-        throw new Error("Method not implemented.");
-    }
-    setCharacter(pos: number, c: string): string {
-        throw new Error("Method not implemented.");
+
+
+    private pad(length:number) : void
+    {
+        while(this.value.length < length)
+            this.value += "";
     }
 }

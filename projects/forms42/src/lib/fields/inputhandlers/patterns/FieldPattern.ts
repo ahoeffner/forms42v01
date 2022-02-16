@@ -3,13 +3,22 @@ import { Pattern } from "../Pattern";
 export class FieldPattern implements Pattern
 {
     private pos:number = 0;
-    private value:string = this.pattern;
+    private object:any = null;
+    private value:string = "";
 
     constructor(fields:FieldToken|FieldToken[], private pattern:string)
     {
     }
 
-    setValue(value: string) : void 
+    setValue(value:string) : void 
+    {
+        if (value == null)
+            value = this.pattern;
+
+        this.value = value;
+    }
+
+    setObject(value:any) : void 
     {
         if (value == null)
             value = this.pattern;

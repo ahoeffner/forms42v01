@@ -112,6 +112,7 @@ export class InputField extends Common implements FormField
 
     private applyPattern(parser:BrowserEventParser) : void
     {
+        parser.preventDefault(true);
         let pos:number = this.getPosition();
         let plh:string = this.pattern.placeholder();
         if (this.getValue() == null) this.setValue(plh);
@@ -119,16 +120,20 @@ export class InputField extends Common implements FormField
         if (parser.type == "click")
         {
             this.pattern.setPosition(pos);
+            return;
         }
+
+        if (parser.key != null)
+            console.log(parser.toString());
 
         if (parser.key == "Backspace")
         {
-            parser.preventDefault(true);
             let sel:number[] = this.getSelection();
-            this.pattern.delete(sel[0],sel[1]);
+            this.setValue(this.pattern.delete(sel[0],sel[1]));
 
             pos = sel[0];
             if (sel[0] > 0 && sel[0] == sel[1]) pos--;
+
             this.setPosition(this.pattern.setPosition(pos));
         }
 
@@ -136,18 +141,27 @@ export class InputField extends Common implements FormField
             this.setPosition(this.pattern.prev());
 
         if (parser.key == "ArrowRight")
+        {
+            console.log("mod "+parser.shift);
             this.setPosition(this.pattern.next());
+        }
 
-        /*
         if (parser.printable)
         {
-            let pos:number = this.getPosition();
+            let sel:number[] = this.getSelection();
+
+            if (sel[0] != sel[1])
+            {
+                pos = sel[0];
+                this.pattern.delete(sel[0],sel[1]);
+                this.pattern.setPosition(sel[0]);
+            }
+
             let val:string = this.pattern.setCharacter(pos,parser.key);
 
             this.setValue(val);
             this.setPosition(this.pattern.next());
         }
-        */
     }
 
     private getPosition() : number
