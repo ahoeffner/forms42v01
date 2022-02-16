@@ -136,7 +136,10 @@ export class FieldPattern implements Pattern
         let a:string = this.value.substring(to);
         let b:string = this.value.substring(0,fr);
 
-        this.setValue(b + " " + a);
+        console.log("del fr: "+fr+" to: "+to+" <"+b+"> <"+a+"> <<"+(b + " " + a)+">>");
+
+        this.setValue(b + a);
+        //this.setValue(b + " " + a);
         return(true);
     }
 
@@ -145,7 +148,7 @@ export class FieldPattern implements Pattern
         if (pos < 0)
         {
             this.pos = 0;
-            return(true);
+            return(false);
         }
 
         if (pos >= this.placeholder$.length)

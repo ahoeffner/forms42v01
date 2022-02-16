@@ -66,6 +66,8 @@ export class BrowserEventParser
         switch(this.jsevent.type)
         {
             case "keyup" :
+                this.ignore = false;
+
                 if (this.jsevent.key == "Alt") {this.ignore = true; this.alt = false;}
                 if (this.jsevent.key == "Meta") {this.ignore = true; this.meta = false;}
                 if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = false;}
@@ -86,15 +88,15 @@ export class BrowserEventParser
             break;
 
             case "keydown":
-                this.ignore = false;
+                this.ignore = true;
                 this.prevent = false;
                 this.printable = false;
                 this.key = this.jsevent.key;
 
-                if (this.jsevent.key == "Alt") {this.ignore = true; this.alt = true;}
-                if (this.jsevent.key == "Meta") {this.ignore = true; this.meta = true;}
-                if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = true;}
-                if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = true;}
+                if (this.jsevent.key == "Alt") this.alt = true;
+                if (this.jsevent.key == "Meta") this.meta = true;
+                if (this.jsevent.key == "Shift") this.shift = true;
+                if (this.jsevent.key == "Control") this.ctrl = true;
 
                 if (this.jsevent.key == "Tab") this.prevent = true;
                 if (this.jsevent.key == "ArrowUp") this.prevent = true;

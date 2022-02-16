@@ -102,7 +102,6 @@ export class InputField extends Common implements FormField
 
     private applyPattern(parser:BrowserEventParser) : void
     {
-        if (parser.ignore) return;
         let pos:number = this.getPosition();
         let plh:string = this.pattern.placeholder();
         if (this.getValue() == null) this.setValue(plh);
@@ -112,8 +111,6 @@ export class InputField extends Common implements FormField
         if (parser.printable)
             prevent = true;
 
-        console.log("mod: "+parser.modifier);
-        
         if (!parser.modifier)
         {
             switch(parser.key)
@@ -125,6 +122,9 @@ export class InputField extends Common implements FormField
         }
 
         parser.preventDefault(prevent);
+
+        if (parser.ignore)
+            return;
 
         if (parser.key == "Backspace" && !parser.modifier)
         {
