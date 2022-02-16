@@ -112,6 +112,8 @@ export class InputField extends Common implements FormField
         if (parser.printable)
             prevent = true;
 
+        console.log("mod: "+parser.modifier);
+        
         if (!parser.modifier)
         {
             switch(parser.key)

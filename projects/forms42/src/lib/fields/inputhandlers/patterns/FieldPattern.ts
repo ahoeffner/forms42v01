@@ -142,8 +142,17 @@ export class FieldPattern implements Pattern
 
     public setPosition(pos:number) : boolean
     {
-        if (pos < 0 || pos > this.placeholder$.length-1)
-            return(false);
+        if (pos < 0)
+        {
+            this.pos = 0;
+            return(true);
+        }
+
+        if (pos >= this.placeholder$.length)
+        {
+            this.pos = this.placeholder$.length;
+            return(true);
+        }
 
         let token:Token = this.tokens.get(pos);
 
@@ -159,6 +168,12 @@ export class FieldPattern implements Pattern
     {
         if (!this.setPosition(pos))
             return(false);
+
+        if (pos < 0)
+            pos = 0;
+
+        if (pos >= this.placeholder$.length - 1)
+            pos = this.placeholder$.length - 1;
 
         let token:Token = this.tokens.get(this.pos);
         if (token == null || !token.validate(c)) return(false);
@@ -176,9 +191,6 @@ export class FieldPattern implements Pattern
 
     public prev() : number
     {
-        if (this.pos <= 0)
-            return(this.pos);
-
         if (this.setPosition(this.pos-1))
             return(this.pos);
 
@@ -187,24 +199,12 @@ export class FieldPattern implements Pattern
         while(pos > 0 && !this.allowed(pos))
             pos--;
 
-        if (pos < 0)
-            pos++;
-
-        if (!this.allowed(pos))
-        {
-            while(pos < this.placeholder$.length-1 && !this.allowed(pos))
-                pos++;
-        }
-
         this.setPosition(pos);
         return(this.pos);
     }
 
     public next() : number
     {
-        if (this.pos >= this.placeholder$.length)
-            return(this.pos);
-
         if (this.setPosition(this.pos+1))
             return(this.pos);
 
@@ -212,15 +212,6 @@ export class FieldPattern implements Pattern
 
         while(pos < this.placeholder$.length-1 && !this.allowed(pos))
             pos++;
-
-        if (pos == this.placeholder$.length)
-            pos--;
-
-        if (!this.allowed(pos))
-        {
-            while(this.pos > 0 && !this.allowed(pos))
-                pos--;
-        }
 
         this.setPosition(pos);
         return(this.pos);
@@ -242,8 +233,10 @@ export class FieldPattern implements Pattern
 
     private allowed(pos:number) : boolean
     {
+        if (pos < 0 || pos > this.placeholder$.length)
+            return(true);
+
         let token:Token = this.tokens.get(pos);
-        if (token == null) console.log("pos: "+pos+" len: "+this.placeholder$.length+" "+(pos < this.placeholder$.length-1))
         return(token.type != 'f');
     }
 }

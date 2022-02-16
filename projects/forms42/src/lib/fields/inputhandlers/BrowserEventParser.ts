@@ -66,10 +66,10 @@ export class BrowserEventParser
         switch(this.jsevent.type)
         {
             case "keyup" :
-                if (this.jsevent.key == "Alt") this.alt = false;
-                if (this.jsevent.key == "Meta") this.meta = false;
-                if (this.jsevent.key == "Shift") this.shift = false;
-                if (this.jsevent.key == "Control") this.ctrl = false;
+                if (this.jsevent.key == "Alt") {this.ignore = true; this.alt = false;}
+                if (this.jsevent.key == "Meta") {this.ignore = true; this.meta = false;}
+                if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = false;}
+                if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = false;}
 
                 if (!this.alt && !this.ctrl && !this.meta)
                 {
