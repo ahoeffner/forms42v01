@@ -126,9 +126,13 @@ export class FieldPattern implements Pattern
 
     public delete(fr:number, to:number) : boolean
     {
+        let range:boolean = true;
+
         if (fr == to)
         {
             fr--;
+            range = false;
+
             if (!this.setPosition(fr))
                 return(false);
         }
@@ -136,10 +140,12 @@ export class FieldPattern implements Pattern
         let a:string = this.value.substring(to);
         let b:string = this.value.substring(0,fr);
 
-        console.log("del fr: "+fr+" to: "+to+" <"+b+"> <"+a+"> <<"+(b + " " + a)+">>");
+        let value:string = b + a;
+        if (!range) value = b + " " + a;
 
-        this.setValue(b + a);
-        //this.setValue(b + " " + a);
+        console.log("del"+fr+" - "+to+" <"+value+">");
+
+        this.setValue(value);
         return(true);
     }
 
