@@ -143,9 +143,9 @@ export class FieldPattern implements Pattern
         let value:string = b + a;
         if (!range) value = b + " " + a;
 
-        console.log("del"+fr+" - "+to+" <"+value+">");
-
         this.setValue(value);
+        this.setPosition(fr);
+
         return(true);
     }
 
