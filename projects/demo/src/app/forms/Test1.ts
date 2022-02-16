@@ -4,13 +4,13 @@ import { Form, register } from 'forms42';
 @Component({
 	selector: 'test1',
 	template: `
-		Test1 
+		Test1
 		<field type="date" handler="input"></field>
-		<field id="radio" type="text" handler="input">
+		<field id="radio" type="text" handler="input" pattern="{CciaA*}{#}">
 			<label for="radio">Radio Button</label>
 		</field>
 		`,
-	styles: 
+	styles:
 	[
 	`
 	`
@@ -19,6 +19,10 @@ import { Form, register } from 'forms42';
 
 @register("/test1")
 
-export class Test1 extends Form 
+export class Test1 extends Form
 {
+	constructor()
+	{
+		super();
+	}
 }

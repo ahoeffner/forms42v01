@@ -17,6 +17,9 @@ export class BrowserEventParser
     public prevent:boolean = false;
     public printable:boolean = false;
 
+    public alt:boolean = false;
+    public ctrl:boolean = false;
+    public meta:boolean = false;
     public shift:boolean = false;
 
 
@@ -51,23 +54,32 @@ export class BrowserEventParser
 
         switch(this.jsevent.type)
         {
-            case "keyup" :            
-                if (this.jsevent.key.length == 1)
+            case "keyup" :
+                if (!this.alt && !this.ctrl && !this.meta)
                 {
-                    this.printable = true;
-                    this.key = this.jsevent.key;
-                    this.shift = this.jsevent.shiftKey; 
+                    if (this.jsevent.key.length == 1)
+                    {
+                        this.printable = true;
+                        this.key = this.jsevent.key;
+                    }
                 }
             break;
 
             case "keydown":
+                this.ignore = false;
                 this.prevent = false;
-                this.key = this.jsevent.key;
+                this.printable = false;
 
-                if (this.jsevent.key == "Alt") this.prevent = true;
-                if (this.jsevent.key == "Shift") this.prevent = true;
-                if (this.jsevent.key == "Control") this.prevent = true;
-                if (this.jsevent.key == "Meta") this.prevent = true;
+                this.key = this.jsevent.key;
+                this.alt = this.jsevent.altKey;
+                this.ctrl = this.jsevent.ctrlKey;
+                this.meta = this.jsevent.metaKey;
+                this.shift = this.jsevent.shiftKey;
+
+                if (this.jsevent.key == "Alt") this.ignore = true;
+                if (this.jsevent.key == "Meta") this.ignore = true;
+                if (this.jsevent.key == "Shift") this.ignore = true;
+                if (this.jsevent.key == "Control") this.ignore = true;
 
                 if (this.jsevent.key == "Tab") this.prevent = true;
                 if (this.jsevent.key == "ArrowUp") this.prevent = true;

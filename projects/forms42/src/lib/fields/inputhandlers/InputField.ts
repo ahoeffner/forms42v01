@@ -12,7 +12,7 @@
 
 import { Common } from "./Common";
 import { Pattern } from "./Pattern";
-import { DatePattern } from "./patterns/DatePattern";
+import { FieldPattern } from "./patterns/FieldPattern";
 import { BrowserEventParser } from "./BrowserEventParser";
 import { FormField, EventHandler, Event, getEventType } from "../interfaces/FormField";
 
@@ -44,32 +44,32 @@ export class InputField extends Common implements FormField
         return(str);
     }
 
-    public setValue(value: any) : void 
+    public setValue(value: any) : void
     {
         if (value == null) value = "";
         this.element.value = value;
     }
-    
-	public validate() : boolean 
+
+	public validate() : boolean
 	{
         throw new Error("Method not implemented.");
     }
 
-	public getElement(): HTMLElement 
+	public getElement(): HTMLElement
 	{
 		return(this.element);
 	}
 
-    public override setAttributes(attributes: Map<string, any>): void 
+    public override setAttributes(attributes: Map<string, any>): void
     {
         super.setAttributes(attributes);
 
-        attributes.forEach((value,attr) => 
+        attributes.forEach((value,attr) =>
         {
             if (attr == "type" && value == "date")
             {
                 value = "text";
-                this.pattern = new DatePattern();
+                this.pattern = new FieldPattern("##-##-####");
                 let plh:string = this.pattern.placeholder();
                 if (plh != null) this.element.setAttribute("placeholder",plh);
             }
@@ -89,7 +89,7 @@ export class InputField extends Common implements FormField
             return;
         }
 
-        if (parser.prevent) 
+        if (parser.prevent)
             jsevent.preventDefault();
 
         if (parser.ignore)
@@ -112,7 +112,6 @@ export class InputField extends Common implements FormField
 
     private applyPattern(parser:BrowserEventParser) : void
     {
-        parser.preventDefault(true);
         let pos:number = this.getPosition();
         let plh:string = this.pattern.placeholder();
         if (this.getValue() == null) this.setValue(plh);
@@ -123,8 +122,28 @@ export class InputField extends Common implements FormField
             return;
         }
 
-        if (parser.key != null)
-            console.log(parser.toString());
+        if (parser.shift)
+        {
+            switch(parser.key)
+            {
+                case "ArrowLeft":
+                case "ArrowRight":
+                return;
+            }
+        }
+
+        if (parser.ctrl)
+        {
+            switch(parser.key)
+            {
+                case "a":
+                case "c":
+                case "v":
+                return;
+            }
+        }
+
+        parser.preventDefault(true);
 
         if (parser.key == "Backspace")
         {
@@ -141,10 +160,7 @@ export class InputField extends Common implements FormField
             this.setPosition(this.pattern.prev());
 
         if (parser.key == "ArrowRight")
-        {
-            console.log("mod "+parser.shift);
             this.setPosition(this.pattern.next());
-        }
 
         if (parser.printable)
         {

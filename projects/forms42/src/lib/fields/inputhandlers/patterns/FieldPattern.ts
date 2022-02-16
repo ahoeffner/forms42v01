@@ -1,93 +1,194 @@
+/*
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 3 only, as
+ * published by the Free Software Foundation.
+
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ */
+
+/*
+ * #      : digit
+ * a[uli] : letter u:upper l:lower i:ignore
+ * *[uli] : any printable u:upper l:lower i:ignore
+ * w[uli] : word character u:upper l:lower i:ignore a-z 0-9
+ */
+
 import { Pattern } from "../Pattern";
 
 export class FieldPattern implements Pattern
 {
-    private pos:number = 0;
-    private object:any = null;
+    private cpos:number = 0;
     private value:string = "";
+    private insert:boolean = true;
+    private tokens:Map<number,Token> = new Map<number,Token>();
 
-    constructor(fields:FieldToken|FieldToken[], private pattern:string)
+    constructor(pattern:string)
     {
+        let pos:number = 0;
+        let fixed:boolean = true;
+
+        for(let i = 0; i < pattern.length; i++)
+        {
+            let c:string = pattern.charAt(i);
+
+            if (c == '{')
+            {
+                fixed = false;
+                continue;
+            }
+
+            if (c == '}')
+            {
+                fixed = true;
+                continue;
+            }
+
+            if (fixed)
+            {
+                this.tokens.set(pos++,new Token("f"));
+                continue;
+            }
+
+            if (!(c == '#' || c == '*' || c == 'a' || c == 'w'))
+                throw "unknown pattern "+c;
+
+            let token:Token = new Token(c);
+
+            if (i < pattern.length - 1)
+            {
+                let mod:string = pattern.charAt(i+1);
+                if (mod == 'u' || mod == 'l' || mod == 'i')
+                {
+                    i++;
+                    token.setCase(mod);
+                }
+            }
+
+            this.tokens.set(pos++,token);
+        }
+
+        this.tokens.forEach((token,pos) =>
+        {
+            console.log(pos+" "+token);
+        });
     }
 
-    setValue(value:string) : void 
+    setValue(value:string) : void
     {
-        if (value == null)
-            value = this.pattern;
-
+        if (value == null) value = "";
         this.value = value;
     }
 
-    setObject(value:any) : void 
+    setObject(value:any) : void
     {
-        if (value == null)
-            value = this.pattern;
-
-        this.value = value;
+        this.setValue(value+"");
     }
 
-    public placeholder() : string 
+    public placeholder() : string
     {
-        return(this.pattern);
-    }
-
-    public delete(fr:number, to:number) : void 
-    {
-    }
-
-    public setPosition(pos: number) : number 
-    {
-        this.pos = pos;   
-        return(this.pos); 
-    }
-
-    public setCharacter(pos: number, c: string) : string 
-    {
-        this.setPosition(pos);
         return(null);
     }
 
-    public prev() : number 
+    public delete(fr:number, to:number) : string
     {
-        if (this.pos > 0) this.pos--;
-        return(this.pos);
+        if (fr == to) fr--;
+        let a:string = this.value.substring(to);
+        let b:string = this.value.substring(0,fr);
+        this.value = b + a;
+        return(this.value);
     }
 
-    public next() : number 
+    public setPosition(pos:number) : number
     {
-        if (this.pos < this.pattern.length) this.pos++;
-        return(this.pos);
+        this.cpos = pos;
+        return(this.cpos);
+    }
+
+    public setCharacter(pos:number, c:string) : string
+    {
+        this.setPosition(pos);
+
+        this.pad(this.cpos);
+        let off:number = this.insert ? 0 : 1;
+        let a:string = this.value.substring(this.cpos+off);
+        let b:string = this.value.substring(0,this.cpos);
+        this.value = b + c + a;
+
+        return(this.value);
+    }
+
+    public prev() : number
+    {
+        if (this.cpos > 0) this.cpos--;
+        return(this.cpos);
+    }
+
+    public next(): number
+    {
+        this.setPosition(this.cpos+1);
+        return(this.cpos);
     }
 
     public validate() : void
     {
-        throw new Error("Method not implemented.");
     }
 
     public getObject() : any
     {
-        throw new Error("Method not implemented.");
-    }   
+        return(this.getValue());
+    }
 
-    public getValue() : string 
+    public getValue() : string
     {
         return(this.value);
+    }
+
+    private pad(length:number) : void
+    {
+        while(this.value.length < length)
+            this.value += "";
     }
 }
 
 
-export interface FieldToken
+class Token
 {
-    pos : number;
-    length:number;
+    type$:string = 'f';
+    case$:string = 'i';
 
-    getValue(value:any) : string;
-    validate(value:string) : void;
+    constructor(type:string)
+    {
+        this.type$ = type;
+    }
 
-    prev() : number;
-    next() : number;
+    public get type() : string
+    {
+        return(this.type$)
+    }
 
-    delete(pos:number) : number;
-    setPosition(pos:number) : number;
-    setCharacter(pos:number, c:string) : string;
+    public get case() : string
+    {
+        return(this.case$)
+    }
+
+    public setType(type:string) : Token
+    {
+        this.type$ = type;
+        return(this);
+    }
+
+    public setCase(uli:string) : Token
+    {
+        this.case$ = uli;
+        return(this);
+    }
+
+    public toString() : string
+    {
+        return(this.type$+"["+this.case$+"]");
+    }
 }
