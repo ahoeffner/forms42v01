@@ -124,51 +124,22 @@ export class FieldPattern implements Pattern
         return(this.placeholder$);
     }
 
-    public delete(fr:number, to:number) : boolean
-    {
-        let range:boolean = true;
-
-        if (fr == to)
-        {
-            fr--;
-            range = false;
-
-            if (!this.setPosition(fr))
-                return(false);
-        }
-
-        let a:string = this.value.substring(to);
-        let b:string = this.value.substring(0,fr);
-
-        let value:string = b + a;
-        if (!range) value = b + " " + a;
-
-        this.setValue(value);
-        this.setPosition(fr);
-
-        return(true);
-    }
-
     public setPosition(pos:number) : boolean
     {
-        if (pos < 0)
-        {
-            this.pos = 0;
-            return(false);
-        }
+        if (pos < 0) pos = 0;
 
-        if (pos >= this.placeholder$.length)
-        {
-            this.pos = this.placeholder$.length;
-            return(true);
-        }
-
-        let token:Token = this.tokens.get(pos);
-
-        if (token.type == 'f')
-            return(false);
+        if (pos > this.placeholder$.length)
+            pos = this.placeholder$.length;
 
         this.pos = pos;
+
+        if (pos >= 0 && pos < this.placeholder$.length - 1)
+        {
+            let token:Token = this.tokens.get(pos);
+
+            if (token.type == 'f')
+                return(false);
+        }
 
         return(true)
     }
@@ -195,6 +166,33 @@ export class FieldPattern implements Pattern
         let b:string = this.value.substring(0,this.pos);
 
         this.setValue(b + c + a);
+        return(true);
+    }
+
+    public delete(fr:number, to:number) : boolean
+    {
+        let range:boolean = true;
+        console.log("delete fr: "+fr+" to: "+to)
+
+        if (fr == to)
+        {
+            fr--;
+            range = false;
+            if (fr < 0) return(false);
+
+            if (!this.setPosition(fr))
+                return(false);
+        }
+
+        let a:string = this.value.substring(to);
+        let b:string = this.value.substring(0,fr);
+
+        let value:string = b + a;
+        if (!range) value = b + " " + a;
+
+        this.setValue(value);
+        this.setPosition(fr);
+
         return(true);
     }
 

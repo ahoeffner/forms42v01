@@ -66,25 +66,31 @@ export class BrowserEventParser
         switch(this.jsevent.type)
         {
             case "keyup" :
-                this.ignore = false;
+                if (!this.alt && !this.ctrl && !this.meta)
+                {
+                    if (this.jsevent.key.length == 1)
+                    {
+                        this.ignore = false;
+                        this.printable = true;
+                        this.key = this.jsevent.key;
+                    }
+                }
+
+                if (this.jsevent.key == "Backspace") this.ignore = false;
+                if (this.jsevent.key == "ArrowLeft") this.ignore = false;
+                if (this.jsevent.key == "ArrowRight") this.ignore = false;
 
                 if (this.jsevent.key == "Alt") {this.ignore = true; this.alt = false;}
                 if (this.jsevent.key == "Meta") {this.ignore = true; this.meta = false;}
                 if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = false;}
                 if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = false;}
-
-                if (!this.alt && !this.ctrl && !this.meta)
-                {
-                    if (this.jsevent.key.length == 1)
-                    {
-                        this.printable = true;
-                        this.key = this.jsevent.key;
-                    }
-                }
             break;
 
             case "keypress":
-                this.prevent = true;
+                this.ignore = true;
+
+                if (this.jsevent.key.length == 1)
+                    this.printable = true;
             break;
 
             case "keydown":
@@ -101,6 +107,14 @@ export class BrowserEventParser
                 if (this.jsevent.key == "Tab") this.prevent = true;
                 if (this.jsevent.key == "ArrowUp") this.prevent = true;
                 if (this.jsevent.key == "ArrowDown") this.prevent = true;
+            break;
+
+            default:
+                this.key = null;
+                this.ignore = true;
+                this.prevent = false;
+                this.printable = false;
+                console.log("reset");
             break;
         }
     }

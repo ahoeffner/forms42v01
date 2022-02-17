@@ -6,15 +6,11 @@ import { Form, register } from 'forms42';
 	template: `
 		Test1
 		<field type="date" handler="input"></field>
-		<field id="radio" type="text" handler="input" pattern="{CciaA*}{#}">
+		<field id="radio" type="text" handler="input">
 			<label for="radio">Radio Button</label>
 		</field>
 		`,
-	styles:
-	[
-	`
-	`
-	]
+	styleUrls:[`../../styles.sass`]
 })
 
 @register("/test1")
