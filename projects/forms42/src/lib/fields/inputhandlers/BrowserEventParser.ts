@@ -108,10 +108,7 @@ export class BrowserEventParser
                     }
                 }
 
-                if (this.key.startsWith("F"))
-                {
-                    console.log("released "+this.funckey);
-                }
+                if (this.key.startsWith("F")) this.ignore = false;
 
                 if (this.jsevent.key == "Backspace") this.ignore = false;
                 if (this.jsevent.key == "ArrowLeft") this.ignore = false;
@@ -122,8 +119,7 @@ export class BrowserEventParser
                 if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = false;}
                 if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = false;}
 
-                if (this.ctrlkey != null)
-                    this.ignore = false;
+                if (this.ctrlkey != null) this.ignore = false;
 
             break;
 
@@ -174,10 +170,8 @@ export class BrowserEventParser
 
                 if (this.key.startsWith("F"))
                 {
-                    this.ignore = false;
                     this.prevent = true;
                     this.funckey = this.key;
-                    console.log("pressed "+this.funckey);
                 }
 
             break;
