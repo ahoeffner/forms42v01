@@ -16,6 +16,7 @@ export class BrowserEventParser
 
     public key:string = null;
     public ctrlkey:string = null;
+    public funckey:string = null;
     public ignore:boolean = false;
     public prevent:boolean = false;
     public printable:boolean = false;
@@ -46,6 +47,7 @@ export class BrowserEventParser
         this.printable = false;
 
         this.ctrlkey = null;
+        this.funckey = null;
     }
 
     public get isKey() : boolean
@@ -106,6 +108,11 @@ export class BrowserEventParser
                     }
                 }
 
+                if (this.key.startsWith("F"))
+                {
+                    console.log("released "+this.funckey);
+                }
+
                 if (this.jsevent.key == "Backspace") this.ignore = false;
                 if (this.jsevent.key == "ArrowLeft") this.ignore = false;
                 if (this.jsevent.key == "ArrowRight") this.ignore = false;
@@ -156,16 +163,22 @@ export class BrowserEventParser
                     }
                 }
 
-                if (this.jsevent.key == "Alt") this.alt = true;
-                if (this.jsevent.key == "Meta") this.meta = true;
-                if (this.jsevent.key == "Shift") this.shift = true;
-                if (this.jsevent.key == "Control") this.ctrl = true;
+                if (this.key == "Alt") this.alt = true;
+                if (this.key == "Meta") this.meta = true;
+                if (this.key == "Shift") this.shift = true;
+                if (this.key == "Control") this.ctrl = true;
 
-                if (this.jsevent.key == "Tab") this.prevent = true;
-                if (this.jsevent.key == "ArrowUp") this.prevent = true;
-                if (this.jsevent.key == "ArrowDown") this.prevent = true;
+                if (this.key == "Tab") this.prevent = true;
+                if (this.key == "ArrowUp") this.prevent = true;
+                if (this.key == "ArrowDown") this.prevent = true;
 
-                if (this.jsevent.key.startsWith("F")) {this.prevent = true; this.ignore = false;}
+                if (this.key.startsWith("F"))
+                {
+                    this.ignore = false;
+                    this.prevent = true;
+                    this.funckey = this.key;
+                    console.log("pressed "+this.funckey);
+                }
 
             break;
 
