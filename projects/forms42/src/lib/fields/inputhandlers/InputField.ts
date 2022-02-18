@@ -92,8 +92,11 @@ export class InputField extends Common implements FormField
         if (this.parser.ignore)
             return;
 
-        if (this.parser.isCtrlKey)
-            console.log("meta: "+this.parser.meta+" ctrl: "+this.parser.ctrl+" "+this.getValue());
+        if (this.parser.CtrlKeyUp)
+            console.log("released meta: "+this.parser.meta+" ctrl: "+this.parser.ctrl+" "+this.getValue());
+
+        if (this.parser.CtrlKeyDown)
+            console.log("pressed meta: "+this.parser.meta+" ctrl: "+this.parser.ctrl+" "+this.getValue());
 
         if (buble)
         {
