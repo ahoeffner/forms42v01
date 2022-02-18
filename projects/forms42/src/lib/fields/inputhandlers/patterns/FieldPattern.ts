@@ -23,7 +23,6 @@ export class FieldPattern implements Pattern
 {
     private pos:number = 0;
     private value:string = "";
-    private insert:boolean = false;
     private placeholder$:string = "";
 
     private tokens:Map<number,Token> = new Map<number,Token>();
@@ -161,8 +160,7 @@ export class FieldPattern implements Pattern
         if (token.case == 'u') c = c.toUpperCase();
         if (token.case == 'l') c = c.toLowerCase();
 
-        let off:number = this.insert ? 0 : 1;
-        let a:string = this.value.substring(this.pos+off);
+        let a:string = this.value.substring(this.pos+1);
         let b:string = this.value.substring(0,this.pos);
 
         this.setValue(b + c + a);
@@ -172,7 +170,6 @@ export class FieldPattern implements Pattern
     public delete(fr:number, to:number) : boolean
     {
         let range:boolean = true;
-        console.log("delete fr: "+fr+" to: "+to)
 
         if (fr == to)
         {

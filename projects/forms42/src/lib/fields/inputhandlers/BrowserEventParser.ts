@@ -24,15 +24,32 @@ export class BrowserEventParser
     public meta:boolean = false;
     public shift:boolean = false;
 
-
     public set event(event:any)
     {
         this.jsevent$ = event;
 
-        if (event.type.startsWith("key"))
-            this.parseKeyEvent();
+        if (!this.isKey) this.reset();
+        else             this.parseKeyEvent();
     }
 
+
+    public reset() : void
+    {
+        this.key = null;
+        this.ignore = true;
+        this.prevent = false;
+        this.printable = false;
+    }
+
+    public get isKey() : boolean
+    {
+        return(this.jsevent$.type.startsWith("key"));
+    }
+
+    public get isCtrlKey() : boolean
+    {
+        return(this.key != null && (this.alt || this.ctrl || this.meta));
+    }
 
     public get type() : string
     {
@@ -99,6 +116,12 @@ export class BrowserEventParser
                 this.printable = false;
                 this.key = this.jsevent.key;
 
+                if (this.key.length == 1)
+                {
+                    if (this.alt || this.ctrl || this.meta)
+                        this.ignore = false;
+                }
+
                 if (this.jsevent.key == "Alt") this.alt = true;
                 if (this.jsevent.key == "Meta") this.meta = true;
                 if (this.jsevent.key == "Shift") this.shift = true;
@@ -114,7 +137,6 @@ export class BrowserEventParser
                 this.ignore = true;
                 this.prevent = false;
                 this.printable = false;
-                console.log("reset");
             break;
         }
     }

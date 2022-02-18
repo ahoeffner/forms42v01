@@ -89,11 +89,11 @@ export class InputField extends Common implements FormField
         if (this.parser.prevent)
             jsevent.preventDefault();
 
-        //if (this.parser.type.startsWith("key"))
-            console.log(this.parser.toString());
-
         if (this.parser.ignore)
             return;
+
+        if (this.parser.isCtrlKey)
+            console.log("meta: "+this.parser.meta+" ctrl: "+this.parser.ctrl+" "+this.getValue());
 
         if (buble)
         {
