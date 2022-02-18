@@ -115,6 +115,9 @@ export class BrowserEventParser
                 if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = false;}
                 if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = false;}
 
+                if (this.ctrlkey != null)
+                    this.ignore = false;
+
             break;
 
             case "keypress":
