@@ -145,6 +145,15 @@ export class BrowserEventParser
                     if (this.alt) this.ctrlkey = "ALT-"+this.key;
                     if (this.ctrl) this.ctrlkey = "CTRL-"+this.key;
                     if (this.meta) this.ctrlkey = "META-"+this.key;
+
+                    switch(this.key)
+                    {
+                        case 'c':
+                        case 'x':
+                        case 'v':
+                        case 'z': break;
+                        default : this.prevent = true;
+                    }
                 }
 
                 if (this.jsevent.key == "Alt") this.alt = true;
@@ -155,6 +164,8 @@ export class BrowserEventParser
                 if (this.jsevent.key == "Tab") this.prevent = true;
                 if (this.jsevent.key == "ArrowUp") this.prevent = true;
                 if (this.jsevent.key == "ArrowDown") this.prevent = true;
+
+                if (this.jsevent.key.startsWith("F")) {this.prevent = true; this.ignore = false;}
 
             break;
 
