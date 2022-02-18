@@ -22,14 +22,17 @@ import { Pattern } from "../Pattern";
 export class FieldPattern implements Pattern
 {
     private pos:number = 0;
+    private length:number = 0;
     private value:string = "";
+    private fields:Field[] = [];
     private placeholder$:string = "";
 
     private tokens:Map<number,Token> = new Map<number,Token>();
 
-    constructor(pattern:string)
+    constructor(pattern:string, placeholder?:string)
     {
         let pos:number = 0;
+        let field:Field = null;
         let fixed:boolean = true;
 
         for(let i = 0; i < pattern.length; i++)
@@ -39,12 +42,16 @@ export class FieldPattern implements Pattern
             if (c == '{')
             {
                 fixed = false;
+                field = new Field();
+                this.fields.push(field);
+                field.fr = this.placeholder$.length;
                 continue;
             }
 
             if (c == '}')
             {
                 fixed = true;
+                field.to = this.placeholder$.length-1;
                 continue;
             }
 
@@ -74,10 +81,29 @@ export class FieldPattern implements Pattern
             this.tokens.set(pos++,token);
         }
 
-        this.value = this.placeholder$;
+        if (placeholder == null)
+        {
+            placeholder = this.placeholder$;
+        }
+        else
+        {
+            let len:number = placeholder.length;
+            let req:number = this.placeholder$.length;
+
+            if (len < req)
+            {
+                for(let i = 0; i < (req - len); i++)
+                    placeholder += " ";
+            }
+
+            this.placeholder$ = placeholder;
+        }
+
+        this.value = placeholder;
+        this.length = this.value.length;
     }
 
-    setValue(value:string) : void
+    public setValue(value:string) : void
     {
         if (value == null)
         {
@@ -87,18 +113,11 @@ export class FieldPattern implements Pattern
 
         let pos:number = 0;
         let fmt:string[] = [];
-        let plen:number = this.placeholder$.length;
 
-        for(let i = 0; i < plen && pos < value.length; i++)
+        for(let i = 0; i < this.length && pos < value.length; i++)
         {
             let c:string = value.charAt(i);
             let p:string = this.placeholder$.charAt(i);
-
-            if (p != ' ' && p != c)
-            {
-                fmt.push(p);
-                continue;
-            }
 
             pos++;
             fmt.push(c);
@@ -107,13 +126,13 @@ export class FieldPattern implements Pattern
         value = "";
         fmt.forEach((c) => {value += c});
 
-        for (let i = value.length; i < plen; i++)
+        for (let i = value.length; i < this.length; i++)
             value += this.placeholder$.charAt(i);
 
         this.value = value;
     }
 
-    setObject(value:any) : void
+    public setObject(value:any) : void
     {
         this.setValue(value+"");
     }
@@ -125,14 +144,12 @@ export class FieldPattern implements Pattern
 
     public setPosition(pos:number) : boolean
     {
-        if (pos < 0) pos = 0;
-
-        if (pos > this.placeholder$.length)
-            pos = this.placeholder$.length;
+        if (pos > this.length)
+            pos = this.length;
 
         this.pos = pos;
 
-        if (pos >= 0 && pos < this.placeholder$.length - 1)
+        if (pos >= 0 && pos < this.length - 1)
         {
             let token:Token = this.tokens.get(pos);
 
@@ -148,12 +165,6 @@ export class FieldPattern implements Pattern
         if (!this.setPosition(pos))
             return(false);
 
-        if (pos < 0)
-            pos = 0;
-
-        if (pos >= this.placeholder$.length - 1)
-            pos = this.placeholder$.length - 1;
-
         let token:Token = this.tokens.get(this.pos);
         if (token == null || !token.validate(c)) return(false);
 
@@ -167,30 +178,64 @@ export class FieldPattern implements Pattern
         return(true);
     }
 
-    public delete(fr:number, to:number) : boolean
+    public delete(fr:number, to:number) : string
     {
-        let range:boolean = true;
-
         if (fr == to)
         {
             fr--;
-            range = false;
-            if (fr < 0) return(false);
+            if (fr < 0) return(this.value);
 
             if (!this.setPosition(fr))
-                return(false);
+                return(this.value);
         }
 
+        let p:string = "";
         let a:string = this.value.substring(to);
         let b:string = this.value.substring(0,fr);
 
-        let value:string = b + a;
-        if (!range) value = b + " " + a;
+        for(let i = fr; i < to; i++)
+            p += this.placeholder$.charAt(i);
 
-        this.setValue(value);
         this.setPosition(fr);
+        this.value = b + p + a;
 
-        return(true);
+        this.clear();
+        return(this.value);
+    }
+
+    public getFieldArea(pos:number) : number[]
+    {
+        if (pos >= this.length)
+            pos = this.length - 1;
+
+        let fr:number = pos;
+        let to:number = pos;
+        let token:Token = this.tokens.get(pos);
+
+        if (token.type == 'f')
+        {
+            let dist1:number = 0;
+            let dist2:number = 0;
+
+            while(fr > 0 && this.tokens.get(fr).type == 'f') fr--;
+            while(to < this.placeholder$.length-1 && this.tokens.get(to).type == 'f') to++;
+
+            dist1 = pos - fr;
+            dist2 = to - pos;
+
+            if (dist2 < dist1)
+                fr = to;
+
+            to = fr;
+        }
+
+        while(fr > 0 && this.tokens.get(fr).type != 'f') fr--;
+        while(to < this.placeholder$.length-1 && this.tokens.get(to).type != 'f') to++;
+
+        if (this.tokens.get(fr).type == 'f') fr++;
+        if (this.tokens.get(to).type == 'f') to--;
+
+        return([fr,to]);
     }
 
     public prev() : number
@@ -214,7 +259,7 @@ export class FieldPattern implements Pattern
 
         let pos = this.pos + 1;
 
-        while(pos < this.placeholder$.length-1 && !this.allowed(pos))
+        while(pos < this.length-1 && !this.allowed(pos))
             pos++;
 
         this.setPosition(pos);
@@ -235,6 +280,73 @@ export class FieldPattern implements Pattern
         return(this.value);
     }
 
+    private clear(pos?:number) : void
+    {
+        if (pos != null)
+        {
+            let field:Field = this.find(pos);
+            this.clearfield(field);
+        }
+        else
+        {
+            for (let i = 0; i < this.fields.length; i++)
+            {
+                let field:Field = this.fields[i];
+                this.clearfield(field);
+
+            }
+        }
+    }
+
+    private clearfield(field:Field) : void
+    {
+        let empty:boolean = true;
+
+        for(let i = field.fr; i <= field.to; i++)
+        {
+            let c:string = this.value.charAt(i);
+            if (c != ' ') {empty = false; break;}
+        }
+
+        if (empty)
+        {
+            let plh:string = this.placeholder$;
+            plh = plh.substring(field.fr,field.to+1);
+            for(let i = field.fr; i <= field.to; i++)
+            this.value = this.replace(this.value,field.fr,plh);
+            return;
+        }
+
+        for(let i = field.fr; i <= field.to; i++)
+        {
+            let c:string = this.value.charAt(i);
+
+            if (c != this.placeholder$.charAt(i))
+            {
+                console.log("before <"+this.value+">");
+                for(let j = i; j <= field.to; j++)
+                {
+                    if (this.value.charAt(j) == this.placeholder$.charAt(j))
+                        this.value = this.replace(this.value,j,' ');
+                }
+                console.log("after <"+this.value+">");
+
+                return;
+            }
+        }
+    }
+
+    private find(pos:number)
+    {
+        for (let i = 0; i < this.fields.length; i++)
+        {
+            let field:Field = this.fields[i];
+            if (pos >= field.fr && pos <= field.to)
+                return(field);
+        }
+        return(null);
+    }
+
     private allowed(pos:number) : boolean
     {
         if (pos < 0 || pos > this.placeholder$.length)
@@ -243,6 +355,18 @@ export class FieldPattern implements Pattern
         let token:Token = this.tokens.get(pos);
         return(token.type != 'f');
     }
+
+    private replace(str:string,pos:number,val:string) : string
+    {
+        return(str.substring(0,pos) + val + str.substring(pos+val.length));
+    }
+}
+
+
+class Field
+{
+    fr:number = 0;
+    to:number = 0;
 }
 
 

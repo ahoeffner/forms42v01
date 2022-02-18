@@ -66,9 +66,7 @@ export class InputField extends Common implements FormField
             if (attr == "type" && value == "date")
             {
                 value = "text";
-                this.pattern = new FieldPattern("{##}-{##}-{####}");
-                let plh:string = this.pattern.placeholder();
-                if (plh != null) this.element.setAttribute("placeholder",plh);
+                this.pattern = new FieldPattern("{##} - {##} - {####}","dd - mm - yyyy");
             }
 
             this.element.setAttribute(attr,value);
@@ -112,8 +110,7 @@ export class InputField extends Common implements FormField
     private applyPattern() : void
     {
         let pos:number = this.getPosition();
-        let plh:string = this.pattern.placeholder();
-        if (this.getValue() == null) this.setValue(plh);
+        this.setValue(this.pattern.getValue());
 
         let prevent:boolean = this.parser.prevent;
 
@@ -132,11 +129,14 @@ export class InputField extends Common implements FormField
 
         this.parser.preventDefault(prevent);
 
-        if (this.parser.ignore)
-            return;
-
         if (this.parser.type == "click")
-            this.pattern.setPosition(this.getPosition());
+        {
+            this.pattern.setPosition(pos);
+            this.setSelection(this.pattern.getFieldArea(pos));
+        }
+
+        if (this.parser.ignore || !this.parser.isKey)
+            return;
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
@@ -164,17 +164,9 @@ export class InputField extends Common implements FormField
                 }
             }
 
-            if (this.pattern.delete(sel[0],sel[1]))
-                this.setValue(this.pattern.getValue());
-
+            this.setValue(this.pattern.delete(sel[0],sel[1]));
             this.setPosition(pos);
         }
-
-        if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
-            this.setPosition(this.pattern.prev());
-
-        if (this.parser.key == "ArrowRight" && !this.parser.modifier)
-            this.setPosition(this.pattern.next());
 
         if (this.parser.printable)
         {
@@ -195,6 +187,12 @@ export class InputField extends Common implements FormField
                 this.setPosition(this.pattern.next());
             }
         }
+
+        if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
+            this.setPosition(this.pattern.prev());
+
+        if (this.parser.key == "ArrowRight" && !this.parser.modifier)
+            this.setPosition(this.pattern.next());
     }
 
     private getPosition() : number
@@ -206,6 +204,22 @@ export class InputField extends Common implements FormField
     {
         if (pos < 0) pos = 0;
         this.element.setSelectionRange(pos,pos);
+    }
+
+    private setSelection(sel:number[]) : void
+    {
+        let prv:number[] = this.getSelection();
+
+        if (prv[0] == sel[0] && prv[1] == sel[1] + 1)
+        {
+            this.element.selectionStart = sel[0];
+            this.element.selectionEnd = sel[0]+1;
+        }
+        else
+        {
+            this.element.selectionStart = sel[0];
+            this.element.selectionEnd = sel[1]+1;
+        }
     }
 
     private getSelection() : number[]

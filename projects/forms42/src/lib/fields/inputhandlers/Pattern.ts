@@ -26,6 +26,7 @@ export interface Pattern
     next() : number;
 
     setPosition(pos:number) : boolean;
-    delete(fr:number,to:number) : boolean;
+    getFieldArea(pos:number) : number[];
+    delete(fr:number,to:number) : string;
     setCharacter(pos:number, c:string) : boolean;
 }

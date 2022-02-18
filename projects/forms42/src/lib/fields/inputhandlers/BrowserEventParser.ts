@@ -42,7 +42,7 @@ export class BrowserEventParser
         this.meta = false;
         this.ctrl = false;
         this.shift = false;
-        this.ignore = true;
+        this.ignore = false;
         this.prevent = false;
         this.printable = false;
 
@@ -146,7 +146,7 @@ export class BrowserEventParser
 
                 this.ctrlkey = null;
                 this.funckey = null;
-                
+
                 this.key = this.jsevent.key;
 
                 if (this.key.length == 1 && (this.alt || this.ctrl || this.meta))
@@ -158,9 +158,11 @@ export class BrowserEventParser
 
                     switch(this.key)
                     {
+                        case 'a':
                         case 'c':
                         case 'x':
                         case 'v':
+                        case 'r':
                         case 'z': break;
                         default : this.prevent = true;
                     }

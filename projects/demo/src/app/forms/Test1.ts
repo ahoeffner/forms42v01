@@ -4,8 +4,8 @@ import { Form, register } from 'forms42';
 @Component({
 	selector: 'test1',
 	template: `
-		Test1
-		<field type="date" handler="input"></field>
+		<field type="date" handler="input"></field><br>
+		<input type="date"><br>
 		<field id="radio" type="text" handler="input">
 			<label for="radio">Radio Button</label>
 		</field>
