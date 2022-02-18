@@ -324,7 +324,7 @@ export class FieldPattern implements Pattern
             if (c != this.placeholder$.charAt(i))
             {
                 console.log("before <"+this.value+">");
-                for(let j = i; j <= field.to; j++)
+                for(let j = field.fr; j <= field.to; j++)
                 {
                     if (this.value.charAt(j) == this.placeholder$.charAt(j))
                         this.value = this.replace(this.value,j,' ');
