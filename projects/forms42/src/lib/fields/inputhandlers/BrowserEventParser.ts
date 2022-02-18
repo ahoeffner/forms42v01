@@ -55,6 +55,11 @@ export class BrowserEventParser
         return(this.jsevent$.type.startsWith("key"));
     }
 
+    public get FuncKey() : boolean
+    {
+        return(this.funckey != null);
+    }
+
     public get CtrlKeyUp() : boolean
     {
         return(this.ctrlkey != null && this.type == "keyup");
@@ -140,6 +145,8 @@ export class BrowserEventParser
                 this.printable = false;
 
                 this.ctrlkey = null;
+                this.funckey = null;
+                
                 this.key = this.jsevent.key;
 
                 if (this.key.length == 1 && (this.alt || this.ctrl || this.meta))

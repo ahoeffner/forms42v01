@@ -98,6 +98,9 @@ export class InputField extends Common implements FormField
         if (this.parser.CtrlKeyDown)
             console.log("pressed : "+this.parser.ctrlkey+" "+this.getValue());
 
+        if (this.parser.FuncKey)
+            console.log("FuncKey : "+this.parser.funckey+" "+this.getValue());
+
         if (buble)
         {
             let handler:EventHandler = this.getEventHandler();
