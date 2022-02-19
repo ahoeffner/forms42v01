@@ -209,17 +209,15 @@ export class InputField extends Common implements FormField
         if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
         {
             pos = this.pattern.prev(true);
-
             this.setPosition(pos);
-            if (this.pattern.input(pos)) this.setSelection([pos,pos]);
+            this.setSelection([pos,pos]);
         }
 
         if (this.parser.key == "ArrowRight" && !this.parser.modifier)
         {
             pos = this.pattern.next(true);
             this.setPosition(pos);
-
-            if (this.pattern.input(pos)) this.setSelection([pos,pos]);
+            this.setSelection([pos,pos]);
         }
     }
 
