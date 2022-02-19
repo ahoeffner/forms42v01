@@ -44,6 +44,7 @@ export class FieldPattern implements Pattern
                 fixed = false;
                 field = new Field();
                 this.fields.push(field);
+                field.fn = this.fields.length - 1;
                 field.fr = this.placeholder$.length;
                 continue;
             }
@@ -103,9 +104,39 @@ export class FieldPattern implements Pattern
         this.length = this.value.length;
     }
 
+    public getValue() : string
+    {
+        return(this.value);
+    }
+
+    public placeholder() : string
+    {
+        return(this.placeholder$);
+    }
+
     public getPosition(): number
     {
         return(this.pos);
+    }
+
+    public validate() : void
+    {
+    }
+
+    public getField(pos?:number) : number
+    {
+        if (pos == null) pos = this.pos;
+        let field:Field = this.findfield(pos);
+        return(field == null ? 0 : field.fn);
+    }
+
+    public input(pos:number) : boolean
+    {
+        if (pos < 0 || pos > this.placeholder$.length-1)
+            return(false);
+
+        let token:Token = this.tokens.get(pos);
+        return(token.type != 'f');
     }
 
     public setValue(value:any) : void
@@ -135,11 +166,6 @@ export class FieldPattern implements Pattern
             value += this.placeholder$.charAt(i);
 
         this.value = value;
-    }
-
-    public placeholder() : string
-    {
-        return(this.placeholder$);
     }
 
     public setPosition(pos:number) : boolean
@@ -272,24 +298,6 @@ export class FieldPattern implements Pattern
         return(this.pos);
     }
 
-    public validate() : void
-    {
-    }
-
-    public getValue() : string
-    {
-        return(this.value);
-    }
-
-    public input(pos:number) : boolean
-    {
-        if (pos < 0 || pos > this.placeholder$.length-1)
-            return(false);
-
-        let token:Token = this.tokens.get(pos);
-        return(token.type != 'f');
-    }
-
     public clear(pos?:number) : void
     {
         if (pos != null)
@@ -364,6 +372,7 @@ export class FieldPattern implements Pattern
 
 class Field
 {
+    fn:number = 0;
     fr:number = 0;
     to:number = 0;
 }
