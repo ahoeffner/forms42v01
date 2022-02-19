@@ -18,10 +18,12 @@ export interface Pattern
     setValue(value:any) : void;
 
     validate() : void;
+    input(pos:number) : boolean;
 
     prev(printable:boolean) : number;
     next(printable:boolean) : number;
 
+    getPosition() : number;
     setPosition(pos:number) : boolean;
     getFieldArea(pos:number) : number[];
     delete(fr:number,to:number) : string;

@@ -103,6 +103,11 @@ export class FieldPattern implements Pattern
         this.length = this.value.length;
     }
 
+    public getPosition(): number
+    {
+        return(this.pos);
+    }
+
     public setValue(value:any) : void
     {
         if (value == null)
@@ -235,22 +240,13 @@ export class FieldPattern implements Pattern
         if (this.setPosition(this.pos-1))
             return(this.pos);
 
-        if (!printable && this.allowed(this.pos+1))
-        {
-            this.setPosition(this.pos);
-            return(this.pos);
-        }
-
         let pos = this.pos - 1;
 
-        if (!printable && this.allowed(pos))
-        {
-            this.setPosition(pos);
-            return(this.pos);
-        }
-
-        while(pos > 0 && !this.allowed(pos))
+        while(pos > 0 && !this.input(pos))
             pos--;
+
+        if (!printable)
+            pos++;
 
         this.setPosition(pos);
         return(this.pos);
@@ -261,7 +257,7 @@ export class FieldPattern implements Pattern
         if (this.setPosition(this.pos+1))
             return(this.pos);
 
-        if (!printable && this.allowed(this.pos-1))
+        if (!printable && this.input(this.pos-1))
         {
             this.setPosition(this.pos);
             return(this.pos);
@@ -269,7 +265,7 @@ export class FieldPattern implements Pattern
 
         let pos = this.pos + 1;
 
-        while(pos < this.length-1 && !this.allowed(pos))
+        while(pos < this.length-1 && !this.input(pos))
             pos++;
 
         this.setPosition(pos);
@@ -285,11 +281,20 @@ export class FieldPattern implements Pattern
         return(this.value);
     }
 
-    private clear(pos?:number) : void
+    public input(pos:number) : boolean
+    {
+        if (pos < 0 || pos > this.placeholder$.length-1)
+            return(false);
+
+        let token:Token = this.tokens.get(pos);
+        return(token.type != 'f');
+    }
+
+    public clear(pos?:number) : void
     {
         if (pos != null)
         {
-            let field:Field = this.find(pos);
+            let field:Field = this.findfield(pos);
             this.clearfield(field);
         }
         else
@@ -303,7 +308,7 @@ export class FieldPattern implements Pattern
         }
     }
 
-    private clearfield(field:Field) : void
+    public clearfield(field:Field) : void
     {
         let empty:boolean = true;
 
@@ -339,7 +344,7 @@ export class FieldPattern implements Pattern
         }
     }
 
-    private find(pos:number)
+    public findfield(pos:number) : Field
     {
         for (let i = 0; i < this.fields.length; i++)
         {
@@ -350,16 +355,7 @@ export class FieldPattern implements Pattern
         return(null);
     }
 
-    private allowed(pos:number) : boolean
-    {
-        if (pos < 0 || pos > this.placeholder$.length)
-            return(true);
-
-        let token:Token = this.tokens.get(pos);
-        return(token.type != 'f');
-    }
-
-    private replace(str:string,pos:number,val:string) : string
+    public replace(str:string,pos:number,val:string) : string
     {
         return(str.substring(0,pos) + val + str.substring(pos+val.length));
     }

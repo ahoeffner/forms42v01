@@ -189,10 +189,20 @@ export class InputField extends Common implements FormField
         }
 
         if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
-            this.setPosition(this.pattern.prev(false));
+        {
+            let pos:number = this.pattern.prev(false);
+
+            this.setPosition(pos);
+            if (this.pattern.input(pos)) this.setSelection([pos,pos]);
+        }
 
         if (this.parser.key == "ArrowRight" && !this.parser.modifier)
-            this.setPosition(this.pattern.next(false));
+        {
+            let pos:number = this.pattern.next(false);
+            this.setPosition(pos);
+
+            if (this.pattern.input(pos)) this.setSelection([pos,pos]);
+        }
     }
 
     private getPosition() : number
