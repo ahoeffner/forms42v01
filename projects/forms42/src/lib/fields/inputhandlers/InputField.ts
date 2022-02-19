@@ -143,9 +143,6 @@ export class InputField extends Common implements FormField
             let sel:number[] = this.getSelection();
 
             pos = sel[0];
-            
-            if (sel[1] == sel[0] + 1)
-                sel[1] = sel[0];
 
             if (sel[0] > 0 && sel[0] == sel[1])
             {
@@ -164,10 +161,17 @@ export class InputField extends Common implements FormField
                         sel[0] = sel[0] - off;
                         sel[1] = sel[1] - off;
                     }
+
+                    console.log(pos+" "+sel);
                 }
             }
 
             this.setValue(this.pattern.delete(sel[0],sel[1]));
+            console.log("pos: "+pos+" "+this.pattern.getPosition());
+
+            if (sel[1] == sel[0] + 1)
+                pos = this.pattern.prev(true);
+
             this.setPosition(pos);
 
             if (this.pattern.input(pos))

@@ -22,7 +22,7 @@ import { Pattern } from "../Pattern";
 export class FieldPattern implements Pattern
 {
     private pos:number = 0;
-    private length:number = 0;
+    private plen:number = 0;
     private value:string = "";
     private fields:Field[] = [];
     private placeholder$:string = "";
@@ -101,7 +101,12 @@ export class FieldPattern implements Pattern
         }
 
         this.value = placeholder;
-        this.length = this.value.length;
+        this.plen = this.value.length;
+    }
+
+    public length() : number
+    {
+        return(this.plen);
     }
 
     public getValue() : string
@@ -150,7 +155,7 @@ export class FieldPattern implements Pattern
         let pos:number = 0;
         let fmt:string[] = [];
 
-        for(let i = 0; i < this.length && pos < value.length; i++)
+        for(let i = 0; i < this.plen && pos < value.length; i++)
         {
             let c:string = value.charAt(i);
             let p:string = this.placeholder$.charAt(i);
@@ -162,7 +167,7 @@ export class FieldPattern implements Pattern
         value = "";
         fmt.forEach((c) => {value += c});
 
-        for (let i = value.length; i < this.length; i++)
+        for (let i = value.length; i < this.plen; i++)
             value += this.placeholder$.charAt(i);
 
         this.value = value;
@@ -170,15 +175,13 @@ export class FieldPattern implements Pattern
 
     public setPosition(pos:number) : boolean
     {
-        if (pos < 0) pos = 0;
-        if (pos > this.length) pos = this.length;
+        if (pos < 0 || pos > this.plen)
+            return(false);
 
         this.pos = pos;
 
-        if (pos >= 0 && pos < this.length)
-            return(this.tokens.get(pos).type != 'f');
-
-        return(false);
+        if (pos == this.plen) return(true);
+        return(this.tokens.get(pos).type != 'f');
     }
 
     public setCharacter(pos:number, c:string) : boolean
@@ -228,8 +231,8 @@ export class FieldPattern implements Pattern
 
     public getFieldArea(pos:number) : number[]
     {
-        if (pos >= this.length)
-            pos = this.length - 1;
+        if (pos >= this.plen)
+            pos = this.plen - 1;
 
         let fr:number = pos;
         let to:number = pos;
@@ -291,7 +294,7 @@ export class FieldPattern implements Pattern
 
         let pos = this.pos + 1;
 
-        while(pos < this.length-1 && !this.input(pos))
+        while(pos < this.plen-1 && !this.input(pos))
             pos++;
 
         this.setPosition(pos);

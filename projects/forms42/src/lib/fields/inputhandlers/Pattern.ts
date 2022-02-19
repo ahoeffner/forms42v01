@@ -12,6 +12,7 @@
 
 export interface Pattern
 {
+    length() : number;
     placeholder() : string;
 
     getValue() : string;
