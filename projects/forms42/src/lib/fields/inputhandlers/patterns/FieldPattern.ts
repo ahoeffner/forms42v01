@@ -178,8 +178,13 @@ export class FieldPattern implements Pattern
         if (pos < 0 || pos >= this.plen)
             return(false);
 
-        this.pos = pos;
-        return(this.tokens.get(pos).type != 'f');
+        if (this.tokens.get(pos).type != 'f')
+        {
+            this.pos = pos;
+            return(true);
+        }
+
+        return(false);
     }
 
     public setCharacter(pos:number, c:string) : boolean
@@ -269,13 +274,23 @@ export class FieldPattern implements Pattern
 
         let pos = this.pos - 1;
 
-        while(pos > 0 && !this.input(pos))
+        if (!printable && pos >= 0)
+        {
+            this.pos = pos;
+            return(this.pos);
+        }
+
+        while(pos > 0)
+        {
+            if (this.input(pos))
+            {
+                this.pos = pos;
+                break;
+            }
+
             pos--;
+        }
 
-        if (!printable)
-            pos++;
-
-        this.setPosition(pos);
         return(this.pos);
     }
 
@@ -284,18 +299,25 @@ export class FieldPattern implements Pattern
         if (this.setPosition(this.pos+1))
             return(this.pos);
 
-        if (!printable && this.input(this.pos-1))
+        let pos = this.pos + 1;
+
+        if (!printable && pos < this.plen)
         {
-            this.setPosition(this.pos);
+            this.pos = pos;
             return(this.pos);
         }
 
-        let pos = this.pos + 1;
+        while(pos < this.plen-1)
+        {
+            if (this.input(pos))
+            {
+                this.pos = pos;
+                break;
+            }
 
-        while(pos < this.plen-1 && !this.input(pos))
             pos++;
+        }
 
-        this.setPosition(pos);
         return(this.pos);
     }
 
