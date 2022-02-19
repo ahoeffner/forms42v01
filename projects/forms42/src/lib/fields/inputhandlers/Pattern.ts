@@ -13,6 +13,8 @@
 export interface Pattern
 {
     length() : number;
+    empty() : boolean;
+
     placeholder() : string;
 
     getValue() : string;

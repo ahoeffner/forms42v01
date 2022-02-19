@@ -80,6 +80,9 @@ export class FieldPattern implements Pattern
 
             this.placeholder$ += " ";
             this.tokens.set(pos++,token);
+
+            if (this.fields.length == 0)
+                throw "No input fields defined";
         }
 
         if (placeholder == null)
@@ -171,6 +174,7 @@ export class FieldPattern implements Pattern
             value += this.placeholder$.charAt(i);
 
         this.value = value;
+        this.clear();
     }
 
     public setPosition(pos:number) : boolean
@@ -321,25 +325,29 @@ export class FieldPattern implements Pattern
         return(this.pos);
     }
 
-    public clear(pos?:number) : void
+    public clear(pos?:number) : boolean
     {
+        let empty:boolean = true;
+
         if (pos != null)
         {
             let field:Field = this.findfield(pos);
-            this.clearfield(field);
+            empty = this.clearfield(field);
         }
         else
         {
             for (let i = 0; i < this.fields.length; i++)
             {
                 let field:Field = this.fields[i];
-                this.clearfield(field);
-
+                if (!this.clearfield(field))
+                    empty = false;
             }
         }
+
+        return(empty);
     }
 
-    public clearfield(field:Field) : void
+    public clearfield(field:Field) : boolean
     {
         let empty:boolean = true;
 
@@ -356,7 +364,7 @@ export class FieldPattern implements Pattern
             plh = plh.substring(field.fr,field.to+1);
             for(let i = field.fr; i <= field.to; i++)
             this.value = this.replace(this.value,field.fr,plh);
-            return;
+            return(true);
         }
 
         for(let i = field.fr; i <= field.to; i++)
@@ -370,9 +378,11 @@ export class FieldPattern implements Pattern
                     if (this.value.charAt(j) == this.placeholder$.charAt(j))
                         this.value = this.replace(this.value,j,' ');
                 }
-                return;
+                return(false);
             }
         }
+
+        return(false);
     }
 
     public findfield(pos:number) : Field
