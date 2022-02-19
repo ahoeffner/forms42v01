@@ -131,7 +131,7 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "blur")
         {
-            if (this.pattern.null())
+            if (this.pattern.isNull())
                 this.setValue(null);
         }
 

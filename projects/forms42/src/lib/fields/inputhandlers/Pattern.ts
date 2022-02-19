@@ -12,8 +12,8 @@
 
 export interface Pattern
 {
-    null() : boolean;
-    length() : number;
+    size() : number;
+    isNull() : boolean;
 
     placeholder() : string;
 
@@ -37,9 +37,9 @@ export interface Pattern
 
 export interface Field
 {
-    position() : number[];
-
-    empty() : boolean;
+    pos() : number;
+    size() : number;
+    isNull() : boolean;
     getValue() : string;
     setValue(value:string) : void;
 }

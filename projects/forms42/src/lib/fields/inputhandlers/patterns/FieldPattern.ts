@@ -107,16 +107,16 @@ export class FieldPattern implements Pattern
         this.plen = this.value.length;
     }
 
-    public length() : number
+    public size() : number
     {
         return(this.plen);
     }
 
-    public null(): boolean
+    public isNull(): boolean
     {
         for (let i = 0; i < this.fields.length; i++)
         {
-            if (!this.fields[i].empty())
+            if (!this.fields[i].isNull())
                 return(false);
         }
 
@@ -347,7 +347,7 @@ export class FieldPattern implements Pattern
         return(this.pos);
     }
 
-    public clear(pos?:number) : boolean
+    private clear(pos?:number) : boolean
     {
         let empty:boolean = true;
 
@@ -369,7 +369,7 @@ export class FieldPattern implements Pattern
         return(empty);
     }
 
-    public clearfield(field:Field) : boolean
+    private clearfield(field:Field) : boolean
     {
         let empty:boolean = true;
 
@@ -407,19 +407,19 @@ export class FieldPattern implements Pattern
         return(false);
     }
 
-    public replace(str:string,pos:number,val:string) : string
-    {
-        return(str.substring(0,pos) + val + str.substring(pos+val.length));
-    }
-
-    public substring(fr:number,to:number) : string
+    private getstring(fr:number,to:number) : string
     {
         return(this.value.substring(fr,to));
     }
 
-    public setstring(pos:number,value:string) : void
+    private setstring(pos:number,value:string) : void
     {
         this.value = this.replace(this.value,pos,value);
+    }
+
+    public replace(str:string,pos:number,val:string) : string
+    {
+        return(str.substring(0,pos) + val + str.substring(pos+val.length));
     }
 }
 
@@ -434,12 +434,17 @@ class Field implements FieldToken
     {
     }
 
-    public position() : number[]
+    public pos() : number
     {
-        return([this.fr,this.to]);
+        return(this.fr);
     }
 
-    public empty() : boolean
+    public size(): number
+    {
+        return(this.to - this.fr + 1);
+    }
+
+    public isNull() : boolean
     {
         let empty:boolean = true;
         let value:string = this.pattern.getValue();
@@ -457,15 +462,23 @@ class Field implements FieldToken
 
     public getValue() : string
     {
-        return(this.pattern.substring(this.fr,this.to));
+        return(this.pattern["getstring"](this.fr,this.to));
     }
 
     public setValue(value:string) : void
     {
-        if (value.length != this.to - this.fr + 1)
-            throw "Value does not match field length";
+        let pattern:string = this.pattern.placeholder();
 
-        this.pattern.setstring(this.fr,value);
+        if (value == null)
+            value = pattern.substring(this.fr,this.to+1);
+
+        if (value.length > this.to - this.fr + 1)
+            value = value.substring(0,this.to+1);
+
+        while(value.length < this.to - this.fr + 1)
+            value += ' ';
+
+        this.pattern["setstring"](this.fr,value);
     }
 }
 
