@@ -175,12 +175,10 @@ export class FieldPattern implements Pattern
 
     public setPosition(pos:number) : boolean
     {
-        if (pos < 0 || pos > this.plen)
+        if (pos < 0 || pos >= this.plen)
             return(false);
 
         this.pos = pos;
-
-        if (pos == this.plen) return(true);
         return(this.tokens.get(pos).type != 'f');
     }
 

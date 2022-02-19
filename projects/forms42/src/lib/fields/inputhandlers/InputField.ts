@@ -142,44 +142,46 @@ export class InputField extends Common implements FormField
         {
             let sel:number[] = this.getSelection();
 
-            if (sel[0] == sel[1] && sel[0] >= this.pattern.length())
+            if (sel[0] == sel[1] && !this.pattern.input(sel[0]))
             {
-                sel[1] = this.pattern.length();
-                sel[0] = this.pattern.length() - 1;
+                pos = this.pattern.prev(true);
+                this.setPosition(pos);
+                this.setSelection([pos,pos]);
             }
-
-            pos = sel[0];
-
-            if (sel[0] > 0 && sel[0] == sel[1])
+            else
             {
-                pos--;
+                pos = sel[0];
 
-                // Move past fixed pattern before deleting
-                if (!this.pattern.setPosition(pos) && sel[0] > 0)
+                if (sel[0] > 0 && sel[0] == sel[1])
                 {
-                    let pre:number = pos;
+                    pos--;
 
-                    pos = this.pattern.prev(true);
-                    let off:number = pre - pos;
-
-                    if (off > 0)
+                    // Move past fixed pattern before deleting
+                    if (!this.pattern.setPosition(pos) && sel[0] > 0)
                     {
-                        sel[0] = sel[0] - off;
-                        sel[1] = sel[1] - off;
+                        let pre:number = pos;
+
+                        pos = this.pattern.prev(true);
+                        let off:number = pre - pos;
+
+                        if (off > 0)
+                        {
+                            sel[0] = sel[0] - off;
+                            sel[1] = sel[1] - off;
+                        }
                     }
                 }
+
+                this.setValue(this.pattern.delete(sel[0],sel[1]));
+
+                if (sel[1] == sel[0] + 1)
+                    pos = this.pattern.prev(true);
+
+                this.setPosition(pos);
+
+                if (this.pattern.input(pos))
+                    this.setSelection([pos,pos]);
             }
-
-            this.setValue(this.pattern.delete(sel[0],sel[1]));
-            console.log("pos: "+pos+" "+this.pattern.getPosition());
-
-            if (sel[1] == sel[0] + 1)
-                pos = this.pattern.prev(true);
-
-            this.setPosition(pos);
-
-            if (this.pattern.input(pos))
-                this.setSelection([pos,pos]);
         }
 
         if (this.parser.printable)
@@ -199,14 +201,14 @@ export class InputField extends Common implements FormField
             {
                 this.setValue(this.pattern.getValue());
                 this.setPosition(this.pattern.next(true));
-                let pos:number = this.pattern.getPosition();
+                pos = this.pattern.getPosition();
                 this.setSelection([pos,pos]);
             }
         }
 
         if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
         {
-            let pos:number = this.pattern.prev(false);
+            pos = this.pattern.prev(true);
 
             this.setPosition(pos);
             if (this.pattern.input(pos)) this.setSelection([pos,pos]);
@@ -214,7 +216,7 @@ export class InputField extends Common implements FormField
 
         if (this.parser.key == "ArrowRight" && !this.parser.modifier)
         {
-            let pos:number = this.pattern.next(false);
+            pos = this.pattern.next(true);
             this.setPosition(pos);
 
             if (this.pattern.input(pos)) this.setSelection([pos,pos]);
