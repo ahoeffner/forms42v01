@@ -27,7 +27,8 @@ export interface Pattern
     next(printable:boolean) : number;
 
     getPosition() : number;
-    getField(pos?:number) : number;
+    getField(n:number) : Field;
+    findField(pos?:number) : Field;
     setPosition(pos:number) : boolean;
     getFieldArea(pos:number) : number[];
     delete(fr:number,to:number) : string;

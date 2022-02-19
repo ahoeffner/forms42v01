@@ -114,11 +114,11 @@ export class FieldPattern implements Pattern
 
     public null(): boolean
     {
-        this.fields.forEach((fld) =>
+        for (let i = 0; i < this.fields.length; i++)
         {
-            if (!fld.empty())
+            if (!this.fields[i].empty())
                 return(false);
-        });
+        }
 
         return(true);
     }
@@ -142,11 +142,22 @@ export class FieldPattern implements Pattern
     {
     }
 
-    public getField(pos?:number) : number
+    public getField(n:number) : Field
+    {
+        return(this.fields[n]);
+    }
+
+    public findField(pos:number) : Field
     {
         if (pos == null) pos = this.pos;
-        let field:Field = this.findfield(pos);
-        return(field == null ? 0 : field.fn);
+
+        for (let i = 0; i < this.fields.length; i++)
+        {
+            let field:Field = this.fields[i];
+            if (pos >= field.fr && pos <= field.to)
+                return(field);
+        }
+        return(null);
     }
 
     public input(pos:number) : boolean
@@ -342,7 +353,7 @@ export class FieldPattern implements Pattern
 
         if (pos != null)
         {
-            let field:Field = this.findfield(pos);
+            let field:Field = this.findField(pos);
             empty = this.clearfield(field);
         }
         else
@@ -394,17 +405,6 @@ export class FieldPattern implements Pattern
         }
 
         return(false);
-    }
-
-    public findfield(pos:number) : Field
-    {
-        for (let i = 0; i < this.fields.length; i++)
-        {
-            let field:Field = this.fields[i];
-            if (pos >= field.fr && pos <= field.to)
-                return(field);
-        }
-        return(null);
     }
 
     public replace(str:string,pos:number,val:string) : string
