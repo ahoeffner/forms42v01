@@ -131,8 +131,9 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "click")
         {
-            this.pattern.setPosition(pos);
-            this.setSelection(this.pattern.getFieldArea(pos));
+            let sel:number[] = this.pattern.getFieldArea(pos);
+            this.pattern.setPosition(sel[0]);
+            this.setSelection(sel);
         }
 
         if (this.parser.ignore || !this.parser.isKey)
@@ -234,18 +235,8 @@ export class InputField extends Common implements FormField
 
     private setSelection(sel:number[]) : void
     {
-        let prv:number[] = this.getSelection();
-
-        if (prv[0] == sel[0] && prv[1] == sel[1] + 1)
-        {
-            this.element.selectionStart = sel[0];
-            this.element.selectionEnd = sel[0]+1;
-        }
-        else
-        {
-            this.element.selectionStart = sel[0];
-            this.element.selectionEnd = sel[1]+1;
-        }
+        this.element.selectionStart = sel[0];
+        this.element.selectionEnd = sel[1]+1;
     }
 
     private getSelection() : number[]
