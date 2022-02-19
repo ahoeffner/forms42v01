@@ -129,6 +129,12 @@ export class InputField extends Common implements FormField
 
         this.parser.preventDefault(prevent);
 
+        if (this.parser.type == "blur")
+        {
+            if (this.pattern.null())
+                this.setValue(null);
+        }
+
         if (this.parser.type == "click")
         {
             let sel:number[] = this.pattern.getFieldArea(pos);

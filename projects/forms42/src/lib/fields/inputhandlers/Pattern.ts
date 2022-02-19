@@ -12,8 +12,8 @@
 
 export interface Pattern
 {
+    null() : boolean;
     length() : number;
-    empty() : boolean;
 
     placeholder() : string;
 
@@ -32,4 +32,13 @@ export interface Pattern
     getFieldArea(pos:number) : number[];
     delete(fr:number,to:number) : string;
     setCharacter(pos:number, c:string) : boolean;
+}
+
+export interface Field
+{
+    position() : number[];
+
+    empty() : boolean;
+    getValue() : string;
+    setValue(value:string) : void;
 }

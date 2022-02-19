@@ -17,7 +17,7 @@
  * w[ul] : word character u:upper l:lower i:ignore a-z 0-9
  */
 
-import { Pattern } from "../Pattern";
+import { Pattern, Field as FieldToken } from "../Pattern";
 
 export class FieldPattern implements Pattern
 {
@@ -42,7 +42,7 @@ export class FieldPattern implements Pattern
             if (c == '{')
             {
                 fixed = false;
-                field = new Field();
+                field = new Field(this);
                 this.fields.push(field);
                 field.fn = this.fields.length - 1;
                 field.fr = this.placeholder$.length;
@@ -110,6 +110,17 @@ export class FieldPattern implements Pattern
     public length() : number
     {
         return(this.plen);
+    }
+
+    public null(): boolean
+    {
+        this.fields.forEach((fld) =>
+        {
+            if (!fld.empty())
+                return(false);
+        });
+
+        return(true);
     }
 
     public getValue() : string
@@ -400,14 +411,62 @@ export class FieldPattern implements Pattern
     {
         return(str.substring(0,pos) + val + str.substring(pos+val.length));
     }
+
+    public substring(fr:number,to:number) : string
+    {
+        return(this.value.substring(fr,to));
+    }
+
+    public setstring(pos:number,value:string) : void
+    {
+        this.value = this.replace(this.value,pos,value);
+    }
 }
 
 
-class Field
+class Field implements FieldToken
 {
     fn:number = 0;
     fr:number = 0;
     to:number = 0;
+
+    constructor(private pattern:FieldPattern)
+    {
+    }
+
+    public position() : number[]
+    {
+        return([this.fr,this.to]);
+    }
+
+    public empty() : boolean
+    {
+        let empty:boolean = true;
+        let value:string = this.pattern.getValue();
+        let pattern:string = this.pattern.placeholder();
+
+        for (let i = 0; i < pattern.length; i++)
+        {
+            let c:string = value.charAt(i);
+            let p:string = pattern.charAt(i);
+            if (c != p && c != ' ') {empty = false; break;}
+        }
+
+        return(empty);
+    }
+
+    public getValue() : string
+    {
+        return(this.pattern.substring(this.fr,this.to));
+    }
+
+    public setValue(value:string) : void
+    {
+        if (value.length != this.to - this.fr + 1)
+            throw "Value does not match field length";
+
+        this.pattern.setstring(this.fr,value);
+    }
 }
 
 
