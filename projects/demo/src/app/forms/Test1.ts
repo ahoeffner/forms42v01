@@ -4,10 +4,10 @@ import { Form, register } from 'forms42';
 @Component({
 	selector: 'test1',
 	template: `
-		<field type="date" handler="input"></field><br>
+		<field class="alex" type="date" handler="input"></field><br>
 		<input type="date"><br>
 		<field id="radio" type="text" handler="input">
-			<label for="radio">Radio Button</label>
+			<label class="alex" for="radio">Radio Button</label>
 		</field>
 		`,
 	styleUrls:[`../../styles.sass`]
