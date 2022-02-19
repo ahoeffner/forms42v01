@@ -153,7 +153,7 @@ export class InputField extends Common implements FormField
                 {
                     let pre:number = pos;
 
-                    pos = this.pattern.prev();
+                    pos = this.pattern.prev(true);
                     let off:number = pre - pos;
 
                     if (off > 0)
@@ -178,21 +178,21 @@ export class InputField extends Common implements FormField
                 this.pattern.delete(sel[0],sel[1]);
 
                 if (!this.pattern.setPosition(sel[0]))
-                    this.pattern.next();
+                    this.pattern.next(true);
             }
 
             if (this.pattern.setCharacter(pos,this.parser.key))
             {
                 this.setValue(this.pattern.getValue());
-                this.setPosition(this.pattern.next());
+                this.setPosition(this.pattern.next(true));
             }
         }
 
         if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
-            this.setPosition(this.pattern.prev());
+            this.setPosition(this.pattern.prev(false));
 
         if (this.parser.key == "ArrowRight" && !this.parser.modifier)
-            this.setPosition(this.pattern.next());
+            this.setPosition(this.pattern.next(false));
     }
 
     private getPosition() : number

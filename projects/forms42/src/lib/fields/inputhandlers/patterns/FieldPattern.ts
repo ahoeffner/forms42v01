@@ -103,7 +103,7 @@ export class FieldPattern implements Pattern
         this.length = this.value.length;
     }
 
-    public setValue(value:string) : void
+    public setValue(value:any) : void
     {
         if (value == null)
         {
@@ -132,11 +132,6 @@ export class FieldPattern implements Pattern
         this.value = value;
     }
 
-    public setObject(value:any) : void
-    {
-        this.setValue(value+"");
-    }
-
     public placeholder() : string
     {
         return(this.placeholder$);
@@ -144,20 +139,15 @@ export class FieldPattern implements Pattern
 
     public setPosition(pos:number) : boolean
     {
-        if (pos > this.length)
-            pos = this.length;
+        if (pos < 0) pos = 0;
+        if (pos > this.length) pos = this.length;
 
         this.pos = pos;
 
-        if (pos >= 0 && pos < this.length - 1)
-        {
-            let token:Token = this.tokens.get(pos);
+        if (pos >= 0 && pos < this.length)
+            return(this.tokens.get(pos).type != 'f');
 
-            if (token.type == 'f')
-                return(false);
-        }
-
-        return(true)
+        return(false);
     }
 
     public setCharacter(pos:number, c:string) : boolean
@@ -175,6 +165,8 @@ export class FieldPattern implements Pattern
         let b:string = this.value.substring(0,this.pos);
 
         this.setValue(b + c + a);
+        this.clear(pos);
+
         return(true);
     }
 
@@ -238,12 +230,24 @@ export class FieldPattern implements Pattern
         return([fr,to]);
     }
 
-    public prev() : number
+    public prev(printable:boolean) : number
     {
         if (this.setPosition(this.pos-1))
             return(this.pos);
 
+        if (!printable && this.allowed(this.pos+1))
+        {
+            this.setPosition(this.pos);
+            return(this.pos);
+        }
+
         let pos = this.pos - 1;
+
+        if (!printable && this.allowed(pos))
+        {
+            this.setPosition(pos);
+            return(this.pos);
+        }
 
         while(pos > 0 && !this.allowed(pos))
             pos--;
@@ -252,10 +256,16 @@ export class FieldPattern implements Pattern
         return(this.pos);
     }
 
-    public next() : number
+    public next(printable:boolean) : number
     {
         if (this.setPosition(this.pos+1))
             return(this.pos);
+
+        if (!printable && this.allowed(this.pos-1))
+        {
+            this.setPosition(this.pos);
+            return(this.pos);
+        }
 
         let pos = this.pos + 1;
 
@@ -268,11 +278,6 @@ export class FieldPattern implements Pattern
 
     public validate() : void
     {
-    }
-
-    public getObject() : any
-    {
-        return(this.getValue());
     }
 
     public getValue() : string
@@ -305,7 +310,8 @@ export class FieldPattern implements Pattern
         for(let i = field.fr; i <= field.to; i++)
         {
             let c:string = this.value.charAt(i);
-            if (c != ' ') {empty = false; break;}
+            let p:string = this.placeholder$.charAt(i);
+            if (c != ' ' && c != p) {empty = false; break;}
         }
 
         if (empty)

@@ -15,15 +15,12 @@ export interface Pattern
     placeholder() : string;
 
     getValue() : string;
-    setValue(value:string) : void;
+    setValue(value:any) : void;
 
     validate() : void;
 
-    getObject() : any;
-    setObject(object:any) : void;
-
-    prev() : number;
-    next() : number;
+    prev(printable:boolean) : number;
+    next(printable:boolean) : number;
 
     setPosition(pos:number) : boolean;
     getFieldArea(pos:number) : number[];
