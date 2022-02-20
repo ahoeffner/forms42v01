@@ -46,18 +46,119 @@ export class Pattern implements PatternType
     private value:string = "";
     private fields:Field[] = [];
     private placeholder$:string = "";
+    private predefined:string = "*#dcaAw";
 
     private tokens:Map<number,Token> = new Map<number,Token>();
 
-    constructor(pattern:string, placeholder?:string)
+    private parse(field:string) : void
     {
         let pos:number = 0;
+
+        for (let i = 0; i < field.length; i++)
+        {
+            let repeat:string = "1";
+            let c:string = field.charAt(i);
+
+            if (c >= '0' && c <= '9')
+            {
+                repeat = "";
+                while(c >= '0' && c <= '9' && i < field.length)
+                {
+                    repeat += c;
+                    c = field.charAt(++i);
+                }
+
+                if (i == field.length)
+                    throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
+            }
+            if (this.predefined.includes(c))
+            {
+                console.log(repeat+"["+c+"]");
+            }
+            else
+            {
+                let expr:string = "";
+
+                if (c != '[')
+                    throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
+
+                c = field.charAt(++i);
+                let esc:boolean = false;
+
+                while((c != ']' || esc) && i < field.length)
+                {
+                    expr += c;
+                    esc = this.escaped(field,i);
+                    c = field.charAt(++i);
+                }
+
+                if (c != ']')
+                    throw "Syntax error in path, non matched []";
+
+                expr = "[" + expr + "]";
+                console.log(repeat+expr);
+
+                let rexpr:RegExp = new RegExp(expr);
+                console.log("s ? "+rexpr.test("s"));
+                console.log("[ ? "+rexpr.test("["));
+                console.log("] ? "+rexpr.test("]"));
+            }
+        }
+    }
+
+    private escaped(str:string,pos:number) : boolean
+    {
+        if (pos == str.length+1)
+            return(false);
+
+        let e:string = str.charAt(pos);
+        let c:string = str.charAt(pos+1);
+
+        return(e == '\\' && c != '\\');
+    }
+
+    constructor(opattern:string, placeholder?:string)
+    {
+        let opos:number = 0;
         let field:Field = null;
         let fixed:boolean = true;
 
-        for(let i = 0; i < pattern.length; i++)
+        let pos:number = 0;
+        let pattern:string = "{[A-Z[\\]]A} \\{ {2[0-9,.]d} }";
+
+        for (let i = 0; i < pattern.length; i++)
         {
             let c:string = pattern.charAt(i);
+            let esc:boolean = this.escaped(pattern,i);
+
+            if (esc)
+            {
+                let b=i;
+                c = pattern.charAt(++i);
+            }
+
+            if (c == '{' && !esc)
+            {
+                let fr:number = i+1;
+                while(i < pattern.length && pattern.charAt(i++) != '}');
+                let to:number = i-1;
+
+                if (to == pattern.length)
+                    throw "Syntax error in path, non matched {}";
+
+                console.log("parse <"+pattern.substring(fr,to)+">");
+                this.parse(pattern.substring(fr,to));
+            }
+            else
+            {
+                console.log(pos+"'"+c+"'");
+                pos++;
+            }
+        }
+
+        for(let i = 0; i < opattern.length; i++)
+        {
+            let c:string = opattern.charAt(i);
 
             if (c == '{')
             {
@@ -79,7 +180,7 @@ export class Pattern implements PatternType
             if (fixed)
             {
                 this.placeholder$ += c;
-                this.tokens.set(pos++,new Token("f"));
+                this.tokens.set(opos++,new Token("f"));
                 continue;
             }
 
@@ -88,9 +189,9 @@ export class Pattern implements PatternType
 
             let token:Token = new Token(c);
 
-            if (i < pattern.length - 1)
+            if (i < opattern.length - 1)
             {
-                let mod:string = pattern.charAt(i+1);
+                let mod:string = opattern.charAt(i+1);
                 if (mod == 'u' || mod == 'l')
                 {
                     i++;
@@ -99,7 +200,7 @@ export class Pattern implements PatternType
             }
 
             this.placeholder$ += " ";
-            this.tokens.set(pos++,token);
+            this.tokens.set(opos++,token);
 
             if (this.fields.length == 0)
                 throw "No input fields defined";
