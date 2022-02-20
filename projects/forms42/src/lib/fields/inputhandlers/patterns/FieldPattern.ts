@@ -13,11 +13,12 @@
 /*
  * [rexexp] or
  * predefined classes:
- *  #: digit
  *  *: any
- *  c: character
- *  a: lowercase character
- *  A: uppercase character
+ *  #: [0-9]
+ *  d: [0-9,.+-]
+ *  c: [a-zA-Z]
+ *  a: [a-z]
+ *  A: [A-Z]
  *  w: [a-zA-Z_0-9]
  *
  * #      : digit
