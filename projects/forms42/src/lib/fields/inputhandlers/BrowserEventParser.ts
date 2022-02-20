@@ -158,6 +158,8 @@ export class BrowserEventParser
 
                     switch(this.key)
                     {
+                        case '+':
+                        case '-':
                         case 'a':
                         case 'c':
                         case 'x':

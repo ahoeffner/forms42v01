@@ -57,18 +57,33 @@ export class InputField extends Common implements FormField
 
     public override setAttributes(attributes: Map<string, any>): void
     {
+        let type:string = "text";
+        let pattern:string = null;
+        let placeholder:string = null;
+
         super.setAttributes(attributes);
 
         attributes.forEach((value,attr) =>
         {
-            if (attr == "type" && value == "date")
-            {
-                value = "text";
-                this.pattern = new FieldPattern("{##} - {##} - {####}","dd - mm - yyyy");
-            }
-
+            if (attr == "type") type = value;
+            if (attr == "pattern") pattern = value;
+            if (attr == "placeholder") placeholder = value;
             this.element.setAttribute(attr,value);
         });
+
+        if (type == "date")
+        {
+            this.element.setAttribute("type","text");
+            this.element.removeAttribute("placeholder");
+            this.pattern = new FieldPattern("{##} - {##} - {####}","dd - mm - yyyy");
+        }
+
+        if (pattern != null)
+        {
+            this.element.setAttribute("type","text");
+            this.element.removeAttribute("placeholder");
+            this.pattern = new FieldPattern(pattern,placeholder);
+        }
     }
 
     private onEvent(jsevent:any) : void
@@ -107,9 +122,6 @@ export class InputField extends Common implements FormField
 
     private applyPattern() : void
     {
-        let pos:number = this.getPosition();
-        this.setValue(this.pattern.getValue());
-
         let prevent:boolean = this.parser.prevent;
 
         if (this.parser.printable)
@@ -127,10 +139,13 @@ export class InputField extends Common implements FormField
 
         this.parser.preventDefault(prevent);
 
+        let pos:number = this.getPosition();
+        this.setValue(this.pattern.getValue());
+
         if (this.parser.type == "blur")
         {
-            if (this.pattern.isNull())
-                this.setValue(null);
+            this.pattern.setPosition(0);
+            if (this.pattern.isNull()) this.setValue(null);
         }
 
         if (this.parser.type == "click")
@@ -138,10 +153,33 @@ export class InputField extends Common implements FormField
             if (pos >= this.pattern.size())
                 pos = this.pattern.size() - 1;
 
-            let sel:number[] = this.pattern.getFieldArea(pos);
-            this.pattern.setPosition(sel[0]);
-            this.setPosition(sel[0]);
-            this.setSelection(sel);
+            let sel:number[] = this.getSelection();
+            let fld:number[] = this.pattern.getFieldArea(pos);
+
+            // toggle field selection
+            if (sel[1] - sel[0] <= 1)
+            {
+                setTimeout(() =>
+                {
+                    pos = fld[0];
+                    this.setPosition(pos);
+                    this.setSelection(fld);
+                    this.pattern.setPosition(pos);
+                },1);
+            }
+            else
+            {
+                setTimeout(() =>
+                {
+                    pos = this.getPosition();
+                    while(pos < fld[0]) pos++;
+                    while(pos > fld[1]) pos--;
+
+                    this.setPosition(pos);
+                    this.setSelection([pos,pos]);
+                    this.pattern.setPosition(pos);
+                },1);
+            }
         }
 
         if (this.parser.ignore || !this.parser.isKey)
