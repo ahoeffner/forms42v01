@@ -59,6 +59,8 @@ export class Pattern implements PatternType
             let repeat:string = "1";
             let c:string = field.charAt(i);
 
+            console.log("next "+c);
+
             if (c >= '0' && c <= '9')
             {
                 repeat = "";
@@ -82,14 +84,16 @@ export class Pattern implements PatternType
                 if (c != '[')
                     throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
 
-                c = field.charAt(++i);
+                i++;
+
+                c = field.charAt(i);
                 let esc:boolean = false;
 
-                while((c != ']' || esc) && i < field.length)
+                for(i++; (c != ']' || esc) && i < field.length; i++)
                 {
                     expr += c;
+                    c = field.charAt(i);
                     esc = this.escaped(field,i);
-                    c = field.charAt(++i);
                 }
 
                 if (c != ']')
@@ -97,11 +101,6 @@ export class Pattern implements PatternType
 
                 expr = "[" + expr + "]";
                 console.log(repeat+expr);
-
-                let rexpr:RegExp = new RegExp(expr);
-                console.log("s ? "+rexpr.test("s"));
-                console.log("[ ? "+rexpr.test("["));
-                console.log("] ? "+rexpr.test("]"));
             }
         }
     }
