@@ -19,11 +19,11 @@
  * Example: Flight ID BA-2272
  *
  *  {[A-Z][A-Z]}-{[0-9][0-9][0-9][0-9]}
- * or shorter
+ * or
  *  {2[A-Z]}-{4[0-9]}
- * or shorter
+ * or
  *  {AA}-{####}
- * or even shorter
+ * or
  *  {2A}-{4#}
  *
  * Predefined classes:
@@ -53,8 +53,8 @@ export class Pattern implements PatternType
 
     constructor(pattern:string, placeholder?:string)
     {
-        if (placeholder != null) this.setPlaceholder(placeholder);
         if (pattern != null) this.setPattern(pattern);
+        if (placeholder != null) this.setPlaceholder(placeholder);
     }
 
     public size() : number
@@ -156,8 +156,9 @@ export class Pattern implements PatternType
         if (placeholder.length > req && req > 0)
             placeholder = placeholder.substring(0,req);
 
+        this.value = placeholder;
+        this.plen = placeholder.length;
         this.placeholder$ = placeholder;
-        console.log("placeholder <"+placeholder+">");
     }
 
     public getField(n:number) : Field
