@@ -117,7 +117,7 @@ export class Pattern implements PatternType
                     throw "Syntax error in path, non matched {}";
 
                 let def:Token[] = this.parseFieldDefinition(pattern.substring(fr,i));
-                this.fields.push(new Field(this,this.fields.length,pos,pos+def.length-1));
+                this.fields.push(new Field(this,this.fields.length,pos,pos+def.length));
                 def.forEach((token) => {this.tokens.set(pos++,token); placeholder += ' '});
             }
             else
@@ -172,7 +172,7 @@ export class Pattern implements PatternType
         for (let i = 0; i < this.fields.length; i++)
         {
             let field:Field = this.fields[i];
-            if (pos >= field.fr && pos <= field.to)
+            if (pos >= field.pos$ && pos <= field.last)
                 return(field);
         }
         return(null);
@@ -421,7 +421,7 @@ export class Pattern implements PatternType
     {
         let empty:boolean = true;
 
-        for(let i = field.fr; i <= field.to; i++)
+        for(let i = field.pos$; i <= field.last; i++)
         {
             let c:string = this.value.charAt(i);
             let p:string = this.placeholder$.charAt(i);
@@ -431,19 +431,19 @@ export class Pattern implements PatternType
         if (empty)
         {
             let plh:string = this.placeholder$;
-            plh = plh.substring(field.fr,field.to+1);
-            for(let i = field.fr; i <= field.to; i++)
-            this.value = this.replace(this.value,field.fr,plh);
+            plh = plh.substring(field.pos$,field.last+1);
+            for(let i = field.pos$; i <= field.last; i++)
+            this.value = this.replace(this.value,field.pos$,plh);
             return(true);
         }
 
-        for(let i = field.fr; i <= field.to; i++)
+        for(let i = field.pos$; i <= field.last; i++)
         {
             let c:string = this.value.charAt(i);
 
             if (c != this.placeholder$.charAt(i))
             {
-                for(let j = field.fr; j <= field.to; j++)
+                for(let j = field.pos$; j <= field.last; j++)
                 {
                     if (this.value.charAt(j) == this.placeholder$.charAt(j))
                         this.value = this.replace(this.value,j,' ');
@@ -537,26 +537,32 @@ export class Pattern implements PatternType
 
 class Field implements IField
 {
-    fn:number = 0; // field no
-    fr:number = 0; // first pos
-    to:number = 0; // last (included) pos
+    fn:number = 0;
+    pos$:number = 0;
+    last$:number = 0;
+    size$:number = 0;
 
     constructor(private pattern:Pattern, fn:number, fr:number, to:number)
     {
         this.fn = fn;
-        this.fr = fr;
-        this.to = to;
-        console.log(fn+" "+fr+" - "+to);
+        this.pos$ = fr;
+        this.last$ = to - 1;
+        this.size$ = to - fr;
     }
 
     public pos() : number
     {
-        return(this.fr);
+        return(this.pos$);
+    }
+
+    public get last() : number
+    {
+        return(this.last$);
     }
 
     public size(): number
     {
-        return(this.to - this.fr + 1);
+        return(this.size$);
     }
 
     public isNull() : boolean
@@ -577,7 +583,7 @@ class Field implements IField
 
     public getValue() : string
     {
-        return(this.pattern["getstring"](this.fr,this.to));
+        return(this.pattern["getstring"](this.pos$,this.last));
     }
 
     public setValue(value:string) : void
@@ -585,15 +591,15 @@ class Field implements IField
         let pattern:string = this.pattern.placeholder();
 
         if (value == null)
-            value = pattern.substring(this.fr,this.to+1);
+            value = pattern.substring(this.pos$,this.last+1);
 
-        if (value.length > this.to - this.fr + 1)
-            value = value.substring(0,this.to+1);
+        if (value.length > this.last - this.pos$ + 1)
+            value = value.substring(0,this.last+1);
 
-        while(value.length < this.to - this.fr + 1)
+        while(value.length < this.last - this.pos$ + 1)
             value += ' ';
 
-        this.pattern["setstring"](this.fr,value);
+        this.pattern["setstring"](this.pos$,value);
     }
 }
 
