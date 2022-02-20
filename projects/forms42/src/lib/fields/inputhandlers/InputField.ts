@@ -66,8 +66,9 @@ export class InputField extends Common implements FormField
         attributes.forEach((value,attr) =>
         {
             if (attr == "type") type = value;
-            if (attr == "pattern") pattern = value;
+            if (attr == "format") pattern = value;
             if (attr == "placeholder") placeholder = value;
+
             this.element.setAttribute(attr,value);
         });
 
@@ -82,6 +83,7 @@ export class InputField extends Common implements FormField
         {
             this.element.setAttribute("type","text");
             this.element.removeAttribute("placeholder");
+            console.log("<"+pattern+"> <"+placeholder+">");
             this.pattern = new FieldPattern(pattern,placeholder);
         }
     }

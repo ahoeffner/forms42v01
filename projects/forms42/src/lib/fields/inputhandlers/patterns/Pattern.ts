@@ -350,9 +350,6 @@ export class Pattern implements PatternType
 
     public prev(printable:boolean) : number
     {
-        if (this.setPosition(this.pos-1))
-            return(this.pos);
-
         let pos = this.pos - 1;
 
         if (!printable && pos >= 0)
@@ -361,7 +358,7 @@ export class Pattern implements PatternType
             return(this.pos);
         }
 
-        while(pos > 0)
+        while(pos >= 0)
         {
             if (this.input(pos))
             {
@@ -377,9 +374,6 @@ export class Pattern implements PatternType
 
     public next(printable:boolean) : number
     {
-        if (this.setPosition(this.pos+1))
-            return(this.pos);
-
         let pos = this.pos + 1;
 
         if (!printable && pos < this.plen)
@@ -388,7 +382,7 @@ export class Pattern implements PatternType
             return(this.pos);
         }
 
-        while(pos < this.plen-1)
+        while(pos < this.plen)
         {
             if (this.input(pos))
             {
@@ -500,7 +494,8 @@ export class Pattern implements PatternType
             }
             if (this.predefined.includes(c))
             {
-                tokens.push(new Token(c));
+                for(let f = 0; f < +repeat; f++)
+                    tokens.push(new Token(c));
             }
             else
             {
@@ -522,7 +517,8 @@ export class Pattern implements PatternType
                 if (c != ']')
                     throw "Syntax error in path, non matched []";
 
-                tokens.push(new Token('x').setRegx("["+expr+"]"));
+                for(let f = 0; f < +repeat; f++)
+                    tokens.push(new Token('x').setRegx("["+expr+"]"));
             }
         }
 
