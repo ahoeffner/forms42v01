@@ -31,10 +31,12 @@
  *  *  : any
  *  #  : [0-9]
  *  d  : [0-9,.+-]
- *  c  : [a-zA-Z]
  *  a  : [a-z]
  *  A  : [A-Z]
- *  w  : [a-zA-Z_0-9]
+ *  w  : [a-z_0-9]
+ *  W  : [A-Z_0-9]
+ *  c  : any lowercase character
+ *  C  : any uppercase character
  */
 
 import { Pattern as PatternType, Field as IField } from "./interfaces/Pattern";
@@ -47,180 +49,12 @@ export class Pattern implements PatternType
     private fields:Field[] = [];
     private placeholder$:string = "";
     private predefined:string = "*#dcaAw";
-
     private tokens:Map<number,Token> = new Map<number,Token>();
 
-    private parse(field:string) : void
+    constructor(pattern:string, placeholder?:string)
     {
-        let pos:number = 0;
-
-        for (let i = 0; i < field.length; i++)
-        {
-            let repeat:string = "1";
-            let c:string = field.charAt(i);
-
-            if (c >= '0' && c <= '9')
-            {
-                repeat = "";
-                while(c >= '0' && c <= '9' && i < field.length)
-                {
-                    repeat += c;
-                    c = field.charAt(++i);
-                }
-
-                if (i == field.length)
-                    throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
-            }
-            if (this.predefined.includes(c))
-            {
-                console.log(repeat+"["+c+"]");
-            }
-            else
-            {
-                let expr:string = "";
-
-                if (c != '[')
-                    throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
-
-                c = field.charAt(++i);
-                let esc:boolean = false;
-
-                while((c != ']' || esc) && i < field.length)
-                {
-                    expr += c;
-                    c = field.charAt(i+1);
-                    esc = this.escaped(field,i++);
-                }
-
-                if (c != ']')
-                    throw "Syntax error in path, non matched []";
-
-                expr = "[" + expr + "]";
-                console.log(repeat+expr);
-            }
-        }
-    }
-
-    private escaped(str:string,pos:number) : boolean
-    {
-        if (pos == str.length+1)
-            return(false);
-
-        let e:string = str.charAt(pos);
-        let c:string = str.charAt(pos+1);
-
-        return(e == '\\' && c != '\\');
-    }
-
-    constructor(opattern:string, placeholder?:string)
-    {
-        let opos:number = 0;
-        let field:Field = null;
-        let fixed:boolean = true;
-
-        let pos:number = 0;
-        let pattern:string = "{[A-Z[\\]]3A} \\{ {2[0-9,.]2d} }";
-
-        for (let i = 0; i < pattern.length; i++)
-        {
-            let c:string = pattern.charAt(i);
-            let esc:boolean = this.escaped(pattern,i);
-
-            if (esc)
-            {
-                let b=i;
-                c = pattern.charAt(++i);
-            }
-
-            if (c == '{' && !esc)
-            {
-                let fr:number = i+1;
-                while(i < pattern.length && pattern.charAt(i++) != '}');
-                let to:number = i-1;
-
-                if (to == pattern.length)
-                    throw "Syntax error in path, non matched {}";
-
-                console.log("parse <"+pattern.substring(fr,to)+">");
-                this.parse(pattern.substring(fr,to));
-            }
-            else
-            {
-                console.log(pos+"'"+c+"'");
-                pos++;
-            }
-        }
-
-        for(let i = 0; i < opattern.length; i++)
-        {
-            let c:string = opattern.charAt(i);
-
-            if (c == '{')
-            {
-                fixed = false;
-                field = new Field(this);
-                this.fields.push(field);
-                field.fn = this.fields.length - 1;
-                field.fr = this.placeholder$.length;
-                continue;
-            }
-
-            if (c == '}')
-            {
-                fixed = true;
-                field.to = this.placeholder$.length-1;
-                continue;
-            }
-
-            if (fixed)
-            {
-                this.placeholder$ += c;
-                this.tokens.set(opos++,new Token("f"));
-                continue;
-            }
-
-            if (!(c == '#' || c == '*' || c == 'a' || c == 'w'))
-                throw "unknown pattern "+c;
-
-            let token:Token = new Token(c);
-
-            if (i < opattern.length - 1)
-            {
-                let mod:string = opattern.charAt(i+1);
-                if (mod == 'u' || mod == 'l')
-                {
-                    i++;
-                    token.setCase(mod);
-                }
-            }
-
-            this.placeholder$ += " ";
-            this.tokens.set(opos++,token);
-
-            if (this.fields.length == 0)
-                throw "No input fields defined";
-        }
-
-        if (placeholder == null)
-        {
-            placeholder = this.placeholder$;
-        }
-        else
-        {
-            let len:number = placeholder.length;
-            let req:number = this.placeholder$.length;
-
-            if (len < req)
-            {
-                for(let i = 0; i < (req - len); i++)
-                    placeholder += " ";
-            }
-
-            this.placeholder$ = placeholder;
-        }
-
-        this.value = placeholder;
-        this.plen = this.value.length;
+        if (placeholder != null) this.setPlaceholder(placeholder);
+        if (pattern != null) this.setPattern(pattern);
     }
 
     public size() : number
@@ -256,6 +90,74 @@ export class Pattern implements PatternType
 
     public validate() : void
     {
+    }
+
+    public setPattern(pattern:string) : void
+    {
+        let pos:number = 0;
+        let placeholder:string = "";
+
+        for (let i = 0; i < pattern.length; i++)
+        {
+            let c:string = pattern.charAt(i);
+            let esc:boolean = this.escaped(pattern,i);
+
+            if (esc)
+            {
+                let b=i;
+                c = pattern.charAt(++i);
+            }
+
+            if (c == '{' && !esc)
+            {
+                let fr:number = i+1;
+                while(i < pattern.length && pattern.charAt(++i) != '}');
+
+                if (i == pattern.length)
+                    throw "Syntax error in path, non matched {}";
+
+                let def:Token[] = this.parseFieldDefinition(pattern.substring(fr,i));
+                this.fields.push(new Field(this,this.fields.length,pos,pos+def.length-1));
+                def.forEach((token) => {this.tokens.set(pos++,token); placeholder += ' '});
+            }
+            else
+            {
+                placeholder += pattern.charAt(i);
+                this.tokens.set(pos++,new Token('f'));
+            }
+        }
+
+        if (this.fields.length == 0)
+            throw "No input fields defined";
+
+        let req:number = placeholder.length;
+
+        if (this.placeholder$ != null)
+            placeholder = this.placeholder$;
+
+        while(placeholder.length < req)
+            placeholder += ' ';
+
+        if (placeholder.length > req)
+            placeholder = placeholder.substring(0,req);
+
+        this.value = placeholder;
+        this.plen = placeholder.length;
+        this.placeholder$ = placeholder;
+    }
+
+    public setPlaceholder(placeholder:string) : void
+    {
+        let req:number = this.plen;
+
+        while(placeholder.length < req)
+            placeholder += ' ';
+
+        if (placeholder.length > req && req > 0)
+            placeholder = placeholder.substring(0,req);
+
+        this.placeholder$ = placeholder;
+        console.log("placeholder <"+placeholder+">");
     }
 
     public getField(n:number) : Field
@@ -335,10 +237,40 @@ export class Pattern implements PatternType
             return(false);
 
         let token:Token = this.tokens.get(this.pos);
-        if (token == null || !token.validate(c)) return(false);
 
-        if (token.case == 'u') c = c.toUpperCase();
-        if (token.case == 'l') c = c.toLowerCase();
+        switch(token.case)
+        {
+            case 'u':
+                c = c.toUpperCase();
+                if (!token.validate(c)) return(false);
+            break;
+
+            case 'l':
+                c = c.toLowerCase();
+                if (!token.validate(c)) return(false);
+            break;
+
+            case '?':
+                let lc = c.toLocaleLowerCase();
+                let uc = c.toLocaleUpperCase();
+
+                if (lc == uc)
+                {
+                    if (!token.validate(c))
+                        return(false);
+                }
+                else
+                {
+                    c = lc;
+                    if (!token.validate(lc))
+                    {
+                        c = uc;
+                        if (!token.validate(uc))
+                            return(false);
+                    }
+                }
+            break;
+        }
 
         let a:string = this.value.substring(this.pos+1);
         let b:string = this.value.substring(0,this.pos);
@@ -537,6 +469,69 @@ export class Pattern implements PatternType
     {
         return(str.substring(0,pos) + val + str.substring(pos+val.length));
     }
+
+    private parseFieldDefinition(field:string) : Token[]
+    {
+        let tokens:Token[] = [];
+
+        for (let i = 0; i < field.length; i++)
+        {
+            let repeat:string = "1";
+            let c:string = field.charAt(i);
+
+            if (c >= '0' && c <= '9')
+            {
+                repeat = "";
+                while(c >= '0' && c <= '9' && i < field.length)
+                {
+                    repeat += c;
+                    c = field.charAt(++i);
+                }
+
+                if (i == field.length)
+                    throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
+            }
+            if (this.predefined.includes(c))
+            {
+                tokens.push(new Token(c));
+            }
+            else
+            {
+                let expr:string = "";
+
+                if (c != '[')
+                    throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
+
+                c = field.charAt(++i);
+                let esc:boolean = false;
+
+                while((c != ']' || esc) && i < field.length)
+                {
+                    expr += c;
+                    c = field.charAt(i+1);
+                    esc = this.escaped(field,i++);
+                }
+
+                if (c != ']')
+                    throw "Syntax error in path, non matched []";
+
+                tokens.push(new Token('x').setRegx("["+expr+"]"));
+            }
+        }
+
+        return(tokens);
+    }
+
+    private escaped(str:string,pos:number) : boolean
+    {
+        if (pos == str.length+1)
+            return(false);
+
+        let e:string = str.charAt(pos);
+        let c:string = str.charAt(pos+1);
+
+        return(e == '\\' && c != '\\');
+    }
 }
 
 
@@ -546,8 +541,12 @@ class Field implements IField
     fr:number = 0;
     to:number = 0;
 
-    constructor(private pattern:Pattern)
+    constructor(private pattern:Pattern, fn:number, fr:number, to:number)
     {
+        this.fn = fn;
+        this.fr = fr;
+        this.to = to;
+        console.log(fn+" "+fr+" - "+to);
     }
 
     public pos() : number
@@ -602,11 +601,13 @@ class Field implements IField
 class Token
 {
     type$:string = 'f';
-    case$:string = 'i';
+    case$:string = '?';
+    expr$:string = null;
+    regex:RegExp = null;
 
     constructor(type:string)
     {
-        this.type$ = type;
+        this.setType(type);
     }
 
     public get type() : string
@@ -622,29 +623,45 @@ class Token
     public setType(type:string) : Token
     {
         this.type$ = type;
+
+        switch(type)
+        {
+            case "c": this.setCase('l'); break;
+            case "C": this.setCase('u'); break;
+            case "#": this.setRegx("[0-9]"); break;
+            case "d": this.setRegx("[0-9,.+-]"); break;
+            case "a": this.setRegx("[a-z]").setCase('l'); break;
+            case "A": this.setRegx("[A-Z]").setCase('u'); break;
+            case "w": this.setRegx("[a-zA-Z_0-9]").setCase('l'); break;
+            case "W": this.setRegx("[a-zA-Z_0-9]").setCase('u'); break;
+        }
+
         return(this);
     }
 
-    public setCase(uli:string) : Token
+    public setCase(type:string) : Token
     {
-        this.case$ = uli;
+        this.case$ = type;
+        return(this);
+    }
+
+    public setRegx(expr:string) : Token
+    {
+        this.expr$ = expr;
+        this.regex = new RegExp(expr);
         return(this);
     }
 
     public validate(c:string) : boolean
     {
-        let lc:string = c.toLowerCase();
-
-        switch(this.type$)
+        switch(this.type$.toLowerCase())
         {
             case "*": return(true);
             case "f": return(false);
-            case "#": return(+c >= 0 && +c <= 9);
-            case "a": return(lc >= 'a' && lc <= 'z');
-            case "w": return((lc >= 'a' && lc <= 'z') || (+c >= 0 && +c <= 9));
+            case "c": return(c.toLocaleLowerCase() != c.toLocaleUpperCase());
         }
 
-        return(false)
+        return(this.regex.test(c));
     }
 
     public toString() : string
