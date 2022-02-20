@@ -537,9 +537,9 @@ export class Pattern implements PatternType
 
 class Field implements IField
 {
-    fn:number = 0;
-    fr:number = 0;
-    to:number = 0;
+    fn:number = 0; // field no
+    fr:number = 0; // first pos
+    to:number = 0; // last (included) pos
 
     constructor(private pattern:Pattern, fn:number, fr:number, to:number)
     {
