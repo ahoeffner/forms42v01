@@ -11,18 +11,20 @@
  */
 
 /*
- * Pattern consists of fixed text and fields enclosed by {}
- * Fields consists of a list regular expressions. Each representing 1 character
+ * Pattern consists of fixed text and fields enclosed by {}.
+ * Fields consists of a list of single character regular expressions.
+ * Each expression can be repeated using a preceding multiplier.
+ * For shorthand, a number of predefined classes can be used.
  *
- * Example:
+ * Example: Flight ID BA-2272
  *
- *  +{[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]}
- * or
- *  +{##} {##} {##} {##}
- * or
- *  +{2#} {2#} {2#} {2#}
- *
- * all allows fora phome number in the for of +45 22 72 08 94
+ *  {[A-Z][A-Z]}-{[0-9][0-9][0-9][0-9]}
+ * or shorter
+ *  {2[A-Z]}-{4[0-9]}
+ * or shorter
+ *  {AA}-{####}
+ * or even shorter
+ *  {2A}-{4#}
  *
  * Predefined classes:
  *
@@ -33,11 +35,6 @@
  *  a  : [a-z]
  *  A  : [A-Z]
  *  w  : [a-zA-Z_0-9]
- *
- * #     : digit
- * a[ul] : letter u:upper l:lower i:ignore
- * *[ul] : any printable u:upper l:lower i:ignore
- * w[ul] : word character u:upper l:lower i:ignore a-z 0-9
  */
 
 import { Pattern as PatternType, Field as IField } from "./interfaces/Pattern";
