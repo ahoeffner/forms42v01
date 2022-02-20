@@ -47,7 +47,8 @@ export class Pattern implements PatternType
     private plen:number = 0;
     private value:string = "";
     private fields:Field[] = [];
-    private placeholder$:string = "";
+    private pattern$:string = null;
+    private placeholder$:string = null;
     private predefined:string = "*#dcaAw";
     private tokens:Map<number,Token> = new Map<number,Token>();
 
@@ -78,14 +79,19 @@ export class Pattern implements PatternType
         return(this.value);
     }
 
-    public placeholder() : string
-    {
-        return(this.placeholder$);
-    }
-
     public getPosition(): number
     {
         return(this.pos);
+    }
+
+    public getPattern(): string
+    {
+        return(this.pattern$);
+    }
+
+    public getPlaceholder() : string
+    {
+        return(this.placeholder$);
     }
 
     public validate() : void
@@ -570,7 +576,7 @@ class Field implements IField
     {
         let empty:boolean = true;
         let value:string = this.pattern.getValue();
-        let pattern:string = this.pattern.placeholder();
+        let pattern:string = this.pattern.getPlaceholder();
 
         for (let i = 0; i < pattern.length; i++)
         {
@@ -589,7 +595,7 @@ class Field implements IField
 
     public setValue(value:string) : void
     {
-        let pattern:string = this.pattern.placeholder();
+        let pattern:string = this.pattern.getPlaceholder();
 
         if (value == null)
             value = pattern.substring(this.pos$,this.last+1);

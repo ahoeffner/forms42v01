@@ -15,7 +15,11 @@ export interface Pattern
     size() : number;
     isNull() : boolean;
 
-    placeholder() : string;
+    getPattern() : string;
+    setPattern(pattern:string) : void;
+
+    getPlaceholder() : string;
+    setPlaceholder(placeholder:string) : void;
 
     getValue() : string;
     setValue(value:any) : void;

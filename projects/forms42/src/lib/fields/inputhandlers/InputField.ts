@@ -135,8 +135,12 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "click")
         {
+            if (pos >= this.pattern.size())
+                pos = this.pattern.size() - 1;
+
             let sel:number[] = this.pattern.getFieldArea(pos);
             this.pattern.setPosition(sel[0]);
+            this.setPosition(sel[0]);
             this.setSelection(sel);
         }
 
