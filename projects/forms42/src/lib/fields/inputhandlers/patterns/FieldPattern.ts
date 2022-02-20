@@ -11,17 +11,23 @@
  */
 
 /*
- * [rexexp] or
- * predefined classes:
- *  *: any
- *  #: [0-9]
- *  d: [0-9,.+-]
- *  c: [a-zA-Z]
- *  a: [a-z]
- *  A: [A-Z]
- *  w: [a-zA-Z_0-9]
+ * Pattern consists of fixed text and fields enclosed by {}
+ * Fields consists of a list regular expressions. Each representing 1 character
  *
- * #      : digit
+ * Example +{[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]} allows for +45 22 72 08 94
+ * Instead of [regex], predefined classes can be used: +{##} {##} {##} {##} is shorthand for the above
+ *
+ * Predefined classes:
+ *
+ *  *  : any
+ *  #  : [0-9]
+ *  d  : [0-9,.+-]
+ *  c  : [a-zA-Z]
+ *  a  : [a-z]
+ *  A  : [A-Z]
+ *  w  : [a-zA-Z_0-9]
+ *
+ * #     : digit
  * a[ul] : letter u:upper l:lower i:ignore
  * *[ul] : any printable u:upper l:lower i:ignore
  * w[ul] : word character u:upper l:lower i:ignore a-z 0-9
