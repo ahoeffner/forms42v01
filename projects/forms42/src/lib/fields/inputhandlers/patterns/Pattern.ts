@@ -14,8 +14,15 @@
  * Pattern consists of fixed text and fields enclosed by {}
  * Fields consists of a list regular expressions. Each representing 1 character
  *
- * Example +{[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]} allows for +45 22 72 08 94
- * Instead of [regex], predefined classes can be used: +{##} {##} {##} {##} is shorthand for the above
+ * Example:
+ *
+ *  +{[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]} {[0-9][0-9]}
+ * or
+ *  +{##} {##} {##} {##}
+ * or
+ *  +{2#} {2#} {2#} {2#}
+ *
+ * all allows fora phome number in the for of +45 22 72 08 94
  *
  * Predefined classes:
  *
