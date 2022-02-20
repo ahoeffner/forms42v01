@@ -83,7 +83,6 @@ export class InputField extends Common implements FormField
         {
             this.element.setAttribute("type","text");
             this.element.removeAttribute("placeholder");
-            console.log("<"+pattern+"> <"+placeholder+">");
             this.pattern = new FieldPattern(pattern,placeholder);
         }
     }
