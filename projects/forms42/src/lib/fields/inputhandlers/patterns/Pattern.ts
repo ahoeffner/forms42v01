@@ -59,8 +59,6 @@ export class Pattern implements PatternType
             let repeat:string = "1";
             let c:string = field.charAt(i);
 
-            console.log("next "+c);
-
             if (c >= '0' && c <= '9')
             {
                 repeat = "";
@@ -84,16 +82,14 @@ export class Pattern implements PatternType
                 if (c != '[')
                     throw "Syntax error in expression, '"+this.predefined+"' or '[]' expected";
 
-                i++;
-
-                c = field.charAt(i);
+                c = field.charAt(++i);
                 let esc:boolean = false;
 
-                for(i++; (c != ']' || esc) && i < field.length; i++)
+                while((c != ']' || esc) && i < field.length)
                 {
                     expr += c;
-                    c = field.charAt(i);
-                    esc = this.escaped(field,i);
+                    c = field.charAt(i+1);
+                    esc = this.escaped(field,i++);
                 }
 
                 if (c != ']')
@@ -123,7 +119,7 @@ export class Pattern implements PatternType
         let fixed:boolean = true;
 
         let pos:number = 0;
-        let pattern:string = "{[A-Z[\\]]A} \\{ {2[0-9,.]d} }";
+        let pattern:string = "{[A-Z[\\]]3A} \\{ {2[0-9,.]2d} }";
 
         for (let i = 0; i < pattern.length; i++)
         {
