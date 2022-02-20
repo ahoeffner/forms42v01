@@ -33,9 +33,9 @@
  * w[ul] : word character u:upper l:lower i:ignore a-z 0-9
  */
 
-import { Pattern, Field as FieldToken } from "../Pattern";
+import { Pattern as PatternType, Field as IField } from "./interfaces/Pattern";
 
-export class FieldPattern implements Pattern
+export class Pattern implements PatternType
 {
     private pos:number = 0;
     private plen:number = 0;
@@ -440,13 +440,13 @@ export class FieldPattern implements Pattern
 }
 
 
-class Field implements FieldToken
+class Field implements IField
 {
     fn:number = 0;
     fr:number = 0;
     to:number = 0;
 
-    constructor(private pattern:FieldPattern)
+    constructor(private pattern:Pattern)
     {
     }
 

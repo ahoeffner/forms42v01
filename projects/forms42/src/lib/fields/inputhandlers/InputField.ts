@@ -11,9 +11,9 @@
  */
 
 import { Common } from "./Common";
-import { Pattern } from "./Pattern";
-import { FieldPattern } from "./patterns/FieldPattern";
+import { Pattern } from "./patterns/interfaces/Pattern";
 import { BrowserEventParser } from "./BrowserEventParser";
+import { Pattern as FieldPattern } from "./patterns/Pattern";
 import { FormField, EventHandler, Event, getEventType } from "../interfaces/FormField";
 
 
@@ -22,8 +22,6 @@ export class InputField extends Common implements FormField
 	private pattern:Pattern = null;
 	private element:HTMLInputElement = null;
     private parser:BrowserEventParser = new BrowserEventParser();
-
-
 
     constructor()
     {
