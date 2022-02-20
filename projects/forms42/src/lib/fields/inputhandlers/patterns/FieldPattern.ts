@@ -11,6 +11,15 @@
  */
 
 /*
+ * [rexexp] or
+ * predefined classes:
+ *  #: digit
+ *  *: any
+ *  c: character
+ *  a: lowercase character
+ *  A: uppercase character
+ *  w: [a-zA-Z_0-9]
+ *
  * #      : digit
  * a[ul] : letter u:upper l:lower i:ignore
  * *[ul] : any printable u:upper l:lower i:ignore
