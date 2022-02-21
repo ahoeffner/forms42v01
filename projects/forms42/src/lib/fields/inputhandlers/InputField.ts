@@ -111,6 +111,7 @@ export class InputField extends Common implements FormField
         if (this.parser.prevent)
             jsevent.preventDefault();
 
+        /*
         if (this.parser.type.startsWith("key"))
         {
             if (this.parser.key < '0' || this.parser.key > '9')
@@ -119,6 +120,7 @@ export class InputField extends Common implements FormField
                 jsevent.preventDefault();
             }
         }
+        */
 
         if (this.parser.ignore)
             return;

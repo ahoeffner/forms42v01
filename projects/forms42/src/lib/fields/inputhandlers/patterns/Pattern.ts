@@ -95,13 +95,18 @@ export class Pattern implements PatternType
         return(this.placeholder$);
     }
 
-    public validate() : boolean
+    public validate(fld?:number) : boolean
     {
-        this.fields.forEach((fld) =>
+        if (fld != null)
         {
-            if (!fld.validate())
-                return(false);
-        });
+            for (let i = 0; i < this.fields.length; i++)
+            {
+                if (!this.fields[i].validate())
+                    return(false);
+            }
+            return(true);
+        }
+        return(true);
     }
 
     public setPattern(pattern:string) : void
@@ -665,8 +670,8 @@ class Field implements IField
 
         if (this.value$ != nval)
         {
-            console.log("validate "+this.value$+" -> "+nval);
             this.value$ = nval;
+            this.pattern.validate(this.fn);
         }
 
         return(true);

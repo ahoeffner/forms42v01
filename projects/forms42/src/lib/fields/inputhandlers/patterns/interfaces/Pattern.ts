@@ -23,15 +23,14 @@ export interface Pattern
 
     getValue() : string;
     setValue(value:any) : void;
-
-    validate() : boolean;
-    input(pos:number) : boolean;
+    validate(fld?:number) : boolean;
 
     prev(printable:boolean,from?:number) : number;
     next(printable:boolean,from?:number) : number;
 
     getPosition() : number;
     getField(n:number) : Field;
+    input(pos:number) : boolean;
     findField(pos?:number) : Field;
     setPosition(pos:number) : boolean;
     getFieldArea(pos:number) : number[];
