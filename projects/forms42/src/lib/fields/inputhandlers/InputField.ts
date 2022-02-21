@@ -94,8 +94,18 @@ export class InputField extends Common implements FormField
 
         if (this.pattern != null)
         {
-            this.applyPattern();
-            return;
+            if (!this.applyPattern())
+                return;
+        }
+
+        if (this.parser.type == "blur")
+        {
+
+        }
+
+        if (this.parser.type == "change")
+        {
+
         }
 
         if (this.parser.prevent)
@@ -130,7 +140,7 @@ export class InputField extends Common implements FormField
         }
     }
 
-    private applyPattern() : void
+    private applyPattern() : boolean
     {
         let prevent:boolean = this.parser.prevent;
 
@@ -152,10 +162,19 @@ export class InputField extends Common implements FormField
         let pos:number = this.getPosition();
         this.setValue(this.pattern.getValue());
 
-        if (this.parser.type == "blur")
+        if (this.parser.type == "blur" || this.parser.type == "change")
         {
             this.pattern.setPosition(0);
-            if (this.pattern.isNull()) this.setValue(null);
+
+            if (this.pattern.isNull())
+                this.setValue(null);
+
+            let valid:boolean = this.pattern.validate();
+
+            this.error(!valid);
+            if (!valid) setTimeout(() => {this.element.focus();},1);
+
+            return(true);
         }
 
         if (this.parser.type == "click")
@@ -190,10 +209,12 @@ export class InputField extends Common implements FormField
                     this.pattern.setPosition(pos);
                 },1);
             }
+
+            return(false);
         }
 
         if (this.parser.ignore || !this.parser.isKey)
-            return;
+            return(true);
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
@@ -243,6 +264,8 @@ export class InputField extends Common implements FormField
                 if (this.pattern.input(pos))
                     this.setSelection([pos,pos]);
             }
+
+            return(false);
         }
 
         if (this.parser.printable)
@@ -265,6 +288,8 @@ export class InputField extends Common implements FormField
                 pos = this.pattern.getPosition();
                 this.setSelection([pos,pos]);
             }
+
+            return(false);
         }
 
         if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
@@ -272,6 +297,7 @@ export class InputField extends Common implements FormField
             pos = this.pattern.prev(true);
             this.setPosition(pos);
             this.setSelection([pos,pos]);
+            return(false);
         }
 
         if (this.parser.key == "ArrowRight" && !this.parser.modifier)
@@ -279,7 +305,10 @@ export class InputField extends Common implements FormField
             pos = this.pattern.next(true);
             this.setPosition(pos);
             this.setSelection([pos,pos]);
+            return(false);
         }
+
+        return(true);
     }
 
     private getPosition() : number

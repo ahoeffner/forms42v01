@@ -95,8 +95,13 @@ export class Pattern implements PatternType
         return(this.placeholder$);
     }
 
-    public validate() : void
+    public validate() : boolean
     {
+        this.fields.forEach((fld) =>
+        {
+            if (!fld.validate())
+                return(false);
+        });
     }
 
     public setPattern(pattern:string) : void
@@ -317,7 +322,17 @@ export class Pattern implements PatternType
         this.clear();
         this.setPosition(fr);
 
-        this.fields.forEach((fld) => {fld.validate()});
+        if (to - fr > 1)
+        {
+            let curr:Field = this.findField(fr);
+            if (curr != null) this.fldno = curr.fn;
+
+            this.fields.forEach((fld) =>
+            {
+                if (fld.pos() > fr)
+                    fld.validate();
+            });
+        }
 
         return(this.value);
     }
@@ -421,6 +436,8 @@ export class Pattern implements PatternType
 
         if (curr.fn != this.fldno)
         {
+            let last:Field = this.fields[this.fldno];
+            last.validate();
             this.fldno = curr.fn;
         }
     }
@@ -642,15 +659,17 @@ class Field implements IField
     }
 
 
-    public validate() : void
+    public validate() : boolean
     {
         let nval:string = this.getValue();
 
         if (this.value$ != nval)
         {
-            console.log("validate "+this.fn+" "+this.value$+" "+nval);
+            console.log("validate "+this.value$+" -> "+nval);
             this.value$ = nval;
         }
+
+        return(true);
     }
 }
 

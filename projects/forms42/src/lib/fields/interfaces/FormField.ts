@@ -38,9 +38,10 @@ export interface FormField
     getProperties() : any;
     setProperties(properties:any) : void;
 
-    getValidValues() : Set<any> | Map<any, any> 
+    getValidValues() : Set<any> | Map<any, any>
     setValidValues(values:Set<any>|Map<any,any>) : void;
 
+    error(flag:boolean) : void;
     enable(flag:boolean) : void;
     readonly(flag:boolean) : void;
 

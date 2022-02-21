@@ -24,7 +24,7 @@ export interface Pattern
     getValue() : string;
     setValue(value:any) : void;
 
-    validate() : void;
+    validate() : boolean;
     input(pos:number) : boolean;
 
     prev(printable:boolean,from?:number) : number;

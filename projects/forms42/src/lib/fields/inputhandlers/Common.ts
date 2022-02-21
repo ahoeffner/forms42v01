@@ -77,6 +77,12 @@ export class Common
         this.values = values;
     }
 
+    public error(flag: boolean) : void
+	{
+        if (flag) this.addClass("invalid");
+        else      this.removeClass("invalid");
+    }
+
     public readonly(flag: boolean) : void
 	{
         (this.field.getElement() as HTMLInputElement).readOnly = flag;
