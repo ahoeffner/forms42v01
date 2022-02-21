@@ -47,7 +47,6 @@ export class Pattern implements PatternType
     private plen:number = 0;
     private fldno:number = 0;
     private value:string = "";
-    private fldval:string = "";
     private fields:Field[] = [];
     private pattern$:string = null;
     private placeholder$:string = null;
@@ -152,7 +151,7 @@ export class Pattern implements PatternType
         this.value = placeholder;
         this.plen = placeholder.length;
         this.placeholder$ = placeholder;
-        this.fldval = this.fields[0].getValue();
+        this.fields.forEach((fld) => {fld.init()});
     }
 
     public setPlaceholder(placeholder:string) : void
@@ -168,9 +167,7 @@ export class Pattern implements PatternType
         this.value = placeholder;
         this.plen = placeholder.length;
         this.placeholder$ = placeholder;
-
-        if (this.fields.length > 0)
-            this.fldval = this.fields[0].getValue();
+        this.fields.forEach((fld) => {fld.init()});
     }
 
     public getField(n:number) : Field
@@ -240,7 +237,7 @@ export class Pattern implements PatternType
         if (this.tokens.get(pos).type != 'f')
         {
             this.pos = pos;
-            this.checkfield();
+            this.onfield();
             return(true);
         }
 
@@ -308,18 +305,6 @@ export class Pattern implements PatternType
                 return(this.value);
         }
 
-        let changed:any[] = [];
-
-        for(let i = fr; i < to; i++)
-        {
-            let field:Field = this.findField(i);
-            if (field != null)
-            {
-                i = field.last;
-                changed.push({fld: field, value: field.getValue()});
-            }
-        }
-
         let p:string = "";
         let a:string = this.value.substring(to);
         let b:string = this.value.substring(0,fr);
@@ -330,16 +315,10 @@ export class Pattern implements PatternType
         this.value = b + p + a;
 
         this.clear();
-
-        let len:number = changed.length;
-
-        for(let i = 0; i < len; i++)
-        {
-            let ch:any = changed.pop();
-            console.log("fld: "+ch.fld.fn+" "+ch.value+" -> "+ch.fld.getValue());
-        }
-
         this.setPosition(fr);
+
+        this.fields.forEach((fld) => {fld.validate()});
+
         return(this.value);
     }
 
@@ -388,7 +367,7 @@ export class Pattern implements PatternType
         if (!printable && pos >= 0)
         {
             this.pos = pos;
-            this.checkfield();
+            this.onfield();
             return(this.pos);
         }
 
@@ -397,7 +376,7 @@ export class Pattern implements PatternType
             if (this.input(pos))
             {
                 this.pos = pos;
-                this.checkfield();
+                this.onfield();
                 break;
             }
 
@@ -417,7 +396,7 @@ export class Pattern implements PatternType
         if (!printable && pos < this.plen)
         {
             this.pos = pos;
-            this.checkfield();
+            this.onfield();
             return(this.pos);
         }
 
@@ -426,7 +405,7 @@ export class Pattern implements PatternType
             if (this.input(pos))
             {
                 this.pos = pos;
-                this.checkfield();
+                this.onfield();
                 break;
             }
 
@@ -436,20 +415,13 @@ export class Pattern implements PatternType
         return(this.pos);
     }
 
-    private checkfield(pos?:number) : void
+    private onfield() : void
     {
-        if (pos == null) pos = this.pos;
-        let curr:Field = this.findField(pos);
+        let curr:Field = this.findField(this.pos);
 
         if (curr.fn != this.fldno)
         {
-            let nval:string = this.getField(this.fldno).getValue();
-
-            if (nval != this.fldval)
-                console.log("field "+this.fldno+" changed from <"+this.fldval+"> to <"+nval+">")
-
             this.fldno = curr.fn;
-            this.fldval = this.getField(this.fldno).getValue();
         }
     }
 
@@ -601,6 +573,7 @@ class Field implements IField
     pos$:number = 0;
     last$:number = 0;
     size$:number = 0;
+    value$:string = null;
 
     constructor(private pattern:Pattern, fn:number, fr:number, to:number)
     {
@@ -660,6 +633,24 @@ class Field implements IField
             value += ' ';
 
         this.pattern["setstring"](this.pos$,value);
+    }
+
+
+    public init() : void
+    {
+        this.value$ = this.getValue();
+    }
+
+
+    public validate() : void
+    {
+        let nval:string = this.getValue();
+
+        if (this.value$ != nval)
+        {
+            console.log("validate "+this.fn+" "+this.value$+" "+nval);
+            this.value$ = nval;
+        }
     }
 }
 

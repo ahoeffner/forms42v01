@@ -230,7 +230,6 @@ export class InputField extends Common implements FormField
                 }
 
                 pos = sel[0];
-                console.log("1 setting pos: "+pos);
                 this.setValue(this.pattern.delete(sel[0],sel[1]));
 
                 if (sel[1] == sel[0] + 1)
@@ -239,7 +238,6 @@ export class InputField extends Common implements FormField
                 if (!this.pattern.setPosition(pos))
                     pos = this.pattern.prev(true,pos);
 
-                console.log("2 setting pos: "+pos);
                 this.setPosition(pos);
 
                 if (this.pattern.input(pos))
