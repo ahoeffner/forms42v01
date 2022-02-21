@@ -6,7 +6,9 @@ import { Form, register } from 'forms42';
 	template: `
 		<field class="alex" type="date"></field>
 		<br>
-		<field id="radio" type="text" upper handler="input" format="{2A} - {4#}"></field>
+		<field type="text" upper handler="input" format="{2A} - {4#}"></field>
+		<br>
+		<field type="text"></field>
 		`,
 	styleUrls:[`../../styles.sass`]
 })

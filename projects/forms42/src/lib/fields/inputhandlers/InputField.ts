@@ -101,6 +101,15 @@ export class InputField extends Common implements FormField
         if (this.parser.prevent)
             jsevent.preventDefault();
 
+        if (this.parser.type.startsWith("key"))
+        {
+            if (this.parser.key < '0' || this.parser.key > '9')
+            {
+                console.log("ignore");
+                jsevent.preventDefault();
+            }
+        }
+
         if (this.parser.ignore)
             return;
 
@@ -220,11 +229,17 @@ export class InputField extends Common implements FormField
                     }
                 }
 
+                pos = sel[0];
+                console.log("1 setting pos: "+pos);
                 this.setValue(this.pattern.delete(sel[0],sel[1]));
 
                 if (sel[1] == sel[0] + 1)
                     pos = this.pattern.prev(true);
 
+                if (!this.pattern.setPosition(pos))
+                    pos = this.pattern.prev(true,pos);
+
+                console.log("2 setting pos: "+pos);
                 this.setPosition(pos);
 
                 if (this.pattern.input(pos))

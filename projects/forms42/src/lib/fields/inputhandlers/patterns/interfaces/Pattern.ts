@@ -27,8 +27,8 @@ export interface Pattern
     validate() : void;
     input(pos:number) : boolean;
 
-    prev(printable:boolean) : number;
-    next(printable:boolean) : number;
+    prev(printable:boolean,from?:number) : number;
+    next(printable:boolean,from?:number) : number;
 
     getPosition() : number;
     getField(n:number) : Field;
