@@ -160,17 +160,6 @@ export class InputField extends Common implements FormField
             }
         }
 
-        /*
-        if (this.parser.type.startsWith("key"))
-        {
-            if (this.parser.key < '0' || this.parser.key > '9')
-            {
-                console.log("ignore");
-                jsevent.preventDefault();
-            }
-        }
-        */
-
         if (this.parser.ignore)
             return;
 
@@ -192,7 +181,6 @@ export class InputField extends Common implements FormField
     }
 
 
-    private dragpos:number = 0;
     private fieldsel:number[] = [0,0];
 
     private applyPattern() : boolean
