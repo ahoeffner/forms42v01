@@ -323,9 +323,15 @@ export class InputField extends Common implements FormField
                 this.setValue(this.pattern.getValue());
                 this.setPosition(this.pattern.next(true));
                 pos = this.pattern.getPosition();
-                this.setSelection([pos,pos]);
+            }
+            else
+            {
+                this.setPosition(pos);
+                this.pattern.setPosition(pos);
+                console.log("failed pos: "+pos+" pattern: "+this.pattern.getPosition());
             }
 
+            this.setSelection([pos,pos]);
             return(false);
         }
 
