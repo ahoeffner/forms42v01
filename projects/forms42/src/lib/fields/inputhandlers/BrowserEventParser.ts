@@ -30,8 +30,8 @@ export class BrowserEventParser
     {
         this.jsevent$ = event;
 
-        if (!this.isKey) this.reset();
-        else             this.parseKeyEvent();
+        if (!this.isKeyEvent) this.reset();
+        else                  this.parseKeyEvent();
     }
 
 
@@ -50,9 +50,15 @@ export class BrowserEventParser
         this.funckey = null;
     }
 
-    public get isKey() : boolean
+    public get isKeyEvent() : boolean
     {
         return(this.jsevent$.type.startsWith("key"));
+    }
+
+    public get isPrintableKey() : boolean
+    {
+        if (this.ctrlkey != null) return(false);
+        return(this.key != null && this.key.length == 1);
     }
 
     public get FuncKey() : boolean

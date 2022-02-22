@@ -84,7 +84,7 @@ export class InputField extends Common implements FormField
         if (type == "x-dec")
         {
             type = "text";
-            this.int = true;
+            this.dec = true;
         }
 
         if (type == "x-date")
@@ -127,6 +127,38 @@ export class InputField extends Common implements FormField
 
         if (this.parser.prevent)
             jsevent.preventDefault();
+
+        if (this.int && this.parser.type == "keydown")
+        {
+            if (this.parser.isPrintableKey)
+            {
+                if (this.parser.key < '0' || this.parser.key > '9')
+                {
+                    jsevent.preventDefault();
+                    return;
+                }
+            }
+        }
+
+        if (this.dec && this.parser.type == "keydown")
+        {
+            if (this.parser.isPrintableKey)
+            {
+                let pass:boolean = false;
+
+                if (this.parser.key >= '0' && this.parser.key <= '9')
+                    pass = true;
+
+                if (this.parser.key == "." && !this.element.value.includes("."))
+                    pass = true;
+
+                if (!pass)
+                {
+                    jsevent.preventDefault();
+                    return;
+                }
+            }
+        }
 
         /*
         if (this.parser.type.startsWith("key"))
@@ -228,7 +260,7 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.ignore || !this.parser.isKey)
+        if (this.parser.ignore || !this.parser.isKeyEvent)
             return(true);
 
         this.fieldsel = [0,0];
