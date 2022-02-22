@@ -143,12 +143,17 @@ export class InputField extends Common implements FormField
     }
 
 
+    private dragpos:number = 0;
     private fieldsel:number[] = [0,0];
+
     private applyPattern() : boolean
     {
         let prevent:boolean = this.parser.prevent;
 
         if (this.parser.printable)
+            prevent = true;
+
+        if (this.parser.type == "drop")
             prevent = true;
 
         if (!this.parser.modifier)
@@ -344,6 +349,9 @@ export class InputField extends Common implements FormField
         element.addEventListener("wheel", (event) => {this.onEvent(event)});
         element.addEventListener("mouseout", (event) => {this.onEvent(event)});
         element.addEventListener("mouseover", (event) => {this.onEvent(event)});
+
+        element.addEventListener("drop", (event) => {this.onEvent(event)});
+        element.addEventListener("dragover", (event) => {this.onEvent(event)});
 
         element.addEventListener("click", (event) => {this.onEvent(event)});
         element.addEventListener("dblclick", (event) => {this.onEvent(event)});
