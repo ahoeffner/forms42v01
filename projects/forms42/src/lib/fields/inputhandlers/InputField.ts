@@ -142,6 +142,8 @@ export class InputField extends Common implements FormField
         }
     }
 
+
+    private fieldsel:number[] = [0,0];
     private applyPattern() : boolean
     {
         let prevent:boolean = this.parser.prevent;
@@ -184,39 +186,30 @@ export class InputField extends Common implements FormField
             if (pos >= this.pattern.size())
                 pos = this.pattern.size() - 1;
 
-            let sel:number[] = this.getSelection();
             let fld:number[] = this.pattern.getFieldArea(pos);
 
-            // toggle field selection
-            if (sel[1] - sel[0] <= 1)
+            if (pos < fld[0] || pos > fld[1])
             {
-                setTimeout(() =>
-                {
-                    pos = fld[0];
-                    this.setPosition(pos);
-                    this.setSelection(fld);
-                    this.pattern.setPosition(pos);
-                },1);
+                pos = fld[0];
+                this.fieldsel = [pos,pos];
             }
-            else
-            {
-                setTimeout(() =>
-                {
-                    pos = this.getPosition();
-                    while(pos < fld[0]) pos++;
-                    while(pos > fld[1]) pos--;
 
-                    this.setPosition(pos);
-                    this.setSelection([pos,pos]);
-                    this.pattern.setPosition(pos);
-                },1);
-            }
+            // toggle field selection
+            if (this.fieldsel[0] == this.fieldsel[1]) pos = fld[0];
+            else                                      fld = [pos,pos];
+
+            this.fieldsel = fld;
+            this.setPosition(pos);
+            this.setSelection(fld);
+            this.pattern.setPosition(pos);
 
             return(false);
         }
 
         if (this.parser.ignore || !this.parser.isKey)
             return(true);
+
+        this.fieldsel = [0,0];
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
