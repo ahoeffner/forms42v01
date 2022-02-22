@@ -710,7 +710,7 @@ class Token
             case "c": this.setCase('l'); break;
             case "C": this.setCase('u'); break;
             case "#": this.setRegx("[0-9]"); break;
-            case "d": this.setRegx("[0-9,.+-]"); break;
+            case "d": this.setRegx("[0-9.-]"); break;
             case "a": this.setRegx("[a-z]").setCase('l'); break;
             case "A": this.setRegx("[A-Z]").setCase('u'); break;
             case "w": this.setRegx("[a-zA-Z_0-9]").setCase('l'); break;

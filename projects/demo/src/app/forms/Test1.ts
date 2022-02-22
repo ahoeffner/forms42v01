@@ -13,14 +13,15 @@ import { Form, register } from 'forms42';
 			</div>
 			<div class="movable" draggable="true" style="margin-top: 25px; border: 1px solid black;">
 				<p>Movable</p>
-				<field type="text"></field>
+				<field type="text">
+					<p>What the ....</p>
+					<script type="javascript">
+						var mv = document.getElementsByClassName("movable");
+						console.log("movable: "+movable);
+					</script>
+				</field>
 			</div>
 		</div>
-
-		<script>
-			var mv = document.getElementsByClassName("movable");
-			console.log("movable: "+movable);
-		</script>
 		`,
 	styleUrls:[`../../styles.sass`]
 })
