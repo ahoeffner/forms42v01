@@ -19,6 +19,8 @@ import { FormField, EventHandler, Event, getEventType } from "../interfaces/Form
 
 export class InputField extends Common implements FormField
 {
+    private int:boolean = false;
+    private dec:boolean = false;
 	private pattern:Pattern = null;
 	private element:HTMLInputElement = null;
     private parser:BrowserEventParser = new BrowserEventParser();
@@ -69,22 +71,37 @@ export class InputField extends Common implements FormField
             if (attr == "format") pattern = value;
             if (attr == "placeholder") placeholder = value;
 
-            this.element.setAttribute(attr,value);
+            if (attr != "type" && attr != "format")
+                this.element.setAttribute(attr,value);
         });
 
-        if (type == "date")
+        if (type == "x-int")
         {
-            this.element.setAttribute("type","text");
+            type = "text";
+            this.int = true;
+        }
+
+        if (type == "x-dec")
+        {
+            type = "text";
+            this.int = true;
+        }
+
+        if (type == "x-date")
+        {
+            type = "text";
             this.element.removeAttribute("placeholder");
             this.pattern = new FieldPattern("{##} - {##} - {####}","dd - mm - yyyy");
         }
 
-        if (pattern != null)
+        if (type == "x-fixed")
         {
-            this.element.setAttribute("type","text");
+            type = "text";
             this.element.removeAttribute("placeholder");
             this.pattern = new FieldPattern(pattern,placeholder);
         }
+
+        this.element.setAttribute("type",type);
     }
 
     private onEvent(jsevent:any) : void
