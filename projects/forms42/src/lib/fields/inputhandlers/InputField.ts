@@ -14,7 +14,7 @@ import { Common } from "./Common";
 import { Pattern } from "./patterns/interfaces/Pattern";
 import { BrowserEventParser } from "./BrowserEventParser";
 import { Pattern as FieldPattern } from "./patterns/Pattern";
-import { FormField, EventHandler, Event, getEventType } from "../interfaces/FormField";
+import { FormField, EventHandler, Event } from "../interfaces/FormField";
 
 
 export class InputField extends Common implements FormField
@@ -175,7 +175,7 @@ export class InputField extends Common implements FormField
         if (buble)
         {
             let handler:EventHandler = this.getEventHandler();
-            let event:Event = {type: getEventType(jsevent), event: jsevent};
+            let event:Event = {type: this.parser.event.type, event: jsevent};
             handler(event);
         }
     }

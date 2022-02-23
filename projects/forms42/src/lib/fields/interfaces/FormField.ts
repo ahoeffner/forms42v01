@@ -73,9 +73,3 @@ export enum FieldEvent
     Changed,
     Custom
 }
-
-
-export function getEventType(type:string) : FieldEvent
-{
-    return(FieldEvent.Change);
-}
