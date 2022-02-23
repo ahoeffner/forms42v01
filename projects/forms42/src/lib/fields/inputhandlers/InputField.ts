@@ -206,17 +206,8 @@ export class InputField extends Common implements FormField
         this.parser.preventDefault(prevent);
         let pos:number = this.getPosition();
 
-        if (this.parser.isPrintableKey)
-            console.log(this.parser.toString()+" "+this.pattern.isValid(pos,this.parser.key));
-            
-        if (this.parser.isPrintableKey && !this.pattern.isValid(pos,this.parser.key))
-        {
-            console.log("reject "+this.parser.toString());
-            this.parser.event.preventDefault();
-            return(false);
-        }
-
-        this.setValue(this.pattern.getValue());
+        if (this.getValue() == null)
+            this.setValue(this.pattern.getValue());
 
         if (this.parser.type == "blur" || this.parser.type == "change")
         {
@@ -318,7 +309,6 @@ export class InputField extends Common implements FormField
         if (this.parser.printable)
         {
             let sel:number[] = this.getSelection();
-            console.log("before pos: "+pos+" pattern: "+this.pattern.getPosition()+" sel: "+sel);
 
             if (sel[0] != sel[1])
             {
@@ -335,13 +325,6 @@ export class InputField extends Common implements FormField
                 this.setPosition(this.pattern.next(true));
                 pos = this.pattern.getPosition();
                 this.setSelection([pos,pos]);
-            }
-            else
-            {
-                console.log("failed pos: "+pos+" pattern: "+this.pattern.getPosition()+" sel: "+sel+" "+this.getSelection());
-                this.setPosition(pos);
-                this.setSelection([pos,pos]);
-                this.pattern.setPosition(pos);
             }
 
             return(false);
