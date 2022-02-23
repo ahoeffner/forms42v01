@@ -244,7 +244,7 @@ export class InputField extends Common implements FormField
 
             let fld:number[] = this.pattern.getFieldArea(pos);
 
-            if (pos < fld[0] || pos > fld[1])
+            if (pos < this.fieldsel[0] || pos > this.fieldsel[1])
             {
                 pos = fld[0];
                 this.fieldsel = [pos,pos];
