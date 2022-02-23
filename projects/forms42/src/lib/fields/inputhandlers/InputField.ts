@@ -207,9 +207,7 @@ export class InputField extends Common implements FormField
         this.parser.preventDefault(prevent);
         let pos:number = this.getPosition();
 
-        console.log(this.parser.type+" focus: "+this.focus);
-
-        if (this.parser.type == "focus" && this.getValue() == null)
+        if (this.parser.type == "focus")
         {
             this.focus = true;
 
