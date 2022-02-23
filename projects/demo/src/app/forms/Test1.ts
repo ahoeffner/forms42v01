@@ -14,7 +14,10 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
-				<field type="x-int"></field>
+				<field id="xx" type="x-int">
+					<label for="xx">Do you like cheese?</label>
+					<script>console.log("hello")</script>
+				</field>
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
