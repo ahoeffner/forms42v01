@@ -21,10 +21,10 @@ import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
 export class FieldInstancePrivate
 {
     private impl$:IField = null;
-    private type$:Handler = null;
+    private handler$:Handler = null;
     private field$:FormField = null;
     private fieldinst$:FieldInstance = null
-    
+
 
     constructor(field:FieldInstance)
     {
@@ -73,9 +73,9 @@ export class FieldInstancePrivate
         let classes:string = null;
 
         let replace:boolean = false;
-        let type:Handler = this.getHandler(name);
+        let handler:Handler = this.getHandler(name);
 
-        if (type == this.type$)
+        if (handler == this.handler$)
             return;
 
         if (this.field$ != null)
@@ -86,22 +86,22 @@ export class FieldInstancePrivate
             classes = this.field$.getClasses();
             this.field$.detach(this.impl$.tag());
         }
-        
-        this.type$ = type;
-        let ftype:Type<FormField> = Handlers.get(type);
+
+        this.handler$ = handler;
+        let ftype:Type<FormField> = Handlers.get(handler);
 
         this.field$ = new ftype();
         this.field$.setBody(this.impl$.body());
         this.field$.setEventHandler(this.onEvent);
         this.field$.setAttributes(this.impl$.attributes());
 
-        if (replace) 
+        if (replace)
         {
             this.field$.setValue(value);
             this.field$.setStyle(style);
             this.field$.setClasses(classes);
         }
-        
+
         this.field$.prepare();
         this.field$.attach(this.impl$.tag());
     }
@@ -116,7 +116,7 @@ export class FieldInstancePrivate
         if (name == null) name = "input";
         let type:Handler = Handler[name.toLowerCase() as keyof typeof Handler];
 
-        if (type == null) 
+        if (type == null)
         {
             type = Handler.input;
             console.error({message: "No such handler as "+name});
