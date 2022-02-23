@@ -237,27 +237,32 @@ export class InputField extends Common implements FormField
             return(true);
         }
 
+        // Wait until position is set
         if (this.parser.type == "click")
         {
-            if (pos >= this.pattern.size())
+            setTimeout(() =>
+            {
+                pos = this.getPosition();
+                if (pos >= this.pattern.size())
                 pos = this.pattern.size() - 1;
 
-            let fld:number[] = this.pattern.getFieldArea(pos);
+                let fld:number[] = this.pattern.getFieldArea(pos);
 
-            if (pos < this.fieldsel[0] || pos > this.fieldsel[1])
-            {
-                pos = fld[0];
-                this.fieldsel = [pos,pos];
-            }
+                if (pos < this.fieldsel[0] || pos > this.fieldsel[1])
+                {
+                    pos = fld[0];
+                    this.fieldsel = [pos,pos];
+                }
 
-            // toggle field selection
-            if (this.fieldsel[0] == this.fieldsel[1]) pos = fld[0];
-            else                                      fld = [pos,pos];
+                // toggle field selection
+                if (this.fieldsel[0] == this.fieldsel[1]) pos = fld[0];
+                else                                      fld = [pos,pos];
 
-            this.fieldsel = fld;
-            this.setPosition(pos);
-            this.setSelection(fld);
-            this.pattern.setPosition(pos);
+                this.fieldsel = fld;
+                this.setPosition(pos);
+                this.setSelection(fld);
+                this.pattern.setPosition(pos);
+            },1);
 
             return(false);
         }
@@ -265,11 +270,11 @@ export class InputField extends Common implements FormField
         if (this.parser.ignore || !this.parser.isKeyEvent)
             return(true);
 
-        this.fieldsel = [0,0];
+        this.fieldsel = this.getSelection();
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
-            let sel:number[] = this.getSelection();
+            let sel:number[] = this.fieldsel;
 
             if (sel[0] == sel[1] && !this.pattern.input(sel[0]))
             {
@@ -321,7 +326,7 @@ export class InputField extends Common implements FormField
 
         if (this.parser.printable)
         {
-            let sel:number[] = this.getSelection();
+            let sel:number[] = this.fieldsel;
 
             if (sel[0] != sel[1])
             {
