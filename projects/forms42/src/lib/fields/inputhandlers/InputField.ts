@@ -270,11 +270,11 @@ export class InputField extends Common implements FormField
         if (this.parser.ignore || !this.parser.isKeyEvent)
             return(true);
 
-        this.fieldsel = this.getSelection();
+        this.fieldsel = [pos,pos];
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
-            let sel:number[] = this.fieldsel;
+            let sel:number[] = this.getSelection();
 
             if (sel[0] == sel[1] && !this.pattern.input(sel[0]))
             {
@@ -326,7 +326,7 @@ export class InputField extends Common implements FormField
 
         if (this.parser.printable)
         {
-            let sel:number[] = this.fieldsel;
+            let sel:number[] = this.getSelection();
 
             if (sel[0] != sel[1])
             {
