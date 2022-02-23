@@ -12,7 +12,7 @@
 
 export class BrowserEventParser
 {
-    private jsevent$:any;
+    private event$:any;
 
     public key:string = null;
     public ctrlkey:string = null;
@@ -28,7 +28,7 @@ export class BrowserEventParser
 
     public set event(event:any)
     {
-        this.jsevent$ = event;
+        this.event$ = event;
 
         if (!this.isKeyEvent) this.reset();
         else                  this.parseKeyEvent();
@@ -37,7 +37,7 @@ export class BrowserEventParser
 
     public get event() : any
     {
-        return(this.jsevent$);
+        return(this.event$);
     }
 
 
@@ -58,7 +58,7 @@ export class BrowserEventParser
 
     public get isKeyEvent() : boolean
     {
-        return(this.jsevent$.type.startsWith("key"));
+        return(this.event.type.startsWith("key"));
     }
 
     public get isPrintableKey() : boolean
@@ -67,43 +67,35 @@ export class BrowserEventParser
         return(this.key != null && this.key.length == 1);
     }
 
-    public get FuncKey() : boolean
+    public get onFuncKey() : boolean
     {
         return(this.funckey != null);
     }
 
-    public get CtrlKeyUp() : boolean
+    public get onCtrlKeyUp() : boolean
     {
         return(this.ctrlkey != null && this.type == "keyup");
     }
 
-    public get CtrlKeyDown() : boolean
+    public get onCtrlKeyDown() : boolean
     {
         return(this.ctrlkey != null && this.type == "keydown");
     }
 
     public get type() : string
     {
-        return(this.jsevent.type);
+        return(this.event.type);
     }
-
-
-    public get jsevent() : any
-    {
-        return(this.jsevent$);
-    }
-
 
     public get modifier() : boolean
     {
         return(this.alt || this.ctrl || this.meta || this.shift);
     }
 
-
     public preventDefault(flag?:boolean) : void
     {
         if (flag == null) flag = this.prevent;
-        if (flag) this.jsevent.preventDefault();
+        if (flag) this.event.preventDefault();
     }
 
 
@@ -111,30 +103,30 @@ export class BrowserEventParser
     {
         this.printable = false;
 
-        switch(this.jsevent.type)
+        switch(this.event.type)
         {
             case "keyup" :
 
                 if (!this.alt && !this.ctrl && !this.meta)
                 {
-                    if (this.jsevent.key.length == 1)
+                    if (this.event.key.length == 1)
                     {
                         this.ignore = false;
                         this.printable = true;
-                        this.key = this.jsevent.key;
+                        this.key = this.event.key;
                     }
                 }
 
                 if (this.key.startsWith("F")) this.ignore = false;
 
-                if (this.jsevent.key == "Backspace") this.ignore = false;
-                if (this.jsevent.key == "ArrowLeft") this.ignore = false;
-                if (this.jsevent.key == "ArrowRight") this.ignore = false;
+                if (this.event.key == "Backspace") this.ignore = false;
+                if (this.event.key == "ArrowLeft") this.ignore = false;
+                if (this.event.key == "ArrowRight") this.ignore = false;
 
-                if (this.jsevent.key == "Alt") {this.ignore = true; this.alt = false;}
-                if (this.jsevent.key == "Meta") {this.ignore = true; this.meta = false;}
-                if (this.jsevent.key == "Shift") {this.ignore = true; this.shift = false;}
-                if (this.jsevent.key == "Control") {this.ignore = true; this.ctrl = false;}
+                if (this.event.key == "Alt") {this.ignore = true; this.alt = false;}
+                if (this.event.key == "Meta") {this.ignore = true; this.meta = false;}
+                if (this.event.key == "Shift") {this.ignore = true; this.shift = false;}
+                if (this.event.key == "Control") {this.ignore = true; this.ctrl = false;}
 
                 if (this.ctrlkey != null) this.ignore = false;
 
@@ -143,9 +135,9 @@ export class BrowserEventParser
             case "keypress":
 
                 this.ignore = true;
-                this.key = this.jsevent.key;
+                this.key = this.event.key;
 
-                if (this.jsevent.key.length == 1)
+                if (this.event.key.length == 1)
                     this.printable = true;
 
             break;
@@ -159,7 +151,7 @@ export class BrowserEventParser
                 this.ctrlkey = null;
                 this.funckey = null;
 
-                this.key = this.jsevent.key;
+                this.key = this.event.key;
 
                 if (this.key.length == 1 && (this.alt || this.ctrl || this.meta))
                 {
