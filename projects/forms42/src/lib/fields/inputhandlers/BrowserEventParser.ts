@@ -35,6 +35,12 @@ export class BrowserEventParser
     }
 
 
+    public get event() : any
+    {
+        return(this.jsevent$);
+    }
+
+
     public reset() : void
     {
         this.key = null;

@@ -10,6 +10,15 @@
  * accompanied this code).
  */
 
+export enum Validity
+{
+    na,
+    true,
+    false,
+    asupper,
+    aslower
+}
+
 export interface Pattern
 {
     size() : number;
@@ -23,7 +32,9 @@ export interface Pattern
 
     getValue() : string;
     setValue(value:any) : void;
+
     validate(fld?:number) : boolean;
+    isValid(pos:number, c:string) : Validity
 
     prev(printable:boolean,from?:number) : number;
     next(printable:boolean,from?:number) : number;

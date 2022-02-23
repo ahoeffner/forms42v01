@@ -39,7 +39,7 @@
  *  C  : any uppercase character
  */
 
-import { Pattern as PatternType, Field as IField } from "./interfaces/Pattern";
+import { Pattern as PatternType, Field as IField, Validity } from "./interfaces/Pattern";
 
 export class Pattern implements PatternType
 {
@@ -259,40 +259,14 @@ export class Pattern implements PatternType
         if (!this.setPosition(pos))
             return(false);
 
-        let token:Token = this.tokens.get(this.pos);
+        let valid:Validity = this.isValid(pos,c);
 
-        switch(token.case)
+        switch(valid)
         {
-            case 'u':
-                c = c.toUpperCase();
-                if (!token.validate(c)) return(false);
-            break;
-
-            case 'l':
-                c = c.toLowerCase();
-                if (!token.validate(c)) return(false);
-            break;
-
-            case '?':
-                let lc = c.toLocaleLowerCase();
-                let uc = c.toLocaleUpperCase();
-
-                if (lc == uc)
-                {
-                    if (!token.validate(c))
-                        return(false);
-                }
-                else
-                {
-                    c = lc;
-                    if (!token.validate(lc))
-                    {
-                        c = uc;
-                        if (!token.validate(uc))
-                            return(false);
-                    }
-                }
-            break;
+            case Validity.na : return(false);
+            case Validity.false : return(false);
+            case Validity.asupper : c = c.toLocaleUpperCase(); break;
+            case Validity.aslower : c = c.toLocaleLowerCase(); break;
         }
 
         let a:string = this.value.substring(this.pos+1);
@@ -302,6 +276,62 @@ export class Pattern implements PatternType
         this.clear(pos);
 
         return(true);
+    }
+
+    public isValid(pos:number, c:string) : Validity
+    {
+        let lc = c.toLocaleLowerCase();
+        let uc = c.toLocaleUpperCase();
+
+        let valid:Validity = Validity.false;
+        let token:Token = this.tokens.get(pos);
+
+        if (token == null)
+            return(Validity.na);
+
+        switch(token.case)
+        {
+            case 'u':
+                if (token.validate(uc))
+                {
+                    if (c == uc) valid = Validity.true;
+                    else         valid = Validity.asupper;
+                }
+            break;
+
+            case 'l':
+                if (token.validate(lc))
+                {
+                    if (c == lc) valid = Validity.true;
+                    else         valid = Validity.asupper;
+                }
+            break;
+
+            case '?':
+                if (lc == uc)
+                {
+                    if (token.validate(c))
+                        valid = Validity.true;
+                }
+                else
+                {
+                    if (token.validate(c))
+                    {
+                        valid = Validity.true;
+                    }
+                    else if (c != lc && token.validate(lc))
+                    {
+                        valid = Validity.aslower;
+                    }
+                    else if (c != uc && token.validate(uc))
+                    {
+                        valid = Validity.asupper;
+                    }
+                }
+            break;
+        }
+
+        return(valid);
     }
 
     public delete(fr:number, to:number) : string
