@@ -184,7 +184,6 @@ export class InputField extends Common implements FormField
     private focus:boolean = false;
     private mousedown:boolean = false;
     private mousemark:boolean = false;
-    private fieldsel:number[] = [0,0];
 
     private applyPattern() : boolean
     {
@@ -263,7 +262,8 @@ export class InputField extends Common implements FormField
         // Wait until position is set
         if (this.parser.type == "mouseup")
         {
-            console.log(this.fieldsel+" == "+this.getSelection());
+            let sel:number[] = this.getSelection();
+
             if (!this.mousemark)
             {
                 setTimeout(() =>
@@ -275,15 +275,12 @@ export class InputField extends Common implements FormField
 
                     let fld:number[] = this.pattern.getFieldArea(pos);
 
-                    if (pos < this.fieldsel[0] || pos > this.fieldsel[1])
-                    {
+                    if (pos < sel[0] || pos > sel[1])
                         pos = fld[0];
-                        this.fieldsel = [pos,pos];
-                    }
 
                     // toggle field selection
-                    if (this.fieldsel[0] == this.fieldsel[1]) pos = fld[0];
-                    else                                      fld = [pos,pos];
+                    if (sel[1] - sel[0] <= 1) pos = fld[0];
+                    else                      fld = [pos,pos];
 
                     this.setPosition(pos);
                     this.setSelection(fld);
@@ -440,7 +437,7 @@ export class InputField extends Common implements FormField
 
     private setSelection(sel:number[]) : void
     {
-        this.fieldsel = sel;
+        if (sel[1] < sel[0]) sel[1] = sel[0];
         this.element.selectionStart = sel[0];
         this.element.selectionEnd = sel[1]+1;
     }
