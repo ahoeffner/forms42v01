@@ -227,7 +227,7 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "mousemove" && this.mousedown)
         {
             if (!this.mousemark)
-                this.setSelection([pos,pos-1]);
+                setTimeout(() => {this.setSelection([pos,pos-1]);},0);
 
             this.mousemark = true;
         }
