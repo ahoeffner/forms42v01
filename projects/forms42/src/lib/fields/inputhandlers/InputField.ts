@@ -181,7 +181,6 @@ export class InputField extends Common implements FormField
     }
 
 
-    private marker:number = 0;
     private focus:boolean = false;
     private mousedown:boolean = false;
     private mousemove:boolean = false;
@@ -229,10 +228,7 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "mousemove" && this.mousedown)
         {
             if (!this.mousemove)
-            {
-                this.marker = pos;
                 this.setSelection([pos,pos-1]);
-            }
 
             this.mousemove = true;
         }
