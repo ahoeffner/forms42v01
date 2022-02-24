@@ -181,7 +181,10 @@ export class InputField extends Common implements FormField
     }
 
 
+    private marker:number = 0;
     private focus:boolean = false;
+    private mousedown:boolean = false;
+    private mousemove:boolean = false;
     private fieldsel:number[] = [0,0];
 
     private applyPattern() : boolean
@@ -192,6 +195,9 @@ export class InputField extends Common implements FormField
             prevent = true;
 
         if (this.parser.type == "drop")
+            prevent = true;
+
+        if (this.parser.key == "ArrowLeft" && this.parser.shift)
             prevent = true;
 
         if (!this.parser.modifier)
@@ -212,11 +218,30 @@ export class InputField extends Common implements FormField
             this.focus = true;
 
             if (this.getValue() == null)
-                this.setValue(this.pattern.getValue());
+                this.setValue(this.pattern.getPlaceholder());
+        }
+
+        if (this.parser.type == "mousedown")
+        {
+            this.mousedown = true;
+        }
+
+        if (this.parser.type == "mousemove" && this.mousedown)
+        {
+            if (!this.mousemove)
+            {
+                this.marker = pos;
+                this.setSelection([pos,pos-1]);
+            }
+
+            this.mousemove = true;
         }
 
         if (this.parser.type == "mouseover" && this.getValue() == null)
-            this.setValue(this.pattern.getValue());
+            this.setValue(this.pattern.getPlaceholder());
+
+        if (this.parser.type == "mouseover" && this.getValue() == null)
+            this.setValue(this.pattern.getPlaceholder());
 
         if (this.parser.type == "mouseout" && !this.focus && this.pattern.isNull())
             this.setValue(null);
@@ -238,39 +263,61 @@ export class InputField extends Common implements FormField
         }
 
         // Wait until position is set
-        if (this.parser.type == "click")
+        if (this.parser.type == "mouseup")
         {
-            setTimeout(() =>
+            if (!this.mousemove)
             {
-                pos = this.getPosition();
-                if (pos >= this.pattern.size())
-                pos = this.pattern.size() - 1;
-
-                let fld:number[] = this.pattern.getFieldArea(pos);
-
-                if (pos < this.fieldsel[0] || pos > this.fieldsel[1])
+                setTimeout(() =>
                 {
-                    pos = fld[0];
-                    this.fieldsel = [pos,pos];
-                }
+                    pos = this.getPosition();
 
-                // toggle field selection
-                if (this.fieldsel[0] == this.fieldsel[1]) pos = fld[0];
-                else                                      fld = [pos,pos];
+                    if (pos >= this.pattern.size())
+                        pos = this.pattern.size() - 1;
 
-                this.fieldsel = fld;
-                this.setPosition(pos);
-                this.setSelection(fld);
-                this.pattern.setPosition(pos);
-            },1);
+                    let fld:number[] = this.pattern.getFieldArea(pos);
+
+                    if (pos < this.fieldsel[0] || pos > this.fieldsel[1])
+                    {
+                        pos = fld[0];
+                        this.fieldsel = [pos,pos];
+                    }
+
+                    // toggle field selection
+                    if (this.fieldsel[0] == this.fieldsel[1]) pos = fld[0];
+                    else                                      fld = [pos,pos];
+
+                    this.setPosition(pos);
+                    this.setSelection(fld);
+                    this.pattern.setPosition(pos);
+                },1);
+            }
+            else
+            {
+                setTimeout(() =>
+                {
+                    pos = this.getPosition();
+
+                    if (pos >= this.pattern.size())
+                        pos = this.pattern.size() - 1;
+
+                    if (!this.pattern.setPosition(pos))
+                    {
+                        pos = this.pattern.prev(true,pos);
+
+                        if (!this.pattern.setPosition(pos))
+                            pos = this.pattern.next(true,pos);
+                    }
+                },1);
+            }
+
+            this.mousedown = false;
+            this.mousemove = false;
 
             return(false);
         }
 
         if (this.parser.ignore || !this.parser.isKeyEvent)
             return(true);
-
-        this.fieldsel = [pos,pos];
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
@@ -348,11 +395,25 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.key == "ArrowLeft" && !this.parser.modifier)
+        if (this.parser.key == "ArrowLeft")
         {
-            pos = this.pattern.prev(true);
-            this.setPosition(pos);
-            this.setSelection([pos,pos]);
+            let sel:number[] = this.getSelection();
+
+            if (!this.parser.modifier)
+            {
+                pos = this.pattern.prev(true);
+                this.setPosition(pos);
+                this.setSelection([pos,pos]);
+            }
+            else if (this.parser.shift)
+            {
+                if (pos > 0)
+                {
+                    pos--;
+                    this.setPosition(pos);
+                    this.setSelection([pos,sel[1]-1]);
+                }
+            }
             return(false);
         }
 
@@ -380,6 +441,7 @@ export class InputField extends Common implements FormField
 
     private setSelection(sel:number[]) : void
     {
+        this.fieldsel = sel;
         this.element.selectionStart = sel[0];
         this.element.selectionEnd = sel[1]+1;
     }
@@ -403,8 +465,11 @@ export class InputField extends Common implements FormField
         element.addEventListener("keypress", (event) => {this.onEvent(event)});
 
         element.addEventListener("wheel", (event) => {this.onEvent(event)});
+        element.addEventListener("mouseup", (event) => {this.onEvent(event)});
         element.addEventListener("mouseout", (event) => {this.onEvent(event)});
+        element.addEventListener("mousedown", (event) => {this.onEvent(event)});
         element.addEventListener("mouseover", (event) => {this.onEvent(event)});
+        element.addEventListener("mousemove", (event) => {this.onEvent(event)});
 
         element.addEventListener("drop", (event) => {this.onEvent(event)});
         element.addEventListener("dragover", (event) => {this.onEvent(event)});
