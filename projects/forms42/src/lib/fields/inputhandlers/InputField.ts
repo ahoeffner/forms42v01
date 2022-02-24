@@ -183,7 +183,7 @@ export class InputField extends Common implements FormField
 
     private focus:boolean = false;
     private mousedown:boolean = false;
-    private mousemove:boolean = false;
+    private mousemark:boolean = false;
     private fieldsel:number[] = [0,0];
 
     private applyPattern() : boolean
@@ -227,10 +227,10 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "mousemove" && this.mousedown)
         {
-            if (!this.mousemove)
+            if (!this.mousemark)
                 this.setSelection([pos,pos-1]);
 
-            this.mousemove = true;
+            this.mousemark = true;
         }
 
         if (this.parser.type == "mouseover" && this.getValue() == null)
@@ -245,10 +245,12 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "blur" || this.parser.type == "change")
         {
             this.focus = false;
-            this.pattern.setPosition(0);
 
             if (this.pattern.isNull())
+            {
                 this.setValue(null);
+                this.setPosition(pos);
+            }
 
             let valid:boolean = this.pattern.validate();
 
@@ -261,7 +263,8 @@ export class InputField extends Common implements FormField
         // Wait until position is set
         if (this.parser.type == "mouseup")
         {
-            if (!this.mousemove)
+            console.log(this.fieldsel+" == "+this.getSelection());
+            if (!this.mousemark)
             {
                 setTimeout(() =>
                 {
@@ -307,7 +310,7 @@ export class InputField extends Common implements FormField
             }
 
             this.mousedown = false;
-            this.mousemove = false;
+            this.mousemark = false;
 
             return(false);
         }
