@@ -48,14 +48,15 @@ export class Pattern implements PatternType
     private fldno:number = 0;
     private value:string = "";
     private fields:Field[] = [];
-    private format$:string = null;
     private pattern$:string = null;
+    private placeholder$:string = null;
     private predefined:string = "*#dcaAw";
     private tokens:Map<number,Token> = new Map<number,Token>();
 
-    constructor(format:string)
+    constructor(pattern:string)
     {
-        this.setPattern(format);
+        if (pattern != null)
+            this.setPattern(pattern);
     }
 
     public size() : number
@@ -86,12 +87,12 @@ export class Pattern implements PatternType
 
     public getPattern(): string
     {
-        return(this.format$);
+        return(this.pattern$);
     }
 
-    public getInputPattern(): string
+    public getPlaceholder(): string
     {
-        return(this.pattern$);
+        return(this.placeholder$);
     }
 
     public validate(fld?:number) : boolean
@@ -108,38 +109,37 @@ export class Pattern implements PatternType
         return(true);
     }
 
-    public setPattern(format:string) : void
+    public setPattern(pattern:string) : void
     {
         let pos:number = 0;
-        let pattern:string = "";
-        if (format == null) return;
+        let placeholder:string = "";
 
-        for (let i = 0; i < format.length; i++)
+        for (let i = 0; i < pattern.length; i++)
         {
-            let c:string = format.charAt(i);
-            let esc:boolean = this.escaped(format,i);
+            let c:string = pattern.charAt(i);
+            let esc:boolean = this.escaped(pattern,i);
 
             if (esc)
             {
                 let b=i;
-                c = format.charAt(++i);
+                c = pattern.charAt(++i);
             }
 
             if (c == '{' && !esc)
             {
                 let fr:number = i+1;
-                while(i < format.length && format.charAt(++i) != '}');
+                while(i < pattern.length && pattern.charAt(++i) != '}');
 
-                if (i == format.length)
+                if (i == pattern.length)
                     throw "Syntax error in path, non matched {}";
 
-                let def:Token[] = this.parseFieldDefinition(format.substring(fr,i));
+                let def:Token[] = this.parseFieldDefinition(pattern.substring(fr,i));
                 this.fields.push(new Field(this,this.fields.length,pos,pos+def.length));
-                def.forEach((token) => {this.tokens.set(pos++,token); pattern += ' '});
+                def.forEach((token) => {this.tokens.set(pos++,token); placeholder += ' '});
             }
             else
             {
-                pattern += format.charAt(i);
+                placeholder += pattern.charAt(i);
                 this.tokens.set(pos++,new Token('f'));
             }
         }
@@ -147,10 +147,10 @@ export class Pattern implements PatternType
         if (this.fields.length == 0)
             throw "No input fields defined";
 
-        this.value = pattern;
-        this.format$ = format;
+        this.value = placeholder;
         this.pattern$ = pattern;
-        this.plen = pattern.length;
+        this.placeholder$ = placeholder;
+        this.plen = placeholder.length;
         this.fields.forEach((fld) => {fld.init()});
     }
 
@@ -176,7 +176,7 @@ export class Pattern implements PatternType
 
     public input(pos:number) : boolean
     {
-        if (pos < 0 || pos > this.pattern$.length-1)
+        if (pos < 0 || pos > this.placeholder$.length-1)
             return(false);
 
         let token:Token = this.tokens.get(pos);
@@ -187,7 +187,7 @@ export class Pattern implements PatternType
     {
         if (value == null)
         {
-            value = this.pattern$;
+            value = this.placeholder$;
             return;
         }
 
@@ -197,7 +197,7 @@ export class Pattern implements PatternType
         for(let i = 0; i < this.plen && pos < value.length; i++)
         {
             let c = value.charAt(pos);
-            let p = this.pattern$.charAt(i);
+            let p = this.placeholder$.charAt(i);
             let token:Token = this.tokens.get(i);
 
             if (token.type != 'f')
@@ -213,7 +213,7 @@ export class Pattern implements PatternType
         }
 
         for (let i = value.length; i < this.plen; i++)
-            fmt += this.pattern$.charAt(i);
+            fmt += this.placeholder$.charAt(i);
 
         this.value = fmt;
     }
@@ -244,7 +244,7 @@ export class Pattern implements PatternType
             let dist2:number = 0;
 
             while(fr > 0 && this.tokens.get(fr).type == 'f') fr--;
-            while(to < this.pattern$.length-1 && this.tokens.get(to).type == 'f') to++;
+            while(to < this.placeholder$.length-1 && this.tokens.get(to).type == 'f') to++;
 
             dist1 = pos - fr;
             dist2 = to - pos;
@@ -352,7 +352,7 @@ export class Pattern implements PatternType
         let b:string = this.value.substring(0,fr);
 
         for(let i = fr; i < to; i++)
-            p += this.pattern$.charAt(i);
+            p += this.placeholder$.charAt(i);
 
         this.value = b + p + a;
 
@@ -388,7 +388,7 @@ export class Pattern implements PatternType
             let dist2:number = 0;
 
             while(fr > 0 && this.tokens.get(fr).type == 'f') fr--;
-            while(to < this.pattern$.length-1 && this.tokens.get(to).type == 'f') to++;
+            while(to < this.placeholder$.length-1 && this.tokens.get(to).type == 'f') to++;
 
             dist1 = pos - fr;
             dist2 = to - pos;
@@ -400,7 +400,7 @@ export class Pattern implements PatternType
         }
 
         while(fr > 0 && this.tokens.get(fr).type != 'f') fr--;
-        while(to < this.pattern$.length-1 && this.tokens.get(to).type != 'f') to++;
+        while(to < this.placeholder$.length-1 && this.tokens.get(to).type != 'f') to++;
 
         if (this.tokens.get(fr).type == 'f') fr++;
         if (this.tokens.get(to).type == 'f') to--;
@@ -595,7 +595,7 @@ class Field implements IField
     {
         let empty:boolean = true;
         let value:string = this.pattern.getValue();
-        let pattern:string = this.pattern.getInputPattern();
+        let pattern:string = this.pattern.getPlaceholder();
 
         for (let i = 0; i < pattern.length; i++)
         {

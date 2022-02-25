@@ -96,6 +96,10 @@ export class InputField extends Common implements FormField
         if (type == "x-fixed")
         {
             type = "text";
+
+            if (pattern == null)
+                console.error("x-pattern not specified for x-fixed field");
+                
             this.pattern = new FieldPattern(pattern);
         }
 
