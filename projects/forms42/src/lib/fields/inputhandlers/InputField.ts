@@ -119,7 +119,7 @@ export class InputField extends Common implements FormField
 
         if (this.pattern != null)
         {
-            if (!this.applyPattern())
+            if (!this.xfixed())
                 return;
         }
 
@@ -246,7 +246,7 @@ export class InputField extends Common implements FormField
         }
     }
 
-    private applyPattern() : boolean
+    private xfixed() : boolean
     {
         let prevent:boolean = this.parser.prevent;
 
@@ -294,7 +294,6 @@ export class InputField extends Common implements FormField
             if (this.pattern.isNull())
             {
                 this.element.value = "";
-                this.setPosition(0);
                 this.pattern.setPosition(0);
             }
 
@@ -320,6 +319,7 @@ export class InputField extends Common implements FormField
                         pos = this.pattern.size() - 1;
 
                     let fld:number[] = this.pattern.getFieldArea(pos);
+                    console.log("fld: "+fld);
 
                     if (pos < sel[0] || pos > sel[1])
                         pos = fld[0];
@@ -328,11 +328,14 @@ export class InputField extends Common implements FormField
                     if (sel[1] - sel[0] <= 1) pos = fld[0];
                     else                      fld = [pos,pos];
 
-                    if (!this.pattern.setPosition(pos))
-                        pos = this.pattern.findPosition(pos);
+                    if (pos < fld[0]) pos = fld[0];
+                    if (pos > fld[1]) pos = fld[1];
 
+                    if (!this.pattern.setPosition(pos))
+                        throw "cannot set pos: "+pos;
+
+                    this.setPosition(pos);
                     this.setSelection(fld);
-                    this.pattern.setPosition(pos);
                 },1);
             }
             else
