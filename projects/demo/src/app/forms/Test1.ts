@@ -10,7 +10,7 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
-				<field type="x-fixed" x-pattern="+ {2A} - {4#}" x-placeholder="+  BA - 0000"></field>
+				<field type="x-fixed" x-pattern="+ {2A} - {4#} $" x-placeholder="+  BA - 0000  $"></field>
 			</div>
 
 			<div style="margin-top: 25px; position: relative">

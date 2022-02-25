@@ -319,7 +319,6 @@ export class InputField extends Common implements FormField
                         pos = this.pattern.size() - 1;
 
                     let fld:number[] = this.pattern.getFieldArea(pos);
-                    console.log("fld: "+fld);
 
                     if (pos < sel[0] || pos > sel[1])
                         pos = fld[0];
@@ -418,6 +417,9 @@ export class InputField extends Common implements FormField
 
                 if (!this.pattern.setPosition(pos))
                     pos = this.pattern.prev(true,pos);
+
+                if (!this.pattern.setPosition(pos))
+                    pos = this.pattern.next(true,pos);
 
                 this.setPosition(pos);
 
