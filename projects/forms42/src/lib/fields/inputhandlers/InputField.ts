@@ -21,7 +21,6 @@ export class InputField extends Common implements FormField
 {
     private int:boolean = false;
     private dec:boolean = false;
-    private focus:boolean = false;
 	private pattern:Pattern = null;
     private placeholder:string = null;
     private mousedown:boolean = false;
@@ -136,8 +135,6 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "focus")
         {
-            this.focus = true;
-
             if (this.placeholder != null)
                 this.setAttribute("placeholder",this.placeholder);
         }
@@ -156,7 +153,7 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "mouseover" && this.placeholder != null)
             this.setAttribute("placeholder",this.placeholder);
 
-        if (this.parser.type == "mouseout" && !this.focus && this.placeholder != null)
+        if (this.parser.type == "mouseout" && this.placeholder != null)
             this.removeAttribute("placeholder");
 
         if (this.parser.prevent)
@@ -293,8 +290,11 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "focus")
         {
-            this.focus = true;
-            this.setValue(this.pattern.getValue());
+            if (this.getValue() == null)
+            {
+                pos = this.pattern.findPosition(0);
+                this.setValue(this.pattern.getValue());
+            }
 
             this.setPosition(pos);
             this.pattern.setPosition(pos);
@@ -304,7 +304,6 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "blur" || this.parser.type == "change")
         {
-            this.focus = false;
             let valid:boolean = this.pattern.validate();
 
             if (this.pattern.isNull())
