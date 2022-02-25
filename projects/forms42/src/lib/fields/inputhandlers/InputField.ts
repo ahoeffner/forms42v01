@@ -217,6 +217,11 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "focus")
         {
             this.focus = true;
+            this.setValue(this.pattern.getValue());
+
+            this.setPosition(pos);
+            this.pattern.setPosition(pos);
+            
             this.setAttribute("placeholder",this.pattern.getPlaceholder());
         }
 

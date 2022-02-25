@@ -247,6 +247,31 @@ export class Pattern implements PatternType
         return(false);
     }
 
+    public findPosition(pos:number) : number
+    {
+        if (this.tokens.get(pos).type == 'f')
+        {
+            let fr:number = pos;
+            let to:number = pos;
+
+            let dist1:number = 0;
+            let dist2:number = 0;
+
+            while(fr > 0 && this.tokens.get(fr).type == 'f') fr--;
+            while(to < this.pattern$.length-1 && this.tokens.get(to).type == 'f') to++;
+
+            dist1 = pos - fr;
+            dist2 = to - pos;
+
+            pos = fr;
+
+            if (dist2 < dist1)
+                pos = to;
+        }
+
+        return(pos);
+    }
+
     public setCharacter(pos:number, c:string) : boolean
     {
         if (!this.setPosition(pos))
@@ -465,66 +490,6 @@ export class Pattern implements PatternType
             last.validate();
             this.fldno = curr.fn;
         }
-    }
-
-    private clear(pos?:number) : boolean
-    {
-        let empty:boolean = true;
-
-        if (pos != null)
-        {
-            let field:Field = this.findField(pos);
-            empty = this.clearfield(field);
-        }
-        else
-        {
-            for (let i = 0; i < this.fields.length; i++)
-            {
-                let field:Field = this.fields[i];
-                if (!this.clearfield(field))
-                    empty = false;
-            }
-        }
-
-        return(empty);
-    }
-
-    private clearfield(field:Field) : boolean
-    {
-        let empty:boolean = true;
-
-        for(let i = field.pos$; i <= field.last; i++)
-        {
-            let c:string = this.value.charAt(i);
-            let p:string = this.pattern$.charAt(i);
-            if (c != ' ' && c != p) {empty = false; break;}
-        }
-
-        if (empty)
-        {
-            let plh:string = this.pattern$;
-            plh = plh.substring(field.pos$,field.last+1);
-            for(let i = field.pos$; i <= field.last; i++)
-            this.value = this.replace(this.value,field.pos$,plh);
-            return(true);
-        }
-
-        for(let i = field.pos$; i <= field.last; i++)
-        {
-            let c:string = this.value.charAt(i);
-
-            if (c != this.pattern$.charAt(i))
-            {
-                for(let j = field.pos$; j <= field.last; j++)
-                {
-                    if (this.value.charAt(j) == this.pattern$.charAt(j))
-                        this.value = this.replace(this.value,j,' ');
-                }
-                return(false);
-            }
-        }
-
-        return(false);
     }
 
     private getstring(fr:number,to:number) : string

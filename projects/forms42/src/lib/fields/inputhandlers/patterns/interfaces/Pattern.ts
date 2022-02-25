@@ -43,6 +43,7 @@ export interface Pattern
     getField(n:number) : Field;
     input(pos:number) : boolean;
     findField(pos?:number) : Field;
+    findPosition(pos:number) : number;
     setPosition(pos:number) : boolean;
     getFieldArea(pos:number) : number[];
     delete(fr:number,to:number) : string;
