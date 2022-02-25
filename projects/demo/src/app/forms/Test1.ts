@@ -6,11 +6,11 @@ import { Form, register } from 'forms42';
 	template: `
 		<div style="position: relative;">
 			<div>
-				<field type="x-date"></field>
+				<field type="x-date" x-placeholder="dd  -  mm  -  yyyy"></field>
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
-				<field type="x-fixed" format="{2A} - {4#}"></field>
+				<field type="x-fixed" format="{2A} - {4#}" x-placeholder="BA - 0000"></field>
 			</div>
 
 			<div style="margin-top: 25px; position: relative">

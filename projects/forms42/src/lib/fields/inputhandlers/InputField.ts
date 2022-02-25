@@ -62,17 +62,16 @@ export class InputField extends Common implements FormField
     {
         let type:string = "text";
         let pattern:string = null;
-        let placeholder:string = null;
 
         super.setAttributes(attributes);
 
         attributes.forEach((value,attr) =>
         {
             if (attr == "type") type = value;
-            if (attr == "format") pattern = value;
-            if (attr == "placeholder") placeholder = value;
+            if (attr == "x-pattern") pattern = value;
+            if (attr == "x-placeholder") this.placeholder = value;
 
-            if (attr != "type" && attr != "format")
+            if (attr != "type" && attr.startsWith("x-"))
                 this.element.setAttribute(attr,value);
         });
 
@@ -91,15 +90,13 @@ export class InputField extends Common implements FormField
         if (type == "x-date")
         {
             type = "text";
-            this.element.removeAttribute("placeholder");
-            this.pattern = new FieldPattern("{##} - {##} - {####}","dd - mm - yyyy");
+            this.pattern = new FieldPattern("{##} - {##} - {####}");
         }
 
         if (type == "x-fixed")
         {
             type = "text";
-            this.element.removeAttribute("placeholder");
-            this.pattern = new FieldPattern(pattern,placeholder);
+            this.pattern = new FieldPattern(pattern);
         }
 
         this.element.setAttribute("type",type);
@@ -118,13 +115,27 @@ export class InputField extends Common implements FormField
 
         if (this.parser.type == "blur")
         {
-
+            if (this.placeholder != null)
+                this.removeAttribute("placeholder");
         }
 
         if (this.parser.type == "change")
         {
 
         }
+
+        if (this.parser.type == "focus")
+        {
+            this.focus = true;
+            if (this.placeholder != null)
+                this.setAttribute("placeholder",this.placeholder);
+        }
+
+        if (this.parser.type == "mouseover" && this.placeholder != null)
+            this.setAttribute("placeholder",this.placeholder);
+
+        if (this.parser.type == "mouseout" && !this.focus && this.placeholder != null)
+            this.removeAttribute("placeholder");
 
         if (this.parser.prevent)
             jsevent.preventDefault();
@@ -223,17 +234,14 @@ export class InputField extends Common implements FormField
             this.setPosition(pos);
             this.pattern.setPosition(pos);
 
-            this.setAttribute("placeholder",this.pattern.getPlaceholder());
+            return(true);
         }
 
         if (this.parser.type == "mousedown")
+        {
             this.mousedown = true;
-
-        if (this.parser.type == "mouseover" && this.getValue() == null)
-            this.setAttribute("placeholder",this.pattern.getPlaceholder());
-
-        if (this.parser.type == "mouseout" && !this.focus && this.pattern.isNull())
-            this.removeAttribute("placeholder");
+            return(true);
+        }
 
         if (this.parser.type == "mousemove" && this.mousedown)
         {
@@ -248,8 +256,12 @@ export class InputField extends Common implements FormField
             this.focus = false;
             let valid:boolean = this.pattern.validate();
 
-            this.removeAttribute("placeholder");
-            if (this.pattern.isNull()) this.element.value = "";
+            if (this.pattern.isNull())
+            {
+                this.element.value = "";
+                this.setPosition(0);
+                this.pattern.setPosition(0);
+            }
 
             this.error(!valid);
             if (!valid) setTimeout(() => {this.element.focus();},1);

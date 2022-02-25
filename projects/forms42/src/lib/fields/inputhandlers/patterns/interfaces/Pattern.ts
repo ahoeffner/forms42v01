@@ -27,9 +27,6 @@ export interface Pattern
     getPattern() : string;
     setPattern(pattern:string) : void;
 
-    getPlaceholder() : string;
-    setPlaceholder(placeholder:string) : void;
-
     getValue() : string;
     setValue(value:any) : void;
 

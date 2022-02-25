@@ -50,14 +50,12 @@ export class Pattern implements PatternType
     private fields:Field[] = [];
     private format$:string = null;
     private pattern$:string = null;
-    private placeholder$:string = null;
     private predefined:string = "*#dcaAw";
     private tokens:Map<number,Token> = new Map<number,Token>();
 
-    constructor(format:string, placeholder?:string)
+    constructor(format:string)
     {
-        if (format != null) this.setPattern(format);
-        if (placeholder != null) this.setPlaceholder(placeholder);
+        this.setPattern(format);
     }
 
     public size() : number
@@ -96,11 +94,6 @@ export class Pattern implements PatternType
         return(this.pattern$);
     }
 
-    public getPlaceholder() : string
-    {
-        return(this.placeholder$);
-    }
-
     public validate(fld?:number) : boolean
     {
         if (fld != null)
@@ -119,6 +112,7 @@ export class Pattern implements PatternType
     {
         let pos:number = 0;
         let pattern:string = "";
+        if (format == null) return;
 
         for (let i = 0; i < format.length; i++)
         {
@@ -153,19 +147,11 @@ export class Pattern implements PatternType
         if (this.fields.length == 0)
             throw "No input fields defined";
 
-        if (this.placeholder$ == null)
-            this.placeholder$ = pattern;
-
         this.value = pattern;
         this.format$ = format;
         this.pattern$ = pattern;
         this.plen = pattern.length;
         this.fields.forEach((fld) => {fld.init()});
-    }
-
-    public setPlaceholder(placeholder:string) : void
-    {
-        this.placeholder$ = placeholder;
     }
 
     public getField(n:number) : Field
@@ -389,8 +375,8 @@ export class Pattern implements PatternType
 
     public getFieldArea(pos:number) : number[]
     {
-        if (pos >= this.plen)
-            pos = this.plen - 1;
+        if (pos < 0) pos = 0;
+        if (pos >= this.plen) pos = this.plen - 1;
 
         let fr:number = pos;
         let to:number = pos;
