@@ -14,12 +14,16 @@ export class BrowserEventParser
 {
     private event$:any;
 
+    private dseq:number = 0;
+    private useq:number = 0;
+    private repeat$:boolean = false;
+
     public key:string = null;
     public ctrlkey:string = null;
     public funckey:string = null;
     public ignore:boolean = false;
     public prevent:boolean = false;
-    public printable:boolean = false;
+    public printable$:boolean = false;
 
     public alt:boolean = false;
     public ctrl:boolean = false;
@@ -50,7 +54,7 @@ export class BrowserEventParser
         this.shift = false;
         this.ignore = false;
         this.prevent = false;
-        this.printable = false;
+        this.printable$ = false;
 
         this.ctrlkey = null;
         this.funckey = null;
@@ -64,6 +68,7 @@ export class BrowserEventParser
     public get isPrintableKey() : boolean
     {
         if (this.ctrlkey != null) return(false);
+        if (this.funckey != null) return(false);
         return(this.key != null && this.key.length == 1);
     }
 
@@ -87,6 +92,28 @@ export class BrowserEventParser
         return(this.event.type);
     }
 
+    public get repeat() : boolean
+    {
+        if (this.key == null)
+            return(false);
+
+        if (this.alt || this.ctrl || this.meta)
+            return(false);
+
+        return(this.type == "keydown" && this.repeat$);
+    }
+
+    public get printable() : boolean
+    {
+        if (!this.repeat)
+            return(this.printable$);
+
+        if (this.repeat && this.isPrintableKey)
+            return(true);
+
+        return(false);
+    }
+
     public get modifier() : boolean
     {
         return(this.alt || this.ctrl || this.meta || this.shift);
@@ -101,18 +128,20 @@ export class BrowserEventParser
 
     private parseKeyEvent() : void
     {
-        this.printable = false;
+        this.printable$ = false;
 
         switch(this.event.type)
         {
             case "keyup" :
+
+                this.useq = this.dseq;
 
                 if (!this.alt && !this.ctrl && !this.meta)
                 {
                     if (this.event.key.length == 1)
                     {
                         this.ignore = false;
-                        this.printable = true;
+                        this.printable$ = true;
                         this.key = this.event.key;
                     }
                 }
@@ -138,7 +167,7 @@ export class BrowserEventParser
                 this.key = this.event.key;
 
                 if (this.event.key.length == 1)
-                    this.printable = true;
+                    this.printable$ = true;
 
             break;
 
@@ -146,7 +175,10 @@ export class BrowserEventParser
 
                 this.ignore = true;
                 this.prevent = false;
-                this.printable = false;
+                this.printable$ = false;
+
+                this.repeat$ = (this.dseq != this.useq);
+                this.dseq = (++this.dseq % 32768);
 
                 this.ctrlkey = null;
                 this.funckey = null;
@@ -195,7 +227,7 @@ export class BrowserEventParser
                 this.key = null;
                 this.ignore = true;
                 this.prevent = false;
-                this.printable = false;
+                this.printable$ = false;
             break;
         }
     }

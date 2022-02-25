@@ -313,8 +313,20 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.ignore || !this.parser.isKeyEvent)
-            return(true);
+        let ignore:boolean = this.parser.ignore;
+        if (this.parser.printable) ignore = false;
+
+        if (this.parser.repeat)
+        {
+            switch(this.parser.key)
+            {
+                case "Backspace":
+                case "ArrowLeft":
+                case "ArrowRight": ignore = false;
+            }
+        }
+
+        if (ignore) return(true);
 
         if (this.parser.key == "Backspace" && !this.parser.modifier)
         {
