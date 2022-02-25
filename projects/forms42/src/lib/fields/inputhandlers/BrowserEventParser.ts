@@ -105,13 +105,8 @@ export class BrowserEventParser
 
     public get printable() : boolean
     {
-        if (!this.repeat)
-            return(this.printable$);
-
-        if (this.repeat && this.isPrintableKey)
-            return(true);
-
-        return(false);
+        if (this.repeat && this.isPrintableKey) return(true);
+        else return(this.type == "keyup" && this.printable$);
     }
 
     public get modifier() : boolean
@@ -177,7 +172,7 @@ export class BrowserEventParser
                 this.prevent = false;
                 this.printable$ = false;
 
-                this.repeat$ = (this.dseq != this.useq);
+                this.repeat$ = (this.dseq != this.useq && this.event.key == this.key);
                 this.dseq = (++this.dseq % 32768);
 
                 this.ctrlkey = null;
@@ -235,6 +230,6 @@ export class BrowserEventParser
 
     public toString() : string
     {
-        return(this.type+" prevent: "+this.prevent+" ignore: "+this.ignore+" printable: "+this.printable+" key: "+this.key);
+        return(this.type+" prevent: "+this.prevent+" ignore: "+this.ignore+" printable: "+this.printable+" key: "+this.key+" repeat: "+this.repeat);
     }
 }

@@ -189,10 +189,13 @@ export class InputField extends Common implements FormField
     {
         let prevent:boolean = this.parser.prevent;
 
-        if (this.parser.printable)
+        if (this.parser.prevent)
             prevent = true;
 
         if (this.parser.type == "drop")
+            prevent = true;
+
+        if (this.parser.type == "keypress")
             prevent = true;
 
         if (this.parser.key == "ArrowLeft" && this.parser.shift)
@@ -214,15 +217,17 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "focus")
         {
             this.focus = true;
-
-            if (this.getValue() == null)
-                this.setValue(this.pattern.getPlaceholder());
+            this.setAttribute("placeholder",this.pattern.getPlaceholder());
         }
 
         if (this.parser.type == "mousedown")
-        {
             this.mousedown = true;
-        }
+
+        if (this.parser.type == "mouseover" && this.getValue() == null)
+            this.setAttribute("placeholder",this.pattern.getPlaceholder());
+
+        if (this.parser.type == "mouseout" && !this.focus && this.pattern.isNull())
+            this.removeAttribute("placeholder");
 
         if (this.parser.type == "mousemove" && this.mousedown)
         {
@@ -232,26 +237,13 @@ export class InputField extends Common implements FormField
             this.mousemark = true;
         }
 
-        if (this.parser.type == "mouseover" && this.getValue() == null)
-            this.setValue(this.pattern.getPlaceholder());
-
-        if (this.parser.type == "mouseover" && this.getValue() == null)
-            this.setValue(this.pattern.getPlaceholder());
-
-        if (this.parser.type == "mouseout" && !this.focus && this.pattern.isNull())
-            this.setValue(null);
-
         if (this.parser.type == "blur" || this.parser.type == "change")
         {
             this.focus = false;
-
-            if (this.pattern.isNull())
-            {
-                this.setValue(null);
-                this.setPosition(pos);
-            }
-
             let valid:boolean = this.pattern.validate();
+
+            this.removeAttribute("placeholder");
+            if (this.pattern.isNull()) this.element.value = "";
 
             this.error(!valid);
             if (!valid) setTimeout(() => {this.element.focus();},1);

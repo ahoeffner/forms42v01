@@ -47,6 +47,16 @@ export class Common
         this.properties = properties;
     }
 
+    public removeAttribute(attr:string) : void
+    {
+        this.field.getElement().removeAttribute(attr);
+    }
+
+    public setAttribute(attr:string, value:string) : void
+    {
+        this.field.getElement().setAttribute(attr,value);
+    }
+
     public getAttributes(): Map<string, any>
     {
         return(this.attributes);
@@ -79,7 +89,7 @@ export class Common
 
     public error(flag: boolean) : void
 	{
-        if (flag) this.addClass("invalid");
+        if (flag) this.setClass("invalid");
         else      this.removeClass("invalid");
     }
 
@@ -103,7 +113,7 @@ export class Common
         this.field.getElement().style.cssText = style;
     }
 
-    public addClass(clazz:string) : void
+    public setClass(clazz:string) : void
     {
         this.field.getElement().classList.add(clazz);
     }
