@@ -22,6 +22,7 @@ export class InputField extends Common implements FormField
     private int:boolean = false;
     private dec:boolean = false;
 	private pattern:Pattern = null;
+    private placeholder:string = null;
 	private element:HTMLInputElement = null;
     private parser:BrowserEventParser = new BrowserEventParser();
 
@@ -221,7 +222,7 @@ export class InputField extends Common implements FormField
 
             this.setPosition(pos);
             this.pattern.setPosition(pos);
-            
+
             this.setAttribute("placeholder",this.pattern.getPlaceholder());
         }
 
