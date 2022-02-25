@@ -99,7 +99,7 @@ export class InputField extends Common implements FormField
 
             if (pattern == null)
                 console.error("x-pattern not specified for x-fixed field");
-                
+
             this.pattern = new FieldPattern(pattern);
         }
 
@@ -297,7 +297,9 @@ export class InputField extends Common implements FormField
                     if (sel[1] - sel[0] <= 1) pos = fld[0];
                     else                      fld = [pos,pos];
 
-                    this.setPosition(pos);
+                    if (!this.pattern.setPosition(pos))
+                        pos = this.pattern.findPosition(pos);
+
                     this.setSelection(fld);
                     this.pattern.setPosition(pos);
                 },1);
@@ -313,10 +315,8 @@ export class InputField extends Common implements FormField
 
                     if (!this.pattern.setPosition(pos))
                     {
-                        pos = this.pattern.prev(true,pos);
-
-                        if (!this.pattern.setPosition(pos))
-                            pos = this.pattern.next(true,pos);
+                        pos = this.pattern.findPosition(pos);
+                        this.pattern.setPosition(pos);
                     }
                 },1);
             }
