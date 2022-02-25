@@ -21,8 +21,12 @@ export class InputField extends Common implements FormField
 {
     private int:boolean = false;
     private dec:boolean = false;
+    private focus:boolean = false;
 	private pattern:Pattern = null;
     private placeholder:string = null;
+    private mousedown:boolean = false;
+    private mousemark:boolean = false;
+
 	private element:HTMLInputElement = null;
     private parser:BrowserEventParser = new BrowserEventParser();
 
@@ -110,6 +114,8 @@ export class InputField extends Common implements FormField
     {
         let buble:boolean = false;
         this.parser.event = jsevent;
+        let pos:number = this.getPosition();
+
 
         if (this.pattern != null)
         {
@@ -131,15 +137,39 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "focus")
         {
             this.focus = true;
+
             if (this.placeholder != null)
                 this.setAttribute("placeholder",this.placeholder);
+
+            return;
+        }
+
+        if (this.parser.type == "mousedown")
+        {
+            this.mousedown = true;
+            return;
+        }
+
+        if (this.parser.type == "mousemove" && this.mousedown)
+        {
+            if (!this.mousemark)
+                setTimeout(() => {this.setSelection([pos,pos-1]);},0);
+
+            this.mousemark = true;
+            return;
         }
 
         if (this.parser.type == "mouseover" && this.placeholder != null)
+        {
             this.setAttribute("placeholder",this.placeholder);
+            return;
+        }
 
         if (this.parser.type == "mouseout" && !this.focus && this.placeholder != null)
+        {
             this.removeAttribute("placeholder");
+            return;
+        }
 
         if (this.parser.prevent)
             jsevent.preventDefault();
@@ -151,9 +181,19 @@ export class InputField extends Common implements FormField
                 if (this.parser.key < '0' || this.parser.key > '9')
                 {
                     jsevent.preventDefault();
-                    return;
+                }
+                else if (this.parser.repeat)
+                {
+                    let value:string = this.element.value;
+
+                    let a:string = value.substring(pos);
+                    let b:string = value.substring(0,pos);
+
+                    this.element.value = b + this.parser.key + a;
+                    this.setPosition(++pos);
                 }
             }
+            return;
         }
 
         if (this.dec && this.parser.type == "keydown")
@@ -172,6 +212,16 @@ export class InputField extends Common implements FormField
                 {
                     jsevent.preventDefault();
                     return;
+                }
+                else if (this.parser.repeat && this.parser.key != ".")
+                {
+                    let value:string = this.element.value;
+
+                    let a:string = value.substring(pos);
+                    let b:string = value.substring(0,pos);
+
+                    this.element.value = b + this.parser.key + a;
+                    this.setPosition(++pos);
                 }
             }
         }
@@ -195,11 +245,6 @@ export class InputField extends Common implements FormField
             handler(event);
         }
     }
-
-
-    private focus:boolean = false;
-    private mousedown:boolean = false;
-    private mousemark:boolean = false;
 
     private applyPattern() : boolean
     {
@@ -239,20 +284,6 @@ export class InputField extends Common implements FormField
             this.pattern.setPosition(pos);
 
             return(true);
-        }
-
-        if (this.parser.type == "mousedown")
-        {
-            this.mousedown = true;
-            return(true);
-        }
-
-        if (this.parser.type == "mousemove" && this.mousedown)
-        {
-            if (!this.mousemark)
-                setTimeout(() => {this.setSelection([pos,pos-1]);},0);
-
-            this.mousemark = true;
         }
 
         if (this.parser.type == "blur" || this.parser.type == "change")
@@ -476,7 +507,7 @@ export class InputField extends Common implements FormField
         return(pos);
     }
 
-    private addEvents(element:HTMLElement) : void
+    public addEvents(element:HTMLElement) : void
     {
         element.addEventListener("blur", (event) => {this.onEvent(event)});
         element.addEventListener("focus", (event) => {this.onEvent(event)});

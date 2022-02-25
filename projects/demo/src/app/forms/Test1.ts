@@ -14,10 +14,7 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
-				<field id="xx" type="x-int">
-					<label for="xx">Do you like cheese?</label>
-					<script>console.log("hello")</script>
-				</field>
+				<field id="xx" type="x-int"></field>
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
@@ -26,7 +23,7 @@ import { Form, register } from 'forms42';
 
 			<div class="movable" draggable="true" style="margin-top: 25px; border: 1px solid black;">
 				<p>Movable</p>
-				<field type="text"></field>
+				<input type="text">
 			</div>
 		</div>
 		`,
