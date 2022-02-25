@@ -438,9 +438,10 @@ export class InputField extends Common implements FormField
             {
                 pos = sel[0];
                 this.pattern.delete(sel[0],sel[1]);
-
-                if (!this.pattern.setPosition(sel[0]))
-                    this.pattern.next(true);
+                this.element.value = this.pattern.getValue();
+                pos = this.pattern.findPosition(sel[0]);
+                this.setPosition(pos);
+                this.setSelection([pos,pos]);
             }
 
             if (this.pattern.setCharacter(pos,this.parser.key))

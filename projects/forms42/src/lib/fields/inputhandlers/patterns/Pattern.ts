@@ -246,6 +246,12 @@ export class Pattern implements PatternType
             while(fr > 0 && this.tokens.get(fr).type == 'f') fr--;
             while(to < this.placeholder$.length-1 && this.tokens.get(to).type == 'f') to++;
 
+            if (fr == 0 && this.tokens.get(fr).type == 'f')
+                fr = to;
+
+            if (to == this.placeholder$.length-1 && this.tokens.get(to).type == 'f')
+                to = fr;
+
             dist1 = pos - fr;
             dist2 = to - pos;
 
