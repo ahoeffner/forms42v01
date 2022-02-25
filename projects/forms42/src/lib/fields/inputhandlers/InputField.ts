@@ -414,7 +414,7 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.key == "ArrowRight" && !this.parser.modifier)
+        if (this.parser.key == "ArrowRight")
         {
             pos = this.pattern.next(true);
             this.setPosition(pos);
