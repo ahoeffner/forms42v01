@@ -140,15 +140,10 @@ export class InputField extends Common implements FormField
 
             if (this.placeholder != null)
                 this.setAttribute("placeholder",this.placeholder);
-
-            return;
         }
 
         if (this.parser.type == "mousedown")
-        {
             this.mousedown = true;
-            return;
-        }
 
         if (this.parser.type == "mousemove" && this.mousedown)
         {
@@ -156,74 +151,27 @@ export class InputField extends Common implements FormField
                 setTimeout(() => {this.setSelection([pos,pos-1]);},0);
 
             this.mousemark = true;
-            return;
         }
 
         if (this.parser.type == "mouseover" && this.placeholder != null)
-        {
             this.setAttribute("placeholder",this.placeholder);
-            return;
-        }
 
         if (this.parser.type == "mouseout" && !this.focus && this.placeholder != null)
-        {
             this.removeAttribute("placeholder");
-            return;
-        }
 
         if (this.parser.prevent)
             jsevent.preventDefault();
 
-        if (this.int && this.parser.type == "keydown")
+        if (this.int)
         {
-            if (this.parser.isPrintableKey)
-            {
-                if (this.parser.key < '0' || this.parser.key > '9')
-                {
-                    jsevent.preventDefault();
-                }
-                else if (this.parser.repeat)
-                {
-                    let value:string = this.element.value;
-
-                    let a:string = value.substring(pos);
-                    let b:string = value.substring(0,pos);
-
-                    this.element.value = b + this.parser.key + a;
-                    this.setPosition(++pos);
-                }
-            }
-            return;
+            if (!this.xint())
+                return;
         }
 
-        if (this.dec && this.parser.type == "keydown")
+        if (this.dec)
         {
-            if (this.parser.isPrintableKey)
-            {
-                let pass:boolean = false;
-
-                if (this.parser.key >= '0' && this.parser.key <= '9')
-                    pass = true;
-
-                if (this.parser.key == "." && !this.element.value.includes("."))
-                    pass = true;
-
-                if (!pass)
-                {
-                    jsevent.preventDefault();
-                    return;
-                }
-                else if (this.parser.repeat && this.parser.key != ".")
-                {
-                    let value:string = this.element.value;
-
-                    let a:string = value.substring(pos);
-                    let b:string = value.substring(0,pos);
-
-                    this.element.value = b + this.parser.key + a;
-                    this.setPosition(++pos);
-                }
-            }
+            if (!this.xdec())
+                return;
         }
 
         if (this.parser.ignore)
@@ -244,6 +192,74 @@ export class InputField extends Common implements FormField
             let event:Event = {type: this.parser.event.type, event: jsevent};
             handler(event);
         }
+    }
+
+    private xint() : boolean
+    {
+        let pos:number = this.getPosition();
+
+        if (this.parser.type == "keydown")
+        {
+            if (this.parser.isPrintableKey)
+            {
+                if (this.parser.key < '0' || this.parser.key > '9')
+                {
+                    this.parser.event.preventDefault();
+                }
+                else if (this.parser.repeat)
+                {
+                    let value:string = this.element.value;
+
+                    let a:string = value.substring(pos);
+                    let b:string = value.substring(0,pos);
+
+                    this.element.value = b + this.parser.key + a;
+                    this.setPosition(++pos);
+                }
+            }
+
+            return(false);
+        }
+
+        return(true);
+    }
+
+    private xdec() : boolean
+    {
+        let pos:number = this.getPosition();
+
+        if (this.parser.type == "keydown")
+        {
+            if (this.parser.isPrintableKey)
+            {
+                let pass:boolean = false;
+
+                if (this.parser.key >= '0' && this.parser.key <= '9')
+                    pass = true;
+
+                if (this.parser.key == "." && !this.element.value.includes("."))
+                    pass = true;
+
+                if (!pass)
+                {
+                    this.parser.event.preventDefault();
+                }
+                else if (this.parser.repeat && this.parser.key != ".")
+                {
+                    let value:string = this.element.value;
+
+                    let a:string = value.substring(pos);
+                    let b:string = value.substring(0,pos);
+
+                    this.element.value = b + this.parser.key + a;
+                    this.setPosition(++pos);
+                }
+            }
+
+            return(false);
+        }
+
+        return(true);
     }
 
     private xfixed() : boolean
