@@ -21,8 +21,10 @@ export class BrowserEventParser
     public key:string = null;
     public ctrlkey:string = null;
     public funckey:string = null;
+    public focus:boolean = false;
     public ignore:boolean = false;
     public prevent:boolean = false;
+    public mousedown:boolean = false;
     public printable$:boolean = false;
 
     public alt:boolean = false;
@@ -36,6 +38,12 @@ export class BrowserEventParser
 
         if (!this.isKeyEvent) this.reset();
         else                  this.parseKeyEvent();
+
+        if (this.type == "blur") this.focus = false;
+        if (this.type == "focus") this.focus = true;
+
+        if (this.type == "mouseup") this.mousedown = false;
+        if (this.type == "mousedown") this.mousedown = true;
     }
 
 
