@@ -519,6 +519,7 @@ export class InputField extends Common implements FormField
 
     private setSelection(sel:number[]) : void
     {
+        if (sel[1] < sel[0]) sel[1] = sel[0];
         this.element.selectionStart = sel[0];
         this.element.selectionEnd = sel[1]+1;
     }
