@@ -143,7 +143,7 @@ export class InputField extends Common implements FormField
         if (this.parser.type == "mouseover" && this.placeholder != null)
             this.setAttribute("placeholder",this.placeholder);
 
-        if (this.parser.type == "mouseout" && this.placeholder != null)
+        if (this.parser.type == "mouseout" && this.placeholder != null && !this.parser.focus)
             this.removeAttribute("placeholder");
 
         if (this.parser.prevent)
@@ -292,9 +292,6 @@ export class InputField extends Common implements FormField
             return(true);
         }
 
-        if (this.parser.type == "mouseout" && this.pattern.isNull())
-            this.element.value = "";
-
         if (this.parser.type == "blur" || this.parser.type == "change")
         {
             let valid:boolean = this.pattern.validate();
@@ -311,9 +308,13 @@ export class InputField extends Common implements FormField
             return(true);
         }
 
-        // Wait until position is set
+        if (this.parser.type == "mouseout" && this.pattern.isNull() && !this.parser.focus)
+            this.element.value = "";
+
         if (this.parser.type == "mouseup")
         {
+            // Wait until position is set
+
             let sel:number[] = this.getSelection();
             if (sel[1] < sel[0]) sel[1] = sel[0];
 
