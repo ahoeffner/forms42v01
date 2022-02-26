@@ -373,8 +373,9 @@ export class InputField extends Common implements FormField
                     if (sel[1] <= sel[0])
                     {
                         sel[1] = sel[0];
-                        this.setSelection(sel);
                         this.setPosition(sel[0]);
+                        this.setSelection(sel);
+                        this.pattern.setPosition(pos);
                     }
                 },1);
             }
