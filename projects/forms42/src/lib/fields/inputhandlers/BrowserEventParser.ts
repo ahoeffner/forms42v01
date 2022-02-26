@@ -63,6 +63,7 @@ export class BrowserEventParser
         this.shift = false;
         this.ignore = false;
         this.prevent = false;
+        this.mouseinit = false;
         this.printable$ = false;
 
         this.ctrlkey = null;

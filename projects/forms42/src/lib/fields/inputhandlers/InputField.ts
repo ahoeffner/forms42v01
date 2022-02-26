@@ -142,7 +142,7 @@ export class InputField extends Common implements FormField
         }
 
         if (this.event.mouseinit)
-            setTimeout(() => {this.clearSelection(pos);},0);
+                this.clearSelection(pos);
 
         if (this.event.type == "mouseover" && this.placeholder != null)
             this.setAttribute("placeholder",this.placeholder);
@@ -289,11 +289,10 @@ export class InputField extends Common implements FormField
 
         if (this.event.type == "focus")
         {
+            pos = this.pattern.findPosition(0);
+
             if (this.getValue() == null)
-            {
-                pos = this.pattern.findPosition(0);
                 this.setValue(this.pattern.getValue(),false);
-            }
 
             this.setPosition(pos);
             this.pattern.setPosition(pos);
@@ -325,6 +324,13 @@ export class InputField extends Common implements FormField
             // Wait until position is set
 
             let sel:number[] = this.getSelection();
+
+            if (sel[0] > this.pattern.size() - 1)
+                sel[0] = this.pattern.size() - 1;
+
+            if (sel[1] > this.pattern.size() - 1)
+                sel[1] = this.pattern.size() - 1;
+
             if (sel[1] < sel[0]) sel[1] = sel[0];
 
             if (!this.event.mousemark)
@@ -343,9 +349,8 @@ export class InputField extends Common implements FormField
                     if (sel[1] - sel[0] <= 1) pos = fld[0];
                     else                      fld = [pos,pos];
 
-                    this.setPosition(pos);
                     this.setSelection(fld);
-                    this.pattern.setPosition(pos);
+                    this.pattern.setPosition(this.pattern.findPosition(pos));
                 },1);
             }
             else
@@ -358,18 +363,13 @@ export class InputField extends Common implements FormField
                         pos = this.pattern.size() - 1;
 
                     if (!this.pattern.setPosition(pos))
-                    {
                         pos = this.pattern.findPosition(pos);
-                        this.pattern.setPosition(pos);
-                    }
 
-                    if (sel[1] <= sel[0])
-                    {
-                        sel[1] = sel[0];
-                        this.setPosition(sel[0]);
-                        this.setSelection(sel);
-                        this.pattern.setPosition(pos);
-                    }
+                    sel[1] = sel[1] - 1;
+                    if (sel[1] < sel[0]) sel[1] = sel[0];
+
+                    this.setSelection(sel);
+                    this.pattern.setPosition(pos);
                 },1);
             }
 
@@ -398,7 +398,6 @@ export class InputField extends Common implements FormField
             if (sel[0] == sel[1] && !this.pattern.input(sel[0]))
             {
                 pos = this.pattern.prev(true);
-                this.setPosition(pos);
                 this.setSelection([pos,pos]);
             }
             else
@@ -437,10 +436,7 @@ export class InputField extends Common implements FormField
                 if (!this.pattern.setPosition(pos))
                     pos = this.pattern.next(true,pos);
 
-                this.setPosition(pos);
-
-                if (this.pattern.input(pos))
-                    this.setSelection([pos,pos]);
+                this.setSelection([pos,pos]);
             }
 
             return(false);
@@ -456,15 +452,13 @@ export class InputField extends Common implements FormField
                 this.pattern.delete(sel[0],sel[1]);
                 this.element.value = this.pattern.getValue();
                 pos = this.pattern.findPosition(sel[0]);
-                this.setPosition(pos);
                 this.setSelection([pos,pos]);
             }
 
             if (this.pattern.setCharacter(pos,this.event.key))
             {
+                pos = this.pattern.next(true,pos);
                 this.setValue(this.pattern.getValue(),false);
-                this.setPosition(this.pattern.next(true));
-                pos = this.pattern.getPosition();
                 this.setSelection([pos,pos]);
             }
 
@@ -478,7 +472,6 @@ export class InputField extends Common implements FormField
             if (!this.event.modifier)
             {
                 pos = this.pattern.prev(true);
-                this.setPosition(pos);
                 this.setSelection([pos,pos]);
             }
             else if (this.event.shift)
@@ -486,7 +479,6 @@ export class InputField extends Common implements FormField
                 if (pos > 0)
                 {
                     pos--;
-                    this.setPosition(pos);
                     this.setSelection([pos,sel[1]-1]);
                 }
             }
@@ -496,7 +488,6 @@ export class InputField extends Common implements FormField
         if (this.event.key == "ArrowRight" && !this.event.modifier)
         {
             pos = this.pattern.next(true);
-            this.setPosition(pos);
             this.setSelection([pos,pos]);
             return(false);
         }
@@ -527,14 +518,14 @@ export class InputField extends Common implements FormField
     {
         if (sel[0] < 0) sel[0] = 0;
         if (sel[1] < sel[0]) sel[1] = sel[0];
+
         this.element.selectionStart = sel[0];
         this.element.selectionEnd = sel[1]+1;
     }
 
     private clearSelection(pos:number) : void
     {
-        this.element.selectionEnd = pos;
-        this.element.selectionStart = pos;
+        this.setPosition(pos);
     }
 
     private getSelection() : number[]
