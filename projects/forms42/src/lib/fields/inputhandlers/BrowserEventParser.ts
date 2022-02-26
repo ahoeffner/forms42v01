@@ -257,11 +257,14 @@ export class BrowserEventParser
         if (this.type == "mouseup")
         {
             this.mousedown = false;
-            this.mousemark = false;
+            setTimeout(() => {this.mousemark = false;},1);
         }
 
         if (this.type == "mousedown")
+        {
             this.mousedown = true;
+            this.mousemark = false;
+        }
 
         let first:boolean = !this.mousemark;
         if (this.type == "mousemove" && this.mousedown)

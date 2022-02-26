@@ -23,7 +23,6 @@ export class InputField extends Common implements FormField
     private dec:boolean = false;
 	private pattern:Pattern = null;
     private placeholder:string = null;
-    private mousemark:boolean = false;
 
 	private element:HTMLInputElement = null;
     private parser:BrowserEventParser = new BrowserEventParser();
@@ -138,16 +137,8 @@ export class InputField extends Common implements FormField
                 this.setAttribute("placeholder",this.placeholder);
         }
 
-
-        if (this.parser.type == "mousemove" && this.parser.mousedown)
-        {
-            console.log("mouseinit "+this.parser.mouseinit+" "+"mousemark "+this.parser.mousemark);
-
-            if (!this.mousemark)
-                setTimeout(() => {this.setSelection([pos,pos-1]);},0);
-
-            this.mousemark = true;
-        }
+        if (this.parser.mouseinit)
+            setTimeout(() => {this.setSelection([pos,pos-1]);},0);
 
         if (this.parser.type == "mouseover" && this.placeholder != null)
             this.setAttribute("placeholder",this.placeholder);
@@ -326,7 +317,7 @@ export class InputField extends Common implements FormField
             let sel:number[] = this.getSelection();
             if (sel[1] < sel[0]) sel[1] = sel[0];
 
-            if (!this.mousemark)
+            if (!this.parser.mousemark)
             {
                 setTimeout(() =>
                 {
@@ -335,23 +326,16 @@ export class InputField extends Common implements FormField
                     if (pos >= this.pattern.size())
                         pos = this.pattern.size() - 1;
 
+                    pos = this.pattern.findPosition(pos);
                     let fld:number[] = this.pattern.getFieldArea(pos);
-
-                    if (pos < sel[0] || pos > sel[1])
-                        pos = fld[0];
 
                     // toggle field selection
                     if (sel[1] - sel[0] <= 1) pos = fld[0];
                     else                      fld = [pos,pos];
 
-                    if (pos < fld[0]) pos = fld[0];
-                    if (pos > fld[1]) pos = fld[1];
-
-                    if (!this.pattern.setPosition(pos))
-                        throw "cannot set pos: "+pos;
-
                     this.setPosition(pos);
                     this.setSelection(fld);
+                    this.pattern.setPosition(pos);
                 },1);
             }
             else
@@ -378,8 +362,6 @@ export class InputField extends Common implements FormField
                     }
                 },1);
             }
-
-            this.mousemark = false;
 
             return(false);
         }
