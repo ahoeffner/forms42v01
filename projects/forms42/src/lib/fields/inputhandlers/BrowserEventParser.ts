@@ -34,7 +34,7 @@ export class BrowserEventParser
     public meta:boolean = false;
     public shift:boolean = false;
 
-    public set event(event:any)
+    public setEvent(event:any) : void
     {
         this.event$ = event;
 

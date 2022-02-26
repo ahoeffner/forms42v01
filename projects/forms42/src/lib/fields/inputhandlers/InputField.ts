@@ -25,7 +25,7 @@ export class InputField extends Common implements FormField
     private placeholder:string = null;
 
 	private element:HTMLInputElement = null;
-    private parser:BrowserEventParser = new BrowserEventParser();
+    private event:BrowserEventParser = new BrowserEventParser();
 
     constructor()
     {
@@ -43,10 +43,13 @@ export class InputField extends Common implements FormField
         return(str);
     }
 
-    public setValue(value: any) : void
+    public setValue(value: any, parse?:boolean) : void
     {
         if (value == null) value = "";
+        if (parse == null) parse = true;
+
         this.element.value = value;
+        if (parse) this.validate();
     }
 
 	public validate() : boolean
@@ -107,10 +110,10 @@ export class InputField extends Common implements FormField
         this.element.setAttribute("type",type);
     }
 
-    private onEvent(jsevent:any) : void
+    private onEvent(event:any) : void
     {
         let buble:boolean = false;
-        this.parser.event = jsevent;
+        this.event.setEvent(event);
         let pos:number = this.getPosition();
 
 
@@ -120,34 +123,34 @@ export class InputField extends Common implements FormField
                 return;
         }
 
-        if (this.parser.type == "blur")
+        if (this.event.type == "blur")
         {
             if (this.placeholder != null)
                 this.removeAttribute("placeholder");
         }
 
-        if (this.parser.type == "change")
+        if (this.event.type == "change")
         {
-
+            this.validate();
+            console.log("change "+this.getValue());
         }
 
-        if (this.parser.type == "focus")
+        if (this.event.type == "focus")
         {
             if (this.placeholder != null)
                 this.setAttribute("placeholder",this.placeholder);
         }
 
-        if (this.parser.mouseinit)
-            setTimeout(() => {this.setSelection([pos,pos-1]);},0);
+        if (this.event.mouseinit)
+            setTimeout(() => {this.clearSelection(pos);},0);
 
-        if (this.parser.type == "mouseover" && this.placeholder != null)
+        if (this.event.type == "mouseover" && this.placeholder != null)
             this.setAttribute("placeholder",this.placeholder);
 
-        if (this.parser.type == "mouseout" && this.placeholder != null && !this.parser.focus)
+        if (this.event.type == "mouseout" && this.placeholder != null && !this.event.focus)
             this.removeAttribute("placeholder");
 
-        if (this.parser.prevent)
-            jsevent.preventDefault();
+        this.event.preventDefault();
 
         if (this.int)
         {
@@ -161,23 +164,29 @@ export class InputField extends Common implements FormField
                 return;
         }
 
-        if (this.parser.ignore)
+        if (this.event.ignore)
             return;
 
-        if (this.parser.onCtrlKeyUp)
-            console.log("released : "+this.parser.ctrlkey+" "+this.getValue());
+        if (this.event.onScrollUp)
+            console.log("scrollup : "+this.getValue());
 
-        if (this.parser.onCtrlKeyDown)
-            console.log("pressed : "+this.parser.ctrlkey+" "+this.getValue());
+        if (this.event.onScrollDown)
+            console.log("scrolldown : "+this.getValue());
 
-        if (this.parser.onFuncKey)
-            console.log("FuncKey : "+this.parser.funckey+" "+this.getValue());
+        if (this.event.onCtrlKeyUp)
+            console.log("released : "+this.event.ctrlkey+" "+this.getValue());
+
+        if (this.event.onCtrlKeyDown)
+            console.log("pressed : "+this.event.ctrlkey+" "+this.getValue());
+
+        if (this.event.onFuncKey)
+            console.log("FuncKey : "+this.event.funckey+" "+this.getValue());
 
         if (buble)
         {
-            let handler:EventHandler = this.getEventHandler();
-            let event:Event = {type: this.parser.event.type, event: jsevent};
-            handler(event);
+            //let handler:EventHandler = this.getEventHandler();
+            //let event:Event = {type: this.event.event.type, event: event};
+            //handler(event);
         }
     }
 
@@ -185,22 +194,22 @@ export class InputField extends Common implements FormField
     {
         let pos:number = this.getPosition();
 
-        if (this.parser.type == "keydown")
+        if (this.event.type == "keydown")
         {
-            if (this.parser.isPrintableKey)
+            if (this.event.isPrintableKey)
             {
-                if (this.parser.key < '0' || this.parser.key > '9')
+                if (this.event.key < '0' || this.event.key > '9')
                 {
-                    this.parser.event.preventDefault();
+                    this.event.preventDefault(true);
                 }
-                else if (this.parser.repeat)
+                else if (this.event.repeat)
                 {
                     let value:string = this.element.value;
 
                     let a:string = value.substring(pos);
                     let b:string = value.substring(0,pos);
 
-                    this.element.value = b + this.parser.key + a;
+                    this.element.value = b + this.event.key + a;
                     this.setPosition(++pos);
                 }
             }
@@ -215,30 +224,30 @@ export class InputField extends Common implements FormField
     {
         let pos:number = this.getPosition();
 
-        if (this.parser.type == "keydown")
+        if (this.event.type == "keydown")
         {
-            if (this.parser.isPrintableKey)
+            if (this.event.isPrintableKey)
             {
                 let pass:boolean = false;
 
-                if (this.parser.key >= '0' && this.parser.key <= '9')
+                if (this.event.key >= '0' && this.event.key <= '9')
                     pass = true;
 
-                if (this.parser.key == "." && !this.element.value.includes("."))
+                if (this.event.key == "." && !this.element.value.includes("."))
                     pass = true;
 
                 if (!pass)
                 {
-                    this.parser.event.preventDefault();
+                    this.event.preventDefault(true);
                 }
-                else if (this.parser.repeat && this.parser.key != ".")
+                else if (this.event.repeat && this.event.key != ".")
                 {
                     let value:string = this.element.value;
 
                     let a:string = value.substring(pos);
                     let b:string = value.substring(0,pos);
 
-                    this.element.value = b + this.parser.key + a;
+                    this.element.value = b + this.event.key + a;
                     this.setPosition(++pos);
                 }
             }
@@ -251,23 +260,23 @@ export class InputField extends Common implements FormField
 
     private xfixed() : boolean
     {
-        let prevent:boolean = this.parser.prevent;
+        let prevent:boolean = this.event.prevent;
 
-        if (this.parser.prevent)
+        if (this.event.prevent)
             prevent = true;
 
-        if (this.parser.type == "drop")
+        if (this.event.type == "drop")
             prevent = true;
 
-        if (this.parser.type == "keypress")
+        if (this.event.type == "keypress")
             prevent = true;
 
-        if (this.parser.key == "ArrowLeft" && this.parser.shift)
+        if (this.event.key == "ArrowLeft" && this.event.shift)
             prevent = true;
 
-        if (!this.parser.modifier)
+        if (!this.event.modifier)
         {
-            switch(this.parser.key)
+            switch(this.event.key)
             {
                 case "Backspace":
                 case "ArrowLeft":
@@ -275,15 +284,15 @@ export class InputField extends Common implements FormField
             }
         }
 
-        this.parser.preventDefault(prevent);
+        this.event.preventDefault(prevent);
         let pos:number = this.getPosition();
 
-        if (this.parser.type == "focus")
+        if (this.event.type == "focus")
         {
             if (this.getValue() == null)
             {
                 pos = this.pattern.findPosition(0);
-                this.setValue(this.pattern.getValue());
+                this.setValue(this.pattern.getValue(),false);
             }
 
             this.setPosition(pos);
@@ -292,7 +301,7 @@ export class InputField extends Common implements FormField
             return(true);
         }
 
-        if (this.parser.type == "blur" || this.parser.type == "change")
+        if (this.event.type == "blur" || this.event.type == "change")
         {
             let valid:boolean = this.pattern.validate();
 
@@ -308,17 +317,17 @@ export class InputField extends Common implements FormField
             return(true);
         }
 
-        if (this.parser.type == "mouseout" && this.pattern.isNull() && !this.parser.focus)
+        if (this.event.type == "mouseout" && this.pattern.isNull() && !this.event.focus)
             this.element.value = "";
 
-        if (this.parser.type == "mouseup")
+        if (this.event.type == "mouseup")
         {
             // Wait until position is set
 
             let sel:number[] = this.getSelection();
             if (sel[1] < sel[0]) sel[1] = sel[0];
 
-            if (!this.parser.mousemark)
+            if (!this.event.mousemark)
             {
                 setTimeout(() =>
                 {
@@ -367,12 +376,12 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        let ignore:boolean = this.parser.ignore;
-        if (this.parser.printable) ignore = false;
+        let ignore:boolean = this.event.ignore;
+        if (this.event.printable) ignore = false;
 
-        if (this.parser.repeat)
+        if (this.event.repeat)
         {
-            switch(this.parser.key)
+            switch(this.event.key)
             {
                 case "Backspace":
                 case "ArrowLeft":
@@ -382,7 +391,7 @@ export class InputField extends Common implements FormField
 
         if (ignore) return(true);
 
-        if (this.parser.key == "Backspace" && !this.parser.modifier)
+        if (this.event.key == "Backspace" && !this.event.modifier)
         {
             let sel:number[] = this.getSelection();
 
@@ -417,7 +426,7 @@ export class InputField extends Common implements FormField
                 }
 
                 pos = sel[0];
-                this.setValue(this.pattern.delete(sel[0],sel[1]));
+                this.setValue(this.pattern.delete(sel[0],sel[1]),false);
 
                 if (sel[1] == sel[0] + 1)
                     pos = this.pattern.prev(true);
@@ -437,7 +446,7 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.printable)
+        if (this.event.printable)
         {
             let sel:number[] = this.getSelection();
 
@@ -451,9 +460,9 @@ export class InputField extends Common implements FormField
                 this.setSelection([pos,pos]);
             }
 
-            if (this.pattern.setCharacter(pos,this.parser.key))
+            if (this.pattern.setCharacter(pos,this.event.key))
             {
-                this.setValue(this.pattern.getValue());
+                this.setValue(this.pattern.getValue(),false);
                 this.setPosition(this.pattern.next(true));
                 pos = this.pattern.getPosition();
                 this.setSelection([pos,pos]);
@@ -462,17 +471,17 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.key == "ArrowLeft")
+        if (this.event.key == "ArrowLeft")
         {
             let sel:number[] = this.getSelection();
 
-            if (!this.parser.modifier)
+            if (!this.event.modifier)
             {
                 pos = this.pattern.prev(true);
                 this.setPosition(pos);
                 this.setSelection([pos,pos]);
             }
-            else if (this.parser.shift)
+            else if (this.event.shift)
             {
                 if (pos > 0)
                 {
@@ -484,7 +493,7 @@ export class InputField extends Common implements FormField
             return(false);
         }
 
-        if (this.parser.key == "ArrowRight" && !this.parser.modifier)
+        if (this.event.key == "ArrowRight" && !this.event.modifier)
         {
             pos = this.pattern.next(true);
             this.setPosition(pos);
@@ -512,6 +521,12 @@ export class InputField extends Common implements FormField
     {
         this.element.selectionStart = sel[0];
         this.element.selectionEnd = sel[1]+1;
+    }
+
+    private clearSelection(pos:number) : void
+    {
+        this.element.selectionEnd = pos;
+        this.element.selectionStart = pos;
     }
 
     private getSelection() : number[]

@@ -18,7 +18,7 @@ export interface FormField
 
     getValue() : any;
     validate() : boolean;
-    setValue(value:any) : void;
+    setValue(value:any, parse?:boolean) : void;
 
     getElement() : HTMLElement;
     setBody(body:HTMLElement) : void;
@@ -74,5 +74,7 @@ export enum FieldEvent
     Leave,
     Change,
     Changed,
+    ScrollUp,
+    ScrollDown,
     Custom
 }
