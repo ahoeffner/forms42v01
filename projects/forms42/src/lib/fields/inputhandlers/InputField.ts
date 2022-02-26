@@ -43,13 +43,13 @@ export class InputField extends Common implements FormField
         return(str);
     }
 
-    public setValue(value: any, parse?:boolean) : void
+    public setValue(value: any, validate?:boolean) : void
     {
         if (value == null) value = "";
-        if (parse == null) parse = true;
+        if (validate == null) validate = true;
 
         this.element.value = value;
-        if (parse) this.validate();
+        if (validate) this.validate();
     }
 
 	public validate() : boolean
