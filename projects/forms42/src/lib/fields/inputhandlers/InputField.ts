@@ -507,7 +507,13 @@ export class InputField extends Common implements FormField
     private getPosition() : number
     {
         let pos:number = this.element.selectionStart;
-        if (pos < 0) pos = 0;
+
+        if (pos < 0)
+        {
+            pos = 0;
+            this.setSelection([pos,pos]);
+        }
+
         return(pos);
     }
 
