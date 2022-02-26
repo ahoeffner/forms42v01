@@ -25,6 +25,8 @@ export class BrowserEventParser
     public ignore:boolean = false;
     public prevent:boolean = false;
     public mousedown:boolean = false;
+    public mouseinit:boolean = false;
+    public mousemark:boolean = false;
     public printable$:boolean = false;
 
     public alt:boolean = false;
@@ -37,13 +39,12 @@ export class BrowserEventParser
         this.event$ = event;
 
         if (!this.isKeyEvent) this.reset();
-        else                  this.parseKeyEvent();
+        else                  this.KeyEvent();
+
+        if (this.isMouseEvent) this.mouseEvent();
 
         if (this.type == "blur") this.focus = false;
         if (this.type == "focus") this.focus = true;
-
-        if (this.type == "mouseup") this.mousedown = false;
-        if (this.type == "mousedown") this.mousedown = true;
     }
 
 
@@ -68,6 +69,12 @@ export class BrowserEventParser
         this.funckey = null;
     }
 
+    public get isMouseEvent() : boolean
+    {
+        if (this.event.type == "wheel") return(true);
+        return(this.event.type.startsWith("mouse"));
+    }
+
     public get isKeyEvent() : boolean
     {
         return(this.event.type.startsWith("key"));
@@ -88,6 +95,16 @@ export class BrowserEventParser
     public get onCtrlKeyUp() : boolean
     {
         return(this.ctrlkey != null && this.type == "keyup");
+    }
+
+    public get onScrollUp() : boolean
+    {
+        return(this.type == "wheel" && this.event.deltaY > 0);
+    }
+
+    public get onScrollDown() : boolean
+    {
+        return(this.type == "wheel" && this.event.deltaY < 0);
     }
 
     public get onCtrlKeyDown() : boolean
@@ -129,7 +146,7 @@ export class BrowserEventParser
     }
 
 
-    private parseKeyEvent() : void
+    private KeyEvent() : void
     {
         this.printable$ = false;
 
@@ -235,6 +252,24 @@ export class BrowserEventParser
         }
     }
 
+    private mouseEvent() : void
+    {
+        if (this.type == "mouseup")
+        {
+            this.mousedown = false;
+            this.mousemark = false;
+        }
+
+        if (this.type == "mousedown")
+            this.mousedown = true;
+
+        let first:boolean = !this.mousemark;
+        if (this.type == "mousemove" && this.mousedown)
+        {
+            this.mousemark = true;
+            this.mouseinit = first;
+        }
+    }
 
     public toString() : string
     {
