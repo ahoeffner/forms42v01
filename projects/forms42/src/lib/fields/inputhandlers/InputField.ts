@@ -374,8 +374,8 @@ export class InputField extends Common implements FormField
                     {
                         sel[1] = sel[0];
                         this.setSelection(sel);
+                        this.setPosition(sel[0]);
                     }
-
                 },1);
             }
 
