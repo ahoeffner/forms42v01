@@ -23,7 +23,6 @@ export class InputField extends Common implements FormField
     private dec:boolean = false;
 	private pattern:Pattern = null;
     private placeholder:string = null;
-    private mousedown:boolean = false;
     private mousemark:boolean = false;
 
 	private element:HTMLInputElement = null;
@@ -139,11 +138,11 @@ export class InputField extends Common implements FormField
                 this.setAttribute("placeholder",this.placeholder);
         }
 
-        if (this.parser.type == "mousedown")
-            this.mousedown = true;
 
-        if (this.parser.type == "mousemove" && this.mousedown)
+        if (this.parser.type == "mousemove" && this.parser.mousedown)
         {
+            console.log("mouseinit "+this.parser.mouseinit+" "+"mousemark "+this.parser.mousemark);
+
             if (!this.mousemark)
                 setTimeout(() => {this.setSelection([pos,pos-1]);},0);
 
@@ -380,7 +379,6 @@ export class InputField extends Common implements FormField
                 },1);
             }
 
-            this.mousedown = false;
             this.mousemark = false;
 
             return(false);
