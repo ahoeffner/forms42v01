@@ -302,6 +302,9 @@ export class InputField extends Common implements FormField
             return(true);
         }
 
+        if (this.parser.type == "mouseout" && this.pattern.isNull())
+            this.element.value = "";
+
         if (this.parser.type == "blur" || this.parser.type == "change")
         {
             let valid:boolean = this.pattern.validate();
