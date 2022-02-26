@@ -18,7 +18,7 @@ export interface FormField
 
     getValue() : any;
     validate() : boolean;
-    setValue(value:any, validate?:boolean) : void;
+    setValue(value:any) : void;
 
     getElement() : HTMLElement;
     setBody(body:HTMLElement) : void;

@@ -43,13 +43,16 @@ export class InputField extends Common implements FormField
         return(str);
     }
 
-    public setValue(value: any, validate?:boolean) : void
+    public setValue(value: any) : void
     {
         if (value == null) value = "";
-        if (validate == null) validate = true;
-
         this.element.value = value;
-        if (validate) this.validate();
+    }
+
+    public setElement(value: any) : void
+    {
+        if (value == null) value = "";
+        this.element.value = value;
     }
 
 	public validate() : boolean
@@ -209,7 +212,7 @@ export class InputField extends Common implements FormField
                     let a:string = value.substring(pos);
                     let b:string = value.substring(0,pos);
 
-                    this.element.value = b + this.event.key + a;
+                    this.setElement(b + this.event.key + a);
                     this.setPosition(++pos);
                 }
             }
@@ -247,7 +250,7 @@ export class InputField extends Common implements FormField
                     let a:string = value.substring(pos);
                     let b:string = value.substring(0,pos);
 
-                    this.element.value = b + this.event.key + a;
+                    this.setElement(b + this.event.key + a);
                     this.setPosition(++pos);
                 }
             }
@@ -292,7 +295,7 @@ export class InputField extends Common implements FormField
             pos = this.pattern.findPosition(0);
 
             if (this.getValue() == null)
-                this.setValue(this.pattern.getValue(),false);
+                this.setElement(this.pattern.getValue());
 
             this.setPosition(pos);
             this.pattern.setPosition(pos);
@@ -306,7 +309,7 @@ export class InputField extends Common implements FormField
 
             if (this.pattern.isNull())
             {
-                this.element.value = "";
+                this.setElement(null);
                 this.pattern.setPosition(0);
             }
 
@@ -317,7 +320,7 @@ export class InputField extends Common implements FormField
         }
 
         if (this.event.type == "mouseout" && this.pattern.isNull() && !this.event.focus)
-            this.element.value = "";
+            this.setElement(null);
 
         if (this.event.type == "mouseup")
         {
@@ -425,7 +428,7 @@ export class InputField extends Common implements FormField
                 }
 
                 pos = sel[0];
-                this.setValue(this.pattern.delete(sel[0],sel[1]),false);
+                this.setElement(this.pattern.delete(sel[0],sel[1]));
 
                 if (sel[1] == sel[0] + 1)
                     pos = this.pattern.prev(true);
@@ -450,7 +453,7 @@ export class InputField extends Common implements FormField
             {
                 pos = sel[0];
                 this.pattern.delete(sel[0],sel[1]);
-                this.element.value = this.pattern.getValue();
+                this.setElement(this.pattern.getValue());
                 pos = this.pattern.findPosition(sel[0]);
                 this.setSelection([pos,pos]);
             }
@@ -458,7 +461,7 @@ export class InputField extends Common implements FormField
             if (this.pattern.setCharacter(pos,this.event.key))
             {
                 pos = this.pattern.next(true,pos);
-                this.setValue(this.pattern.getValue(),false);
+                this.setElement(this.pattern.getValue());
                 this.setSelection([pos,pos]);
             }
 
