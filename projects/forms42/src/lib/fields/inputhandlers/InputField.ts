@@ -497,7 +497,9 @@ export class InputField extends Common implements FormField
 
     private getPosition() : number
     {
-        return(this.element.selectionStart);
+        let pos:number = this.element.selectionStart;
+        if (pos < 0) pos = 0;
+        return(pos);
     }
 
     private setPosition(pos:number) : void
