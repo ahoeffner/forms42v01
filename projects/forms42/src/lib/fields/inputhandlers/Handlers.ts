@@ -13,33 +13,33 @@
 import { Type } from '@angular/core';
 import { Handler } from '../Handler';
 import { InputField } from './InputField';
-import { FormField } from '../interfaces/FormField';
+import { Field } from '../interfaces/Field';
 
 
 export class Handlers
 {
-    private static handlers:Map<String,Type<FormField>> = Handlers.defaults();
+    private static handlers:Map<String,Type<Field>> = Handlers.defaults();
 
-    private static defaults() : Map<String,Type<FormField>>
+    private static defaults() : Map<String,Type<Field>>
     {
-        let handlers:Map<String,Type<FormField>> =
-            new Map<String,Type<FormField>>();
+        let handlers:Map<String,Type<Field>> =
+            new Map<String,Type<Field>>();
 
         handlers.set("input",InputField);
-        
+
         return(handlers);
     }
 
-    public static set(type:Handler, clazz:Type<FormField>) : void
+    public static set(type:Handler, clazz:Type<Field>) : void
     {
         let id:string = Handler[type];
         Handlers.handlers.set(id.toLowerCase(),clazz);
     }
 
-    public static get(type:Handler) : Type<FormField>
+    public static get(type:Handler) : Type<Field>
     {
         let id:string = Handler[type];
-        let ftype:Type<FormField> = Handlers.handlers.get(id.toLowerCase());
+        let ftype:Type<Field> = Handlers.handlers.get(id.toLowerCase());
         if (ftype == null) ftype = InputField;
         return(ftype);
     }

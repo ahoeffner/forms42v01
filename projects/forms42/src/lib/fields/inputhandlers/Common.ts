@@ -10,19 +10,19 @@
  * accompanied this code).
  */
 
-import { EventHandler, FormField } from "../interfaces/FormField";
+import { EventHandler, Field } from "../interfaces/Field";
 
 
 export class Common
 {
+    private field:Field = null;
     private properties:any = {};
-    private field:FormField = null;
 	private body:HTMLElement = null;
 	private handler:EventHandler = null;
     private attributes: Map<string, string> = null;
     private values: Set<any> | Map<any, any> = null;
 
-    public setBase(field:FormField) : void
+    public setBase(field:Field) : void
     {
         this.field = field;
     }

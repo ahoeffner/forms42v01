@@ -14,10 +14,10 @@ import { Common } from "./Common";
 import { Pattern } from "./patterns/interfaces/Pattern";
 import { BrowserEventParser } from "./BrowserEventParser";
 import { Pattern as FieldPattern } from "./patterns/Pattern";
-import { FormField, EventHandler, Event } from "../interfaces/FormField";
+import { Field, EventHandler, Event } from "../interfaces/Field";
 
 
-export class InputField extends Common implements FormField
+export class InputField extends Common implements Field
 {
     private int:boolean = false;
     private dec:boolean = false;

@@ -10,7 +10,7 @@
  * accompanied this code).
  */
 
-export interface FormField
+export interface Field
 {
     prepare() : void;
     detach(body:HTMLElement) : void;

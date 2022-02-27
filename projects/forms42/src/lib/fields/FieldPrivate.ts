@@ -14,16 +14,16 @@ import { Field } from "./Field";
 import { Handler } from "./Handler";
 import { Type } from "@angular/core";
 import { Handlers } from "./inputhandlers/Handlers";
-import { FormField as FieldDef} from "./interfaces/FormField";
+import { Field as FieldDef} from "./interfaces/Field";
 import { Field as FieldImpl } from '../framework/interfaces/Field';
 
 
 export class FieldPrivate
 {
     private impl$:FieldImpl = null;
-    private handler$:Handler = null;
     private field$:FieldDef = null;
-    private fieldinst$:Field = null
+    private fieldinst$:Field = null;
+    private handler$:Handler = null;
 
 
     constructor(field:Field)

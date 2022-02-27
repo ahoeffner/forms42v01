@@ -10,12 +10,16 @@
  * accompanied this code).
  */
 
+/*
+ * Create and inject implementation into the real fields private impl.
+ */
+
 import { Field } from '../fields/Field';
 import { Context } from '../application/Context';
 import { FormPrivate } from '../forms/FormPrivate';
 import { NGComponentFactory } from './NGComponentFactory';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Field as FieldDef } from '../framework/interfaces/Field';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component
 ({
