@@ -25,6 +25,10 @@ import { Form, register } from 'forms42';
 				<p>Movable</p>
 				<input type="text">
 			</div>
+
+			<div style="margin-top: 20px;">
+				Menu: <menu></menu>
+			</div>
 		</div>
 		`,
 	styleUrls:[`../../styles.sass`]
