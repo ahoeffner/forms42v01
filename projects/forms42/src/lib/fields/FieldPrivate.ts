@@ -10,19 +10,19 @@
  * accompanied this code).
  */
 
-import { Type } from "@angular/core";
-import { Handler } from "./Handler";
 import { Field } from "./Field";
-import { FormField } from "./interfaces/FormField";
+import { Handler } from "./Handler";
+import { Type } from "@angular/core";
 import { Handlers } from "./inputhandlers/Handlers";
-import { Field as FieldDef } from '../framework/interfaces/Field';
+import { FormField as FieldDef} from "./interfaces/FormField";
+import { Field as FieldImpl } from '../framework/interfaces/Field';
 
 
 export class FieldPrivate
 {
-    private impl$:FieldDef = null;
+    private impl$:FieldImpl = null;
     private handler$:Handler = null;
-    private field$:FormField = null;
+    private field$:FieldDef = null;
     private fieldinst$:Field = null
 
 
@@ -60,7 +60,7 @@ export class FieldPrivate
         return(this.fieldinst$);
     }
 
-    public setImplementation(impl:FieldDef)
+    public setImplementation(impl:FieldImpl)
     {
         this.impl$ = impl;
         this.setHandler(this.handler());
@@ -88,7 +88,7 @@ export class FieldPrivate
         }
 
         this.handler$ = handler;
-        let ftype:Type<FormField> = Handlers.get(handler);
+        let ftype:Type<FieldDef> = Handlers.get(handler);
 
         this.field$ = new ftype();
         this.field$.setBody(this.impl$.body());
