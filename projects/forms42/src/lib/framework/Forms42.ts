@@ -10,12 +10,16 @@
  * accompanied this code).
  */
 
+/*
+ * Expose Forms42 to angular apps
+ */
+
 import { Injectable } from "@angular/core";
-import { Forms42 as Base } from "../application/Forms42";
+import { Forms42 as Forms42Impl } from "../application/Forms42";
 
 @Injectable({providedIn: 'root',})
 
 
-export class Forms42 extends Base
+export class Forms42 extends Forms42Impl
 {
 }

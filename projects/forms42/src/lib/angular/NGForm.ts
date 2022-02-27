@@ -14,13 +14,13 @@ import { Form } from '../forms/Form';
 import { Context } from '../application/Context';
 import { Component, OnInit } from "@angular/core";
 import { NGComponentFactory } from './NGComponentFactory';
-import { Form as IForm } from '../framework/interfaces/Form';
+import { Form as FormDef } from '../framework/interfaces/Form';
 
 @Component({template: ''})
 
-export class NGForm extends Form implements IForm, OnInit
+export class NGForm extends Form implements FormDef, OnInit
 {
-    public ngOnInit(): void 
+    public ngOnInit(): void
     {
         this["__priv__"].setImplementation(this);
         (Context.factory.factory() as NGComponentFactory).form = this["__priv__"];

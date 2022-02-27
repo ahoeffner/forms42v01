@@ -14,14 +14,14 @@ import { Builder } from './Builder';
 import { Main } from '../application/Main';
 import { Context } from '../application/Context';
 import { NGComponentFactory } from './NGComponentFactory';
-import { Main as IMain } from '../framework/interfaces/Main';
+import { Main as MainDef } from '../framework/interfaces/Main';
 import { ComponentFactory } from '../application/ComponentFactory';
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 
 @Component
 ({
 	selector: 'f42-main',
-	template: 
+	template:
 	`
 	FormsLibrary V23
 	<div #windows class="windows"></div>
@@ -30,7 +30,7 @@ import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@ang
       <div #modal class="page modal"></div>
     </div>
   `,
-  styles: 
+  styles:
 	[
 	`
 		.canvas
@@ -57,11 +57,11 @@ import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@ang
 			width: 0;
 			height: 0;
 		}
-	`  
+	`
 	]
 })
 
-export class NGMain implements IMain, OnInit
+export class NGMain implements MainDef, OnInit
 {
 	private layer$:number = 0;
 	private page$:HTMLDivElement = null;
@@ -76,7 +76,7 @@ export class NGMain implements IMain, OnInit
 	{
 	}
 
-	public ngOnInit(): void 
+	public ngOnInit(): void
 	{
 		this.page$ = this.pelem.nativeElement;
 		this.overlay$ = this.melem.nativeElement;

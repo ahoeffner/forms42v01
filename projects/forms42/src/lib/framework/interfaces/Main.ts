@@ -12,8 +12,8 @@
 
 export interface Main
 {
-    layer() : number;
-    page() : HTMLDivElement;
+    layer()   : number;
+    page()    : HTMLDivElement;
     overlay() : HTMLDivElement;
     windows() : HTMLDivElement;
 }

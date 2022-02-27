@@ -12,21 +12,21 @@
 
 import { Type } from "@angular/core";
 import { Handler } from "./Handler";
-import { FieldInstance } from "./FieldInstance";
+import { Field } from "./Field";
 import { FormField } from "./interfaces/FormField";
 import { Handlers } from "./inputhandlers/Handlers";
-import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
+import { Field as FieldDef } from '../framework/interfaces/Field';
 
 
-export class FieldInstancePrivate
+export class FieldPrivate
 {
-    private impl$:IField = null;
+    private impl$:FieldDef = null;
     private handler$:Handler = null;
     private field$:FormField = null;
-    private fieldinst$:FieldInstance = null
+    private fieldinst$:Field = null
 
 
-    constructor(field:FieldInstance)
+    constructor(field:Field)
     {
         this.fieldinst$ = field;
     }
@@ -55,12 +55,12 @@ export class FieldInstancePrivate
         return(this.impl$.attributes().get("handler"));
     }
 
-    public fieldinst() : FieldInstance
+    public fieldinst() : Field
     {
         return(this.fieldinst$);
     }
 
-    public setImplementation(impl:IField)
+    public setImplementation(impl:FieldDef)
     {
         this.impl$ = impl;
         this.setHandler(this.handler());

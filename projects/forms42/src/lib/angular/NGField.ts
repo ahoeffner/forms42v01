@@ -10,24 +10,24 @@
  * accompanied this code).
  */
 
+import { Field } from '../fields/Field';
 import { Context } from '../application/Context';
 import { FormPrivate } from '../forms/FormPrivate';
-import { FieldInstance } from '../fields/FieldInstance';
 import { NGComponentFactory } from './NGComponentFactory';
-import { FieldInstance as IField } from '../framework/interfaces/FieldInstance';
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Field as FieldDef } from '../framework/interfaces/Field';
 
 @Component
 ({
 	selector: 'field',
-	template: 
+	template:
 	`
         <span #tag></span>
         <span #body style="display: none"><ng-content></ng-content></span>
     `
 })
 
-export class NGField extends FieldInstance implements IField, OnInit
+export class NGField extends Field implements FieldDef, OnInit
 {
 	private body$:HTMLElement = null;
 	private ctag$:HTMLSpanElement = null;
@@ -51,7 +51,7 @@ export class NGField extends FieldInstance implements IField, OnInit
         });
     }
 
-    public ngOnInit(): void 
+    public ngOnInit(): void
     {
 		this.ctag$ = this.telem.nativeElement;
 		this.body$ = this.belem.nativeElement.childNodes[0];
@@ -63,18 +63,18 @@ export class NGField extends FieldInstance implements IField, OnInit
         form.addFieldInstance(this);
     }
 
-    public tag(): HTMLSpanElement 
+    public tag(): HTMLSpanElement
     {
         return(this.ctag$);
     }
 
-    public body(): HTMLSpanElement 
+    public body(): HTMLSpanElement
     {
         return(this.body$);
     }
 
-    public attributes(): Map<string, string> 
+    public attributes(): Map<string, string>
     {
-        return(this.attributes$);    
+        return(this.attributes$);
     }
 }

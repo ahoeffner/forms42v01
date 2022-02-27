@@ -10,9 +10,15 @@
  * accompanied this code).
  */
 
-export interface FieldInstance
+import { FieldPrivate } from './FieldPrivate';
+
+
+export class Field
 {
-    tag() : HTMLElement;
-    body() : HTMLElement;
-    attributes() : Map<string,string>;
+    private __priv__:FieldPrivate = null;
+
+    constructor()
+    {
+        this.__priv__ = new FieldPrivate(this);
+    }
 }

@@ -11,7 +11,7 @@
  */
 
 import { Component } from '../framework/interfaces/Component';
-import { ComponentRef, EmbeddedViewRef, Type } from '@angular/core';
+import { ComponentRef, EmbeddedViewRef } from '@angular/core';
 
 
 export class NGComponent implements Component
@@ -23,13 +23,13 @@ export class NGComponent implements Component
         return(this.ref);
     }
 
-    public instance(): object 
+    public instance(): object
     {
         return(this.ref.instance);
     }
 
 
-    public html(): HTMLElement 
+    public html(): HTMLElement
     {
         return((this.ref.hostView as EmbeddedViewRef<any>).rootNodes[0]);
     }

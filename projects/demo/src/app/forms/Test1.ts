@@ -14,7 +14,7 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
-				<field id="xx" type="x-int"></field>
+				<field type="x-int"></field>
 			</div>
 
 			<div style="margin-top: 25px; position: relative">
