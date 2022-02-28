@@ -17,10 +17,9 @@ export class StaticMenu implements Menu
 
     public show(path:string): string
     {
-        let open:boolean = this.status.get(path);
-
-        if (open)
+        if (this.open(path))
         {
+            console.log("close: "+path);
             this.status.set(path,false);
         }
         else
@@ -44,11 +43,9 @@ export class StaticMenu implements Menu
     private build(path:string,data:MenuEntry) : string
     {
         let html:string = "<div>";
-        let open:boolean = this.status.get(path);
+        console.log("path: "+path+" open: "+this.open(path));
 
-        console.log("path: "+path+" open: "+open);
-
-        if (!open || data.entries == null)
+        if (!this.open(path) || data.entries == null)
             return("");
 
         for (let i = 0; i < data.entries.length; i++)
@@ -61,14 +58,25 @@ export class StaticMenu implements Menu
     }
 
 
+    private open(path:string) : boolean
+    {
+        if (path.length > 0 && path.endsWith("/"))
+            path = path.substring(0,path.length-1);
+
+        let open:boolean = this.status.get(path);
+
+        if (open == null)
+            open = false;
+
+        return(open);
+    }
+
+
     private split(path:string) : string[]
     {
         let road:string = "/";
         let parts:string[] = [];
         let split:string[] = path.trim().split("/");
-
-        console.log("path: <"+path+"> split: "+split.length);
-        split.forEach((elem) => {console.log("split <"+elem+">")});
 
         parts.push("/");
         split.forEach((elem) =>
@@ -79,8 +87,6 @@ export class StaticMenu implements Menu
                 parts.push(road);
             }
         });
-
-        parts.forEach((e) => {console.log("e: "+e)})
 
         return(parts);
     }
