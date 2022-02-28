@@ -29,6 +29,12 @@ export class StaticMenu implements Menu
     {
         let html:string = "<div>";
 
+        console.log("path: "+path);
+        let open:boolean = this.status.get(path);
+
+        if (!open || data.entries == null)
+            return("");
+
         for (let i = 0; i < data.entries.length; i++)
         {
             html += "<a class='"+this.classes+"' href='#' path='"+path+i+"'>"+data.entries[i].name+"</a>";
