@@ -39,6 +39,8 @@ export class Menu
 
         this.name = this.attributes().get("name");
         this.classes = this.attributes().get("classes");
+
+        console.log("name: "+this.name+" classes: "+this.classes);
     }
 
     public ngOnInit(): void
@@ -71,9 +73,11 @@ export class Menu
     public show(path:string) : void
     {
         if (this.menu == null)
+        {
             this.menu = new StaticMenu(this.name,null);
+            this.menu.classes = this.classes;
+        }
 
-        this.menu.classes = this.classes;
         let html:string = this.menu.show(path);
 
         if (html != null)

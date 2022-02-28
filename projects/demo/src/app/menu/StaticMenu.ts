@@ -83,15 +83,14 @@ export class StaticMenu implements Menu
     {
         let html:string = null;
         if (path == "/") path = "";
-        let classes:string = "menu";
+        
         let root:MenuEntry = this.find(path);
-        if (this.classes != null) classes+" "+this.classes;
-
-        console.log("path: "+path+" root: "+root.entries);
+        let classes:string = "menu "+this.name;
+        if (this.classes != null) classes += " "+this.classes;
 
         if (root.entries == null)
         {
-            console.log("goto "+root.command);
+            console.log("goto "+root.command+" classes: "+this.classes);
         }
         else
         {
