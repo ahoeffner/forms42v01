@@ -1,119 +1,57 @@
 import { Menu, MenuEntry } from "./Definition";
+import { Menus } from "./Menus";
 
 export class StaticMenu implements Menu
 {
     public name:string;
-    public data:MenuEntry;
     public classes:string;
+    private status:Map<string,boolean> = new Map<string,boolean>();
 
-    private testdata:MenuEntry =
-    {
-        name: "Danmark",
-        entries:
-        [
-            {
-                name: "Jylland",
-                entries:
-                [
-                    {
-                        name: "Sønderborg",
-                        command: "/soenderborg"
-                    }
-                    ,
-                    {
-                        name: "Århus",
-                        entries:
-                        [
-                            {
-                                name: "Syd",
-                                command: "/aahus/syd"
-                            }
-                            ,
-                            {
-                                name: "Nord",
-                                command: "/aahus/nord"
-                            }
-                        ]
-                    }
-                    ,
-                    {
-                        name: "Skagen",
-                        command: "/skagen"
-                    }
-                ]
-            }
-            ,
-            {
-                name: "Sjælland",
-                entries:
-                [
-                    {
-                        name: "København",
-                        command: "/kopenhavn"
-                    }
-                    ,
-                    {
-                        name: "Hørsholm",
-                        command: "/horsholm"
-                    }
-                ]
-            }
-            ,
-            {
-                name: "Fyn",
-                command: "/fyn"
-            }
-            ,
-            {
-                name: "Øerne",
-                command: "/oerne"
-            }
-        ]
-    }
-
-
-    constructor(name:string,data:MenuEntry)
+    constructor(name:string,classes:string)
     {
         this.name = name;
-        this.data = this.testdata;
+        this.classes = "menu "+this.name;
+        if (classes != null) this.classes += " "+classes;
+        this.status.set("/",true);
     }
 
 
     public show(path:string): string
     {
+        let data:MenuEntry = Menus.data.get("test");
         let html:string = null;
-        if (path == "/") path = "";
-        
-        let root:MenuEntry = this.find(path);
-        let classes:string = "menu "+this.name;
-        if (this.classes != null) classes += " "+this.classes;
-
-        if (root.entries == null)
-        {
-            console.log("goto "+root.command+" classes: "+this.classes);
-        }
-        else
-        {
-            html = "";
-            for (let i = 0; i < root.entries.length; i++)
-                html += "<a class='"+classes+"' href='#' path='"+path+"/"+i+"'>"+root.entries[i].name+"</a>"
-        }
-
+        html = this.build("/",data);
         return(html);
     }
 
 
-    private find(path:string) : MenuEntry
+    private build(path:string,data:MenuEntry) : string
     {
-        let road:string[] = path.split("/");
-        let data:MenuEntry = this.testdata;
+        let html:string = "<div>";
 
-        for (let i = 0; i < road.length; i++)
+        for (let i = 0; i < data.entries.length; i++)
         {
-            if (road[i] != "")
-                data = data.entries[+road[i]];
+            html += "<a class='"+this.classes+"' href='#' path='"+path+i+"'>"+data.entries[i].name+"</a>";
+            if (data.entries[i].entries != null) html += this.build(path+i+"/",data.entries[i]);
         }
 
-        return(data);
+        return(html+= "</div>");
+    }
+
+
+    private split(path:string) : string[]
+    {
+        let road:string[] = [];
+        let split:string[] = path.trim().split("/");
+
+        road.push("/");
+        split.forEach((elem) => {if (elem.length > 0) road.push(elem)});
+
+        console.log("path: <"+path+">");
+        road.forEach((e) => {console.log("e: "+e)})
+
+        road.push("");
+
+        return(road);
     }
 }
