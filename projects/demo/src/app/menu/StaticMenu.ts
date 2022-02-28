@@ -10,17 +10,33 @@ export class StaticMenu implements Menu
     constructor(name:string,classes:string)
     {
         this.name = name;
-        this.classes = "menu "+this.name;
+        this.classes = "menu-entry "+this.name;
         if (classes != null) this.classes += " "+classes;
-        this.status.set("/",true);
     }
 
 
     public show(path:string): string
     {
-        let data:MenuEntry = Menus.data.get("test");
+        let open:boolean = this.status.get(path);
+
+        if (open)
+        {
+            this.status.set(path,false);
+        }
+        else
+        {
+            this.status.clear();
+            let road:string[] = this.split(path);
+
+            for (let i = 0; i < road.length; i++)
+                this.status.set(road[i],true);
+        }
+
+        let data:MenuEntry = Menus.data.get(this.name);
+
         let html:string = null;
         html = this.build("/",data);
+
         return(html);
     }
 
@@ -28,9 +44,9 @@ export class StaticMenu implements Menu
     private build(path:string,data:MenuEntry) : string
     {
         let html:string = "<div>";
-
-        console.log("path: "+path);
         let open:boolean = this.status.get(path);
+
+        console.log("path: "+path+" open: "+open);
 
         if (!open || data.entries == null)
             return("");
@@ -47,17 +63,25 @@ export class StaticMenu implements Menu
 
     private split(path:string) : string[]
     {
-        let road:string[] = [];
+        let road:string = "/";
+        let parts:string[] = [];
         let split:string[] = path.trim().split("/");
 
-        road.push("/");
-        split.forEach((elem) => {if (elem.length > 0) road.push(elem)});
+        console.log("path: <"+path+"> split: "+split.length);
+        split.forEach((elem) => {console.log("split <"+elem+">")});
 
-        console.log("path: <"+path+">");
-        road.forEach((e) => {console.log("e: "+e)})
+        parts.push("/");
+        split.forEach((elem) =>
+        {
+            if (elem.length > 0)
+            {
+                road += elem + "/";
+                parts.push(road);
+            }
+        });
 
-        road.push("");
+        parts.forEach((e) => {console.log("e: "+e)})
 
-        return(road);
+        return(parts);
     }
 }

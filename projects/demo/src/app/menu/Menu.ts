@@ -49,7 +49,7 @@ export class Menu
 		this.body$ = this.belem.nativeElement.childNodes[0];
         this.belem.nativeElement.remove();
 
-        this.show("/");
+        this.toggle(null);
     }
 
     public tag(): HTMLSpanElement
@@ -70,28 +70,28 @@ export class Menu
 
     private menu:StaticMenu = null;
 
-    public show(path:string) : void
+    public toggle(path:string) : void
     {
         if (this.menu == null)
+            this.menu = new StaticMenu(this.name,this.classes);
+
+        let html:string = "<a href='#' class='menu menu-"+this.name+"'>"+this.name+"</a>";
+
+        if (path != null)
+            html += this.menu.show(path);
+            
+        this.tag().innerHTML = html;
+
+        let menu:Element = this.tag().getElementsByClassName("menu-"+this.name).item(0);
+        let entries:HTMLCollectionOf<Element> = this.tag().getElementsByClassName("menu-entry");
+
+        for (let i = 0; i < entries.length; i++)
         {
-            this.menu = new StaticMenu(this.name,null);
-            this.menu.classes = this.classes;
+            let entry:Element = entries.item(i);
+            let next:string = entry.getAttribute("path");
+            entry.addEventListener("click",() => {this.toggle(next)});
         }
 
-        let html:string = this.menu.show(path);
-
-        if (html != null)
-        {
-            this.tag().innerHTML = html;
-
-            let entries:HTMLCollectionOf<Element> = this.tag().getElementsByClassName("menu");
-
-            for (let i = 0; i < entries.length; i++)
-            {
-                let entry:Element = entries.item(i);
-                let next:string = entry.getAttribute("path");
-                entry.addEventListener("click", () => {this.show(next)});
-            }
-        }
+        menu.addEventListener("click",() => {this.toggle('/')});
     }
 }
