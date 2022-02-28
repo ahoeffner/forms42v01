@@ -1,6 +1,5 @@
-import { Component, ElementRef, ViewChild } from "@angular/core";
-import { MenuEntry } from "./Definition";
 import { StaticMenu } from "./StaticMenu";
+import { Component, ElementRef, ViewChild } from "@angular/core";
 
 
 @Component
@@ -16,6 +15,9 @@ import { StaticMenu } from "./StaticMenu";
 
 export class Menu
 {
+    private name:string = null;
+    private classes:string = null;
+
 	private body$:HTMLElement = null;
 	private ctag$:HTMLSpanElement = null;
     private attributes$:Map<string,string> = new Map<string,string>();
@@ -34,6 +36,9 @@ export class Menu
                 this.attributes$.set(attr,value);
             }
         });
+
+        this.name = this.attributes().get("name");
+        this.classes = this.attributes().get("classes");
     }
 
     public ngOnInit(): void
@@ -65,19 +70,24 @@ export class Menu
 
     public show(path:string) : void
     {
-        console.log("menu "+this.menu+" path: "+path);
-
         if (this.menu == null)
-            this.menu = new StaticMenu("test",null);
+            this.menu = new StaticMenu(this.name,null);
 
-        this.tag().innerHTML = this.menu.show(path);
-        let entries:HTMLCollectionOf<Element> = this.tag().getElementsByClassName("menu");
+        this.menu.classes = this.classes;
+        let html:string = this.menu.show(path);
 
-        for (let i = 0; i < entries.length; i++)
+        if (html != null)
         {
-            let entry:Element = entries.item(i);
-            let next:string = entry.getAttribute("path");
-            entry.addEventListener("click", () => {this.show(next)});
+            this.tag().innerHTML = html;
+
+            let entries:HTMLCollectionOf<Element> = this.tag().getElementsByClassName("menu");
+
+            for (let i = 0; i < entries.length; i++)
+            {
+                let entry:Element = entries.item(i);
+                let next:string = entry.getAttribute("path");
+                entry.addEventListener("click", () => {this.show(next)});
+            }
         }
     }
 }
