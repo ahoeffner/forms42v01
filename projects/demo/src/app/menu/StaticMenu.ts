@@ -17,19 +17,16 @@ export class StaticMenu implements Menu
 
     public show(path:string): string
     {
-        if (this.open(path))
-        {
-            console.log("close: "+path);
-            this.status.set(path,false);
-        }
-        else
-        {
-            this.status.clear();
-            let road:string[] = this.split(path);
+        let open:boolean = this.open(path);
 
-            for (let i = 0; i < road.length; i++)
-                this.status.set(road[i],true);
-        }
+        this.status.clear();
+        let road:string[] = this.split(path);
+
+        for (let i = 0; i < road.length; i++)
+            this.open(road[i],true);
+
+        if (open)
+            this.open(path,false);
 
         let data:MenuEntry = Menus.data.get(this.name);
 
@@ -43,7 +40,6 @@ export class StaticMenu implements Menu
     private build(path:string,data:MenuEntry) : string
     {
         let html:string = "<div>";
-        console.log("path: "+path+" open: "+this.open(path));
 
         if (!this.open(path) || data.entries == null)
             return("");
@@ -55,20 +51,6 @@ export class StaticMenu implements Menu
         }
 
         return(html+= "</div>");
-    }
-
-
-    private open(path:string) : boolean
-    {
-        if (path.length > 0 && path.endsWith("/"))
-            path = path.substring(0,path.length-1);
-
-        let open:boolean = this.status.get(path);
-
-        if (open == null)
-            open = false;
-
-        return(open);
     }
 
 
@@ -89,5 +71,17 @@ export class StaticMenu implements Menu
         });
 
         return(parts);
+    }
+
+
+    private open(path:string,open?:boolean) : boolean
+    {
+        if (path.length > 1 && path.endsWith("/"))
+            path = path.substring(0,path.length-1);
+
+        if (open != null)
+            this.status.set(path,open);
+
+        return(this.status.get(path));
     }
 }

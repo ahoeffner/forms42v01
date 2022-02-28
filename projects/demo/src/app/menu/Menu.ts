@@ -39,8 +39,6 @@ export class Menu
 
         this.name = this.attributes().get("name");
         this.classes = this.attributes().get("classes");
-
-        console.log("name: "+this.name+" classes: "+this.classes);
     }
 
     public ngOnInit(): void
@@ -79,7 +77,7 @@ export class Menu
 
         if (path != null)
             html += this.menu.show(path);
-            
+
         this.tag().innerHTML = html;
 
         let menu:Element = this.tag().getElementsByClassName("menu-"+this.name).item(0);
