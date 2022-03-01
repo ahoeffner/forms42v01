@@ -27,7 +27,9 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 20px;">
-				<menu name="test" classes="left">Denmark</menu>
+				<menu name="test" classes="left">
+					<button>Danmark</button>
+				</menu>
 			</div>
 		</div>
 		`,

@@ -1,5 +1,6 @@
-import { Menu, MenuEntry } from "./Definition";
 import { Menus } from "./Menus";
+import { Menu, MenuEntry } from "./Definition";
+
 
 export class StaticMenu implements Menu
 {
@@ -10,14 +11,14 @@ export class StaticMenu implements Menu
     constructor(name:string,classes:string)
     {
         this.name = name;
-        this.classes = "menu-entry "+this.name;
+        this.classes = "menu-entry";
         if (classes != null) this.classes += " "+classes;
     }
-
 
     public show(path:string): string
     {
         let open:boolean = this.open(path);
+        let data:MenuEntry = Menus.data.get(this.name);
 
         this.status.clear();
         let road:string[] = this.split(path);
@@ -28,18 +29,12 @@ export class StaticMenu implements Menu
         if (open)
             this.open(path,false);
 
-        let data:MenuEntry = Menus.data.get(this.name);
-        let html:string = "<div class='menu-content "+this.classes+"'>";
-
-        html += this.build("/",data);
-
-        return(html+"</div>");
+        return(this.build("/",data));
     }
-
 
     private build(path:string,data:MenuEntry) : string
     {
-        let html:string = "<div>";
+        let html:string = "<div class='menu-entry-list'>";
 
         if (!this.open(path) || data.entries == null)
             return("");
@@ -52,7 +47,6 @@ export class StaticMenu implements Menu
 
         return(html+= "</div>");
     }
-
 
     private split(path:string) : string[]
     {
@@ -72,7 +66,6 @@ export class StaticMenu implements Menu
 
         return(parts);
     }
-
 
     private open(path:string,open?:boolean) : boolean
     {

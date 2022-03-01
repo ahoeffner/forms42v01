@@ -45,7 +45,18 @@ export class Menu
     {
 		this.ctag$ = this.telem.nativeElement;
 		this.body$ = this.belem.nativeElement.childNodes[0];
+
         this.belem.nativeElement.remove();
+
+        let link:Element = this.body$.getRootNode().firstChild as Element;
+        link.addEventListener("click", () => {this.toggle('/');});
+
+        let container:Element = document.createElement("div");
+        container.classList.add("menu-container");
+
+        this.tag().innerHTML = "";
+        this.tag().appendChild(link);
+        this.tag().appendChild(container);
 
         this.toggle(null);
     }
@@ -73,15 +84,12 @@ export class Menu
         if (this.menu == null)
             this.menu = new StaticMenu(this.name,this.classes);
 
-        let text:string = this.body().getRootNode().firstChild.textContent;
-        let html:string = "<a href='#' class='menu menu-"+this.name+"'>"+text+"</a>";
+        let html:string = "";
 
         if (path != null)
             html += this.menu.show(path);
 
-        this.tag().innerHTML = html;
-
-        let menu:Element = this.tag().getElementsByClassName("menu-"+this.name).item(0);
+        (this.tag().childNodes[1] as Element).innerHTML = html;
         let entries:HTMLCollectionOf<Element> = this.tag().getElementsByClassName("menu-entry");
 
         for (let i = 0; i < entries.length; i++)
@@ -90,7 +98,5 @@ export class Menu
             let next:string = entry.getAttribute("path");
             entry.addEventListener("click",() => {this.toggle(next)});
         }
-
-        menu.addEventListener("click",() => {this.toggle('/')});
     }
 }
