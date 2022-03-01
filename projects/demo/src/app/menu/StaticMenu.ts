@@ -29,11 +29,11 @@ export class StaticMenu implements Menu
             this.open(path,false);
 
         let data:MenuEntry = Menus.data.get(this.name);
+        let html:string = "<div class='menu-content "+this.classes+"'>";
 
-        let html:string = null;
-        html = this.build("/",data);
+        html += this.build("/",data);
 
-        return(html);
+        return(html+"</div>");
     }
 
 
