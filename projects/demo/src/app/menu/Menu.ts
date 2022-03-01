@@ -73,7 +73,8 @@ export class Menu
         if (this.menu == null)
             this.menu = new StaticMenu(this.name,this.classes);
 
-        let html:string = "<a href='#' class='menu menu-"+this.name+"'>"+this.name+"</a>";
+        let text:string = this.body().getRootNode().firstChild.textContent;
+        let html:string = "<a href='#' class='menu menu-"+this.name+"'>"+text+"</a>";
 
         if (path != null)
             html += this.menu.show(path);
