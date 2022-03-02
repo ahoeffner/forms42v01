@@ -41,7 +41,7 @@ export class StaticMenu implements Menu
 
         for (let i = 0; i < data.entries.length; i++)
         {
-            html += "<a class='"+this.classes+"' href='#' path='"+path+i+"'>"+data.entries[i].name+"</a>";
+            html += "<a class='"+this.classes+"' path='"+path+i+"'>"+data.entries[i].name+"</a>";
             if (data.entries[i].entries != null) html += this.build(path+i+"/",data.entries[i]);
         }
 

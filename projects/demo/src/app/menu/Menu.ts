@@ -48,11 +48,22 @@ export class Menu
 
         this.belem.nativeElement.remove();
 
+        let classes:string = "menu-container";
+        if (this.classes != null) classes += " "+this.classes;
+
         let link:Element = this.body$.getRootNode().firstChild as Element;
+
+        if (link instanceof Text)
+        {
+            let text:string = link.textContent;
+            link = document.createElement("a");
+            link.append(text);
+        }
+
         link.addEventListener("click", () => {this.toggle('/');});
 
         let container:Element = document.createElement("div");
-        container.classList.add("menu-container");
+        container.classList.value = classes;
 
         this.tag().innerHTML = "";
         this.tag().appendChild(link);

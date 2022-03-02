@@ -27,8 +27,14 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 20px;">
-				<menu name="test" classes="left">
-					<button>Danmark</button>
+				<menu name="test" classes="left-menu">
+					<button>Left</button>
+				</menu>
+			</div>
+
+			<div style="margin-top: 20px;">
+				<menu name="test" classes="dropdown">
+					DropDown
 				</menu>
 			</div>
 		</div>
