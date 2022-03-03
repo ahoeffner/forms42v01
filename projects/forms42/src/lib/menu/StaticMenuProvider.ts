@@ -6,16 +6,31 @@ import { MenuEntry, StaticMenuEntry } from "./interfaces/MenuEntry";
 
 export abstract class StaticMenuProvider implements Provider, EventListener
 {
-    public data:StaticMenuEntry = null;
+    abstract data:StaticMenuEntry;
 
     public root(): MenuEntry
+    {
+        return(this.data);
+    }
+
+    public entries(path:number[]): MenuEntry[]
     {
         throw new Error("Method not implemented.");
     }
 
-    public entries(path: string): MenuEntry[]
+    public find(path:number[]) : StaticMenuEntry
     {
-        throw new Error("Method not implemented.");
+        return(null);
+    }
+
+    public findByName(path:string) : StaticMenuEntry
+    {
+        return(null);
+    }
+
+    public enable(entry:StaticMenuEntry,flag:boolean) : void
+    {
+
     }
 
     abstract execute(action: string): boolean;

@@ -38,13 +38,6 @@ export class MenuPrivate
         let provider:string = impl.attributes().get("provider");
         this.provider = Context.factory.getNewBeanInstance(provider) as Provider;
 
-        if (this.provider instanceof StaticMenuProvider)
-        {
-            let data:string = impl.attributes().get("data");
-        }
-
-        this.provider
-
         let classes:string = "menu-container";
         if (this.classes != null) classes += " "+this.classes;
 
@@ -82,10 +75,14 @@ export class MenuPrivate
         let open:boolean = this.open(path);
 
         this.status.clear();
-        let road:string[] = this.split(path);
+        let road:number[] = this.split(path);
 
+        let opath:string = "/";
         for (let i = 0; i < road.length; i++)
-            this.open(road[i],true);
+        {
+            opath += road[i]+"/"
+            this.open(opath,true);
+        }
 
         if (open)
             this.open(path,false);
@@ -117,8 +114,9 @@ export class MenuPrivate
     private build(path:string,entry:MenuEntry) : string
     {
         if (entry == null) return("");
+        let road:number[] = this.split(path);
         let html:string = "<div class='menu-entry-list'>";
-        let entries:MenuEntry[] = this.provider.entries(path);
+        let entries:MenuEntry[] = this.provider.entries(road);
 
         if (!this.open(path) || !entry.active || entries == null)
             return("");
@@ -139,18 +137,18 @@ export class MenuPrivate
         return(html+= "</div>");
     }
 
-    private split(path:string) : string[]
+    private split(path:string) : number[]
     {
-        let road:string = "/";
-        let parts:string[] = [];
+        let road:number = 0;
+        let parts:number[] = [];
         let split:string[] = path.trim().split("/");
 
-        parts.push("/");
+        parts.push(road);
         split.forEach((elem) =>
         {
             if (elem.length > 0)
             {
-                road += elem + "/";
+                road += +elem;
                 parts.push(road);
             }
         });
