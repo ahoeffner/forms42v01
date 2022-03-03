@@ -18,7 +18,7 @@ export abstract class StaticMenuProvider implements Provider, EventListener
         throw new Error("Method not implemented.");
     }
 
-    public find(path:number[]) : StaticMenuEntry
+    public find(path:string) : StaticMenuEntry
     {
         return(null);
     }
