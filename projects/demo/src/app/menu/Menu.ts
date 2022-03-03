@@ -98,7 +98,7 @@ export class Menu
         let html:string = "";
 
         if (path != null)
-            html += this.menu.show(path);
+            html += this.menu.toggle(path);
 
         (this.tag().childNodes[1] as Element).innerHTML = html;
         let entries:HTMLCollectionOf<Element> = this.tag().getElementsByClassName("menu-entry");
@@ -107,7 +107,15 @@ export class Menu
         {
             let entry:Element = entries.item(i);
             let next:string = entry.getAttribute("path");
-            entry.addEventListener("click",() => {this.toggle(next)});
+            let action:string = entry.getAttribute("action");
+
+            if (action == null) entry.addEventListener("click",() => {this.toggle(next)});
+            else                entry.addEventListener("click",() => {this.action(action)});
         }
+    }
+
+    public action(action:string) : void
+    {
+        this.menu.action(action);
     }
 }

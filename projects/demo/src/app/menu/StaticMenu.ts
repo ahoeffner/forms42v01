@@ -15,7 +15,7 @@ export class StaticMenu implements Menu
         if (classes != null) this.classes += " "+classes;
     }
 
-    public show(path:string): string
+    public toggle(path:string): string
     {
         let open:boolean = this.open(path);
         let data:MenuEntry = Menus.data.get(this.name);
@@ -32,17 +32,29 @@ export class StaticMenu implements Menu
         return(this.build("/",data));
     }
 
+    public action(action?: string) : void
+    {
+        console.log("action: "+action);
+    }
+
     private build(path:string,data:MenuEntry) : string
     {
         let html:string = "<div class='menu-entry-list'>";
 
-        if (!this.open(path) || data.entries == null)
+        if (!this.open(path) || !data.active || data.entries == null)
             return("");
 
         for (let i = 0; i < data.entries.length; i++)
         {
-            html += "<a class='"+this.classes+"' path='"+path+i+"'>"+data.entries[i].name+"</a>";
-            if (data.entries[i].entries != null) html += this.build(path+i+"/",data.entries[i]);
+            if (data.entries[i].entries != null)
+            {
+                html += "<a class='"+this.classes+"' path='"+path+i+"'>"+data.entries[i].name+"</a>";
+                if (data.entries[i].entries != null) html += this.build(path+i+"/",data.entries[i]);
+            }
+            else
+            {
+                html += "<a class='"+this.classes+" menu-action' action='"+data.entries[i].command+"'>"+data.entries[i].name+"</a>";
+            }
         }
 
         return(html+= "</div>");

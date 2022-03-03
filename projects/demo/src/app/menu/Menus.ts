@@ -16,28 +16,34 @@ export class Menus
         return(
         {
             name: "Danmark",
+            active: true,
             entries:
             [
                 {
                     name: "Jylland",
+                    active: true,
                     entries:
                     [
                         {
                             name: "Sønderborg",
+                            active: true,
                             command: "/soenderborg"
                         }
                         ,
                         {
                             name: "Århus",
+                            active: true,
                             entries:
                             [
                                 {
                                     name: "Syd",
+                                    active: true,
                                     command: "/aahus/syd"
                                 }
                                 ,
                                 {
                                     name: "Nord",
+                                    active: true,
                                     command: "/aahus/nord"
                                 }
                             ]
@@ -45,6 +51,7 @@ export class Menus
                         ,
                         {
                             name: "Skagen",
+                            active: true,
                             command: "/skagen"
                         }
                     ]
@@ -52,15 +59,18 @@ export class Menus
                 ,
                 {
                     name: "Sjælland",
+                    active: true,
                     entries:
                     [
                         {
                             name: "København",
+                            active: true,
                             command: "/kopenhavn"
                         }
                         ,
                         {
                             name: "Hørsholm",
+                            active: true,
                             command: "/horsholm"
                         }
                     ]
@@ -68,11 +78,13 @@ export class Menus
                 ,
                 {
                     name: "Fyn",
+                    active: true,
                     command: "/fyn"
                 }
                 ,
                 {
                     name: "Øerne",
+                    active: true,
                     command: "/oerne"
                 }
             ]
