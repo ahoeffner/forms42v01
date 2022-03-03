@@ -13,12 +13,12 @@
 import { Type } from '@angular/core';
 import { Form } from '../forms/Form';
 import { Component } from '../framework/interfaces/Component';
-import { ComponentFactory as Factory } from '../framework/interfaces/ComponentFactory'; 
+import { ComponentFactory as Factory } from '../framework/interfaces/ComponentFactory';
 
 
 export class ComponentFactory
 {
-    private beandef:Map<string,BeanDefinition> = 
+    private beandef:Map<string,BeanDefinition> =
         new Map<string,BeanDefinition>();
 
     private static formclasses:Map<string,Type<any>> =
@@ -27,25 +27,25 @@ export class ComponentFactory
     private static beanclasses:Map<string,Type<any>> =
         new Map<string,Type<any>>();
 
-    private formdef:Map<string,ComponentDefinition> = 
+    private formdef:Map<string,ComponentDefinition> =
         new Map<string,ComponentDefinition>();
 
     public static addClass(id: string, clazz: Type<any>) : void
     {
         if (id == null) id = clazz.name.toLowerCase();
-        
+
         if (clazz.prototype instanceof Form)
             ComponentFactory.formclasses.set(id,clazz);
 
         else ComponentFactory.beanclasses.set(id,clazz);
     }
 
-    constructor(private factory$:Factory) 
+    constructor(private factory$:Factory)
     {
-        ComponentFactory.beanclasses.forEach((clazz,id) => 
+        ComponentFactory.beanclasses.forEach((clazz,id) =>
         {this.beandef.set(id,new BeanDefinition(clazz));});
 
-        ComponentFactory.formclasses.forEach((clazz,id) => 
+        ComponentFactory.formclasses.forEach((clazz,id) =>
         {this.formdef.set(id,new ComponentDefinition(this.factory(),clazz));});
 
         ComponentFactory.beanclasses.clear();
@@ -65,7 +65,15 @@ export class ComponentFactory
         return(def.getInstance(inst));
     }
 
-    public getFormInstance(id: string, inst: string) : Component 
+    public getNewBeanInstance(id: string) : any
+    {
+        if (id == null) throw "Cannot resolve bean 'null'";
+        let def:BeanDefinition = this.beandef.get(id.toLowerCase());
+        if (def == null) throw "No bean registered to '"+id+"'";
+        return(def.getNewInstance());
+    }
+
+    public getFormInstance(id: string, inst: string) : Component
     {
         if (id == null) throw "Cannot resolve component 'null'";
         let def:ComponentDefinition = this.formdef.get(id.toLowerCase());
@@ -85,14 +93,14 @@ export class ComponentFactory
     {
         if (id == null) throw "Cannot resolve component 'null'";
         let def:ComponentDefinition = this.formdef.get(id.toLowerCase());
-        def.delete(id);        
+        def.delete(id);
     }
 }
 
 
 class BeanDefinition
 {
-    private instances:Map<string,any> = 
+    private instances:Map<string,any> =
         new Map<string,any>();
 
     constructor(private clazz:Type<any>) {}
@@ -101,7 +109,7 @@ class BeanDefinition
     {
         if (id == null) id = "";
         else id = id.toLowerCase();
-        this.instances.delete(id);    
+        this.instances.delete(id);
     }
 
     public getInstance(id:string) : any
@@ -118,6 +126,11 @@ class BeanDefinition
         }
 
         return(comp);
+    }
+
+    public getNewInstance() : any
+    {
+        return(new this.clazz());
     }
 }
 
@@ -136,8 +149,8 @@ class ComponentDefinition
 
         let comp:Component = this.instances.get(id);
 
-        this.factory.detroy(comp);    
-        this.instances.delete(id);        
+        this.factory.detroy(comp);
+        this.instances.delete(id);
     }
 
     public getInstance(id:string) : Component
