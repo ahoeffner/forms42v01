@@ -20,7 +20,7 @@ import { FieldImplementation } from '../framework/interfaces/FieldImplementation
 
 export class FieldPrivate
 {
-    private fieldinst$:Field = null;
+    private pub$:Field = null;
     private handler$:Handler = null;
     private field$:FieldBinding = null;
     private impl$:FieldImplementation = null;
@@ -28,7 +28,17 @@ export class FieldPrivate
 
     constructor(field:Field)
     {
-        this.fieldinst$ = field;
+        this.pub$ = field;
+    }
+
+    public pub() : Field
+    {
+        return(this.pub$);
+    }
+
+    public impl() : FieldImplementation
+    {
+        return(this.impl$);
     }
 
     public id() : string
@@ -53,11 +63,6 @@ export class FieldPrivate
     public handler() : string
     {
         return(this.impl$.attributes().get("handler"));
-    }
-
-    public fieldinst() : Field
-    {
-        return(this.fieldinst$);
     }
 
     public setImplementation(impl:FieldImplementation)

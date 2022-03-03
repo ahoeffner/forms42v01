@@ -15,13 +15,14 @@ import { ComponentFactory } from './application/ComponentFactory';
  */
 
 import { NgModule } from '@angular/core';
+import { NGMenu } from './angular/NGMenu';
 import { NGField } from './angular/NGField';
 
 
 @NgModule({
 	imports: [],
-	declarations: [NGMain, NGField],
-	exports: [NGMain, NGField]
+	declarations: 	[NGMain, NGMenu, NGField],
+	exports: 		[NGMain, NGMenu, NGField]
 })
 
 
