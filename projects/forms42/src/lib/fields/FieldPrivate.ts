@@ -14,16 +14,16 @@ import { Field } from "./Field";
 import { Handler } from "./Handler";
 import { Type } from "@angular/core";
 import { Handlers } from "./inputhandlers/Handlers";
-import { Field as FieldDef} from "./interfaces/Field";
-import { Field as FieldImpl } from '../framework/interfaces/Field';
+import { FieldBinding} from "./interfaces/FieldBinding";
+import { FieldImplementation } from '../framework/interfaces/FieldImplementation';
 
 
 export class FieldPrivate
 {
-    private impl$:FieldImpl = null;
-    private field$:FieldDef = null;
     private fieldinst$:Field = null;
     private handler$:Handler = null;
+    private field$:FieldBinding = null;
+    private impl$:FieldImplementation = null;
 
 
     constructor(field:Field)
@@ -60,7 +60,7 @@ export class FieldPrivate
         return(this.fieldinst$);
     }
 
-    public setImplementation(impl:FieldImpl)
+    public setImplementation(impl:FieldImplementation)
     {
         this.impl$ = impl;
         this.setHandler(this.handler());
@@ -88,7 +88,7 @@ export class FieldPrivate
         }
 
         this.handler$ = handler;
-        let ftype:Type<FieldDef> = Handlers.get(handler);
+        let ftype:Type<FieldBinding> = Handlers.get(handler);
 
         this.field$ = new ftype();
         this.field$.setBody(this.impl$.body());

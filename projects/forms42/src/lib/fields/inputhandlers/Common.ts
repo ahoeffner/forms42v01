@@ -10,19 +10,19 @@
  * accompanied this code).
  */
 
-import { EventHandler, Field } from "../interfaces/Field";
+import { EventHandler, FieldBinding } from "../interfaces/FieldBinding";
 
 
 export class Common
 {
-    private field:Field = null;
+    private field:FieldBinding = null;
     private properties:any = {};
 	private body:HTMLElement = null;
 	private handler:EventHandler = null;
     private attributes: Map<string, string> = null;
     private values: Set<any> | Map<any, any> = null;
 
-    public setBase(field:Field) : void
+    public setBase(field:FieldBinding) : void
     {
         this.field = field;
     }

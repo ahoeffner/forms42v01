@@ -10,7 +10,7 @@
  * accompanied this code).
  */
 
-export interface Field
+export interface FieldBinding
 {
     prepare() : void;
     detach(body:HTMLElement) : void;

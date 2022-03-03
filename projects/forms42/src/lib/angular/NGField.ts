@@ -18,7 +18,7 @@ import { Field } from '../fields/Field';
 import { Context } from '../application/Context';
 import { FormPrivate } from '../forms/FormPrivate';
 import { NGComponentFactory } from './NGComponentFactory';
-import { Field as FieldDef } from '../framework/interfaces/Field';
+import { FieldImplementation as FieldDef } from '../framework/interfaces/FieldImplementation';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component

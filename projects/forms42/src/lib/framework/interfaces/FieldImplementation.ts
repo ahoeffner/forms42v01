@@ -10,7 +10,7 @@
  * accompanied this code).
  */
 
-export interface Field
+export interface FieldImplementation
 {
     tag() : HTMLElement;
     body() : HTMLElement;
