@@ -16,3 +16,7 @@ export { register } from './lib/annotations/register';
 export { Provider } from './lib/menu/interfaces/Provider';
 export { StaticMenuProvider } from './lib/menu/StaticMenuProvider';
 export { MenuEntry, StaticMenuEntry } from './lib/menu/interfaces/MenuEntry';
+
+export { Event } from './lib/events/Events';
+export { EventFilter } from './lib/events/EventFilters';
+export { EventListener } from './lib/events/EventListener';

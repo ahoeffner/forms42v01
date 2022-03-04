@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { Form, register } from 'forms42';
+import { Component } from '@angular/core';
 
 @Component({
 	selector: 'test1',
@@ -27,13 +27,13 @@ import { Form, register } from 'forms42';
 			</div>
 
 			<div style="margin-top: 20px;">
-				<menu name="test" classes="left-menu">
+				<menu provider="Denmark" classes="left-menu">
 					<button>Left</button>
 				</menu>
 			</div>
 
 			<div style="margin-top: 20px;">
-				<menu name="test" classes="dropdown">
+				<menu provider="Denmark" classes="dropdown">
 					DropDown
 				</menu>
 			</div>

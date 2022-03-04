@@ -8,5 +8,5 @@ export interface MenuEntry
 
 export interface StaticMenuEntry extends MenuEntry
 {
-    entries?:MenuEntry[];
+    entries?:StaticMenuEntry[];
 }
