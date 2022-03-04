@@ -1,18 +1,16 @@
 import { StaticMenuEntry, StaticMenuProvider, register } from 'forms42';
 
-@register();
+@register()
 
 export class Denmark extends StaticMenuProvider
 {
     data: StaticMenuEntry = this.test();
-
 
     execute(action: string): boolean
     {
         console.log("click: "+action);
         return(true);
     }
-
 
     private test() : StaticMenuEntry
     {
