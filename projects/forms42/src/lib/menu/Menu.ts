@@ -20,4 +20,14 @@ export class Menu
     {
         this.__priv__ = new MenuPrivate(this);
     }
+
+    public open() : void
+    {
+        this.__priv__.open();
+    }
+
+    public close() : void
+    {
+        this.__priv__.close();
+    }
 }

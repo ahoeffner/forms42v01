@@ -3,7 +3,6 @@ import { Context } from "../application/Context";
 import { Provider } from "./interfaces/Provider";
 import { MenuEntry } from "./interfaces/MenuEntry";
 import { MenuImplementation } from "../framework/interfaces/MenuImplementation";
-import { StaticMenuProvider } from "./StaticMenuProvider";
 
 
 export class MenuPrivate
@@ -58,8 +57,18 @@ export class MenuPrivate
         impl.tag().innerHTML = "";
         impl.tag().appendChild(link);
         impl.tag().appendChild(container);
+    }
 
-        this.toggle(null);
+    public open() : void
+    {
+        this.status.clear();
+        this.toggle("/");
+    }
+
+    public close() : void
+    {
+        this.status.clear();
+        (this.impl().tag().childNodes[1] as Element).innerHTML = "";
     }
 
     public toggle(path:string) : void
@@ -72,15 +81,15 @@ export class MenuPrivate
             return;
         }
 
-        let open:boolean = this.open(path);
+        let open:boolean = this.opentree(path);
 
         this.status.clear();
         let road:string[] = this.split(path);
 
         for (let i = 0; i < road.length; i++)
-            this.open(road[i],true);
+            this.opentree(road[i],true);
 
-        if (open) this.open(path,false);
+        if (open) this.opentree(path,false);
 
         html = this.build("/",this.provider.root());
         (this.impl().tag().childNodes[1] as Element).innerHTML = html;
@@ -112,7 +121,7 @@ export class MenuPrivate
         let html:string = "<div class='menu-entry-list'>";
         let entries:MenuEntry[] = this.provider.entries(path);
 
-        if (!this.open(path) || !entry.active || entries == null)
+        if (!this.opentree(path) || !entry.active || entries == null)
             return("");
 
         for (let i = 0; i < entries.length; i++)
@@ -150,7 +159,7 @@ export class MenuPrivate
         return(parts);
     }
 
-    private open(path:string,open?:boolean) : boolean
+    private opentree(path:string,open?:boolean) : boolean
     {
         if (path.length > 1 && path.endsWith("/"))
             path = path.substring(0,path.length-1);
