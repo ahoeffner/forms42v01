@@ -7,30 +7,32 @@ import { MenuEntry, StaticMenuEntry } from "./interfaces/MenuEntry";
 export abstract class StaticMenuProvider implements Provider, EventListener
 {
     abstract data:StaticMenuEntry;
+    private menu:Map<string,StaticMenuEntry>;
 
     public root(): MenuEntry
     {
         return(this.data);
     }
 
-    public entries(path:number[]): MenuEntry[]
+    public entries(path:string): MenuEntry[]
     {
-        throw new Error("Method not implemented.");
+        let entry:StaticMenuEntry = this.find(path);
+        if (entry != null) return(entry.entries);
+        return([]);
     }
 
     public find(path:string) : StaticMenuEntry
     {
-        return(null);
+        if (path.length > 1 && path.endsWith("/"))
+            path = path.substring(0,path.length-1);
+
+        return(this.menu.get(path));
     }
 
-    public findByName(path:string) : StaticMenuEntry
+    public enable(path:string,flag:boolean) : void
     {
-        return(null);
-    }
-
-    public enable(entry:StaticMenuEntry,flag:boolean) : void
-    {
-
+        let entry:StaticMenuEntry = this.find(path);
+        if (entry != null) entry.active = flag;
     }
 
     abstract execute(action: string): boolean;

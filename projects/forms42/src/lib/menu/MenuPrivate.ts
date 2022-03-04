@@ -75,17 +75,12 @@ export class MenuPrivate
         let open:boolean = this.open(path);
 
         this.status.clear();
-        let road:number[] = this.split(path);
+        let road:string[] = this.split(path);
 
-        let opath:string = "/";
         for (let i = 0; i < road.length; i++)
-        {
-            opath += road[i]+"/"
-            this.open(opath,true);
-        }
+            this.open(road[i],true);
 
-        if (open)
-            this.open(path,false);
+        if (open) this.open(path,false);
 
         html = this.build("/",this.provider.root());
         (this.impl().tag().childNodes[1] as Element).innerHTML = html;
@@ -114,9 +109,8 @@ export class MenuPrivate
     private build(path:string,entry:MenuEntry) : string
     {
         if (entry == null) return("");
-        let road:number[] = this.split(path);
         let html:string = "<div class='menu-entry-list'>";
-        let entries:MenuEntry[] = this.provider.entries(road);
+        let entries:MenuEntry[] = this.provider.entries(path);
 
         if (!this.open(path) || !entry.active || entries == null)
             return("");
@@ -125,7 +119,7 @@ export class MenuPrivate
         {
             if (entries[i].command == null)
             {
-                html += "<a class='"+this.classes+"' path='"+path+i+"'>"+entries[i].name+"</a>";
+                html += "<a class='"+this.classes+"' path='"+path+entries[i].name+"'>"+entries[i].name+"</a>";
                 html += this.build(path+i+"/",entries[i]);
             }
             else
@@ -137,18 +131,18 @@ export class MenuPrivate
         return(html+= "</div>");
     }
 
-    private split(path:string) : number[]
+    private split(path:string) : string[]
     {
-        let road:number = 0;
-        let parts:number[] = [];
+        let road:string = "/";
+        let parts:string[] = [];
         let split:string[] = path.trim().split("/");
 
-        parts.push(road);
+        parts.push("/");
         split.forEach((elem) =>
         {
             if (elem.length > 0)
             {
-                road += +elem;
+                road += elem + "/";
                 parts.push(road);
             }
         });
